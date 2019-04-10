@@ -12,6 +12,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <iostream>
 
 
 Connector::Connector(int port) : port(port) {
@@ -21,25 +22,27 @@ Connector::Connector(int port) : port(port) {
     // Inizializzo l'indirizzo del server
     memset((char *)&servaddr, 0, sizeof(struct sockaddr_in));
     servaddr.sin_family = AF_INET;
-    host = gethostbyname("localhost");
+    host = gethostbyname(TARGET);
 
     servaddr.sin_addr.s_addr=((struct in_addr *)(host->h_addr))->s_addr;
     servaddr.sin_port = htons(port);
 
     // Crea la socket
     sd=socket(AF_INET, SOCK_STREAM, 0);
-    if(sd<0) {perror("apertura socket"); exit(1);}
-    printf("Client: creata la socket sd=%d\n", sd);
+    if(sd<0) {
+        std::cerr << "Error in socket creation" << std::endl;
+        exit(1);
+    }
 
     // Effettuo la connect
-    if(connect(sd,(struct sockaddr *) &servaddr, sizeof(struct sockaddr))<0)
-    {perror("connect"); exit(1);}
-    printf("Client: connect ok\n");
+    if(connect(sd,(struct sockaddr *) &servaddr, sizeof(struct sockaddr))<0){
+        std::cerr << "Error in connect call" << std::endl;
+        exit(1);
+    }
 }
 
 void Connector::send_name(const std::string &name) {
     std::string payload {'"' + name + '"'};
-
     send_string(payload);
 }
 
@@ -75,7 +78,7 @@ std::string Connector::receive_string() {
     int strlen;
     // Ricevo la lunghezza
     if (!read_all(sd, reinterpret_cast<char *>(&strlen), sizeof(strlen))) {
-        perror("Errore nella ricezione della lunghezza");
+        std::cerr << "Error: read_all returned false reading the size" << std::endl;
         exit(1);
     }
     strlen = ntohl(strlen);
@@ -85,7 +88,7 @@ std::string Connector::receive_string() {
 
     // Ricevo il messaggio
     if (!read_all(sd, buffer.data(), sizeof(char)*strlen)) {
-        perror("Errore nella ricezione del messaggio");
+        std::cerr << "Error: read_all returned false reading data" << std::endl;
         exit(1);
     }
 
