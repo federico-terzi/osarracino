@@ -3,6 +3,7 @@
 //
 
 #include "Connector.h"
+#include <vector>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -53,5 +54,42 @@ void Connector::send_string(const std::string &payload) {
 Connector::~Connector() {
     // Chiusura socket
     close(sd);
+}
+
+bool read_all(int socket, char* buffer, unsigned int x)
+{
+    int bytesRead = 0;
+    int result;
+    while (bytesRead < x)
+    {
+        result = read(socket, buffer + bytesRead, x - bytesRead);
+        if (result < 0) {
+            return false;
+        }
+        bytesRead += result;
+    }
+    return true;
+}
+
+std::string Connector::receive_string() {
+    int strlen;
+    // Ricevo la lunghezza
+    if (!read_all(sd, reinterpret_cast<char *>(&strlen), sizeof(strlen))) {
+        perror("Errore nella ricezione della lunghezza");
+        exit(1);
+    }
+    strlen = ntohl(strlen);
+
+    std::vector<char> buffer;
+    buffer.reserve(strlen);
+
+    // Ricevo il messaggio
+    if (!read_all(sd, buffer.data(), sizeof(char)*strlen)) {
+        perror("Errore nella ricezione del messaggio");
+        exit(1);
+    }
+
+    std::string output(buffer.data());
+    return std::move(output);
 }
 

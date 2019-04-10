@@ -18,6 +18,7 @@ public:
 
     void send_name(const std::string &name);
     void send_string(const std::string &payload);
+    std::string receive_string();
 };
 
 

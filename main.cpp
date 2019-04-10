@@ -1,4 +1,5 @@
 #include <iostream>
+#include <unistd.h>
 #include "Board.h"
 #include "Connector.h"
 
@@ -10,4 +11,26 @@ int main() {
 
     Connector connector{5800};
     connector.send_name("Pippo");
+
+    b.load_board(connector.receive_string());
+    std::cout << b << std::endl;
+
+    while (true) {
+        std::string from;
+        std::string to;
+
+        std::cout << "From To" << std::endl;
+        std::cin >> from >> to;
+
+        std::string move {"{\"from\":\""+from+"\",\"to\":\""+to+"\",\"turn\":\"WHITE\"}"};
+        std::cout << move << std::endl;
+        connector.send_string(move);
+
+        b.load_board(connector.receive_string());
+        std::cout << b << std::endl;
+
+        b.load_board(connector.receive_string());
+        std::cout << b << std::endl;
+    }
+
 }
