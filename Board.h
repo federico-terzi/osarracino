@@ -20,7 +20,7 @@ namespace Pawn {
     const char FullThrone = EmptyThrone | King;
     const char WinCondition = King | WinPoint;
 
-    static std::map<char,std::string> names = {{0,"   "}, {White, "▓▓▓"}, {Black, "░░░"}, {King, " ® "}};
+    static std::map<char,std::string> names = {{0,"║   "}, {White, "║▓▓▓"}, {Black, "║░░░"}, {King, "║ ® "}};
 }
 
 
@@ -33,12 +33,15 @@ public:
 
     friend std::ostream& operator<<(std::ostream &s, const Board &board){
         s << "BOARD" << std::endl;
+        s << "╔═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╗" << std::endl;
         for (int y = 0; y < DIM; y++) {
             for (int x = 0; x < DIM; x++) {
                 s << Pawn::names[board.board[x][y]];
             }
-            s << std::endl;
+            s << "║ " << (y + 1) << std::endl;
         }
+        s << "╚═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╝" << std::endl;
+        s << "  A   B   C   D   E   F   G   H   I" << std::endl;
     }
 };
 
