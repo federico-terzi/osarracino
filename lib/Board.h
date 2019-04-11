@@ -12,6 +12,8 @@
 #include <unordered_map>
 
 const int DIM = 9;
+const int OFFSET = 10;
+
 namespace Pawn {
     const char White = 1 << 0;
     const char Black = 1 << 1;
@@ -27,38 +29,34 @@ namespace Pawn {
 }
 
 namespace Action {
-    struct Position {
-        char row;
-        int column;
-        friend bool operator==(const Position& lhs, const Position& rhs);
-        struct hash
-        {
-            auto operator()( const Position& x ) const
-            { return  x.row + x.column ; }
-        };
-    };
     static std::map<int, char> toCol = {
-            {1,'a'},
-            {2,'b'},
-            {3,'c'},
-            {4,'d'},
-            {5,'e'},
-            {6,'f'},
-            {7,'g'},
-            {8,'h'},
-            {9,'i'},
-            };
-}
+            {0,'a'},
+            {1,'b'},
+            {2,'c'},
+            {3,'d'},
+            {4,'e'},
+            {5,'f'},
+            {6,'g'},
+            {7,'h'},
+            {8,'i'},
+    };
 
+    struct Position {
+        int column;
+        int row;
+        friend bool operator==(const Position& lhs, const Position& rhs);
+    };
+
+}
 
 class Board {
 public:
+    Board();
     char board[DIM][DIM];
     bool is_white;
-    std::unordered_map<int, std::vector<int>> moves;
     std::vector<Action::Position> to_be_moved;
     void load_board(const std::string &json_board);
-    std::vector<Action::Position> get_legal_moves(Action::Position pos);
+    std::vector<Action::Position> get_legal_moves(const Action::Position &pos);
 
     friend std::ostream& operator<<(std::ostream &s, const Board &board){
         s << "BOARD" << std::endl;
