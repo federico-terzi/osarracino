@@ -34,6 +34,8 @@ void Board::load_board(const std::string &json_board) {
             } else if (column == "KING") {
                 board[x][y] = Pawn::King;
                 to_be_moved.push_back(Action::Position{Action::toCol[x], y});
+            } else if (column == "THRONE") {
+                board[x][y] = Pawn::EmptyThrone;
             } else {
                 std::cerr << "Not recognized column " << column << std::endl;
             }
@@ -47,5 +49,8 @@ void Board::load_board(const std::string &json_board) {
 
 std::map<Action::Position ,std::vector<Action::Position>> Board::generate_legal_moves() {
     std::map<Action::Position ,std::vector<Action::Position>> moves;
+    for(const auto &move: to_be_moved) {
+
+    }
     return moves;
 }
