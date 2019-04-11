@@ -9,6 +9,7 @@
 #include <map>
 #include <vector>
 #include <array>
+#include <unordered_map>
 
 const int DIM = 9;
 namespace Pawn {
@@ -29,8 +30,8 @@ namespace Action {
     struct Position {
         char row;
         int column;
+        bool operator==(const Position &a);
     };
-
     static std::map<int, char> toCol = {
             {1,'a'},
             {2,'b'},
@@ -49,9 +50,10 @@ class Board {
 public:
     char board[DIM][DIM];
     bool is_white;
+    std::unordered_map<int, std::vector<int>> moves;
     std::vector<Action::Position> to_be_moved;
     void load_board(const std::string &json_board);
-    std::map<Action::Position ,std::vector<Action::Position>> generate_legal_moves();
+    std::vector<Action::Position> get_legal_moves(Action::Position pos);
 
     friend std::ostream& operator<<(std::ostream &s, const Board &board){
         s << "BOARD" << std::endl;
@@ -65,6 +67,7 @@ public:
         s << "╚═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╝" << std::endl;
         s << "  A   B   C   D   E   F   G   H   I" << std::endl;
     }
+
 };
 
 
