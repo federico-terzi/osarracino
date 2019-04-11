@@ -7,6 +7,8 @@
 #include <string>
 #include <iostream>
 #include <map>
+#include <vector>
+#include <array>
 
 const int DIM = 9;
 namespace Pawn {
@@ -23,13 +25,33 @@ namespace Pawn {
     static std::map<char,std::string> names = {{0,"║   "}, {White, "║▓▓▓"}, {Black, "║░░░"}, {King, "║ ® "}};
 }
 
+namespace Action {
+    struct Position {
+        char row;
+        int column;
+    };
+
+    static std::map<int, char> toCol = {
+            {1,'a'},
+            {2,'b'},
+            {3,'c'},
+            {4,'d'},
+            {5,'e'},
+            {6,'f'},
+            {7,'g'},
+            {8,'h'},
+            {9,'i'},
+            };
+}
 
 
 class Board {
 public:
     char board[DIM][DIM];
+    bool is_white;
+    std::vector<Action::Position> to_be_moved;
     void load_board(const std::string &json_board);
-
+    std::map<Action::Position ,std::vector<Action::Position>> generate_legal_moves();
 
     friend std::ostream& operator<<(std::ostream &s, const Board &board){
         s << "BOARD" << std::endl;

@@ -23,10 +23,17 @@ void Board::load_board(const std::string &json_board) {
                 board[x][y] = 0;
             } else if (column == "WHITE") {
                 board[x][y] = Pawn::White;
+                if(is_white){
+                    to_be_moved.push_back(Action::Position{Action::toCol[x], y});
+                }
             } else if (column == "BLACK") {
                 board[x][y] = Pawn::Black;
+                if(!is_white){
+                    to_be_moved.push_back(Action::Position{Action::toCol[x], y});
+                }
             } else if (column == "KING") {
                 board[x][y] = Pawn::King;
+                to_be_moved.push_back(Action::Position{Action::toCol[x], y});
             } else {
                 std::cerr << "Not recognized column " << column << std::endl;
             }
@@ -34,6 +41,11 @@ void Board::load_board(const std::string &json_board) {
         }
         y++;
     }
+    is_white = root["turn"] == "WHITE";
 
+}
 
+std::map<Action::Position ,std::vector<Action::Position>> Board::generate_legal_moves() {
+    std::map<Action::Position ,std::vector<Action::Position>> moves;
+    return moves;
 }
