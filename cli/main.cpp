@@ -1,7 +1,7 @@
 #include <iostream>
 #include <unistd.h>
-#include "Board.h"
-#include "Connector.h"
+#include "../lib/Board.h"
+#include "../lib/Connector.h"
 #include <map>
 #include <locale>
 
