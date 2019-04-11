@@ -14,6 +14,7 @@
 #include <netdb.h>
 #include <iostream>
 
+const char* TARGET  {"localhost"};
 
 Connector::Connector(int port) : port(port) {
     struct hostent *host;

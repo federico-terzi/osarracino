@@ -7,7 +7,6 @@
 
 #include <string>
 
-const char* TARGET  {"localhost"};
 
 class Connector {
 private:
