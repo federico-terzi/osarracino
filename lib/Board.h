@@ -30,7 +30,12 @@ namespace Action {
     struct Position {
         char row;
         int column;
-        bool operator==(const Position &a);
+        friend bool operator==(const Position& lhs, const Position& rhs);
+        struct hash
+        {
+            auto operator()( const Position& x ) const
+            { return  x.row + x.column ; }
+        };
     };
     static std::map<int, char> toCol = {
             {1,'a'},

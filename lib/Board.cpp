@@ -60,3 +60,7 @@ std::vector<Action::Position> Board::get_legal_moves(const Action::Position pos)
     }
     return out;
 }
+
+bool Action::operator==(const Action::Position &lhs, const Action::Position &rhs) {
+    return lhs.row == rhs.row && lhs.column == rhs.column;
+}
