@@ -34,21 +34,21 @@ std::vector<Action::Position> BitMaskHandler::xorAndRun(Board &b, int col, int r
         down = vert.substr(row+1);
 
     }else {
-        right = b.empty[row].to_string().substr(col+1);
+        right = b.empty[row].to_string().substr(col);
         left = b.empty[row].to_string().substr(0, col);
         up = vert.substr(0, row);
-        down = vert.substr(row+1);
+        down = vert.substr(row);
 
     }
 
     std::vector<Action::Position> moves;
     //right
-    for (int i = 0; i+col < 9 && right[i] != '0'; i++){
+    for (int i = 1; i+col < 9 && right[i] != '0'; i++){
         moves.push_back(Action::Position{i+col, row});
     }
 
     //down
-    for (int i = 0; i+row < 9 && down[i] != '0'; i++){
+    for (int i = 1; i+row < 9 && down[i] != '0'; i++){
         moves.push_back(Action::Position{col, i+row});
     }
 
