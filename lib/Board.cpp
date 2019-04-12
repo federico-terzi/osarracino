@@ -27,21 +27,28 @@ void Board::load_board(const std::string &json_board) {
         for(auto &column: row) {
             if(column == "EMPTY") {
                 board[x][y] |= 0;
-                empty[y].flip(x);
+                empty[y].set(x);
 
             } else if (column == "WHITE") {
                 board[x][y] = Pawn::White;
                 if(is_white){
                     to_be_moved.push_back(Action::Position{x, y});
+                }else {
+                    opposite_pawns++;
                 }
             } else if (column == "BLACK") {
                 board[x][y] |= Pawn::Black;
                 if(!is_white){
                     to_be_moved.push_back(Action::Position{x, y});
+                } else {
+                    opposite_pawns++;
                 }
             } else if (column == "KING") {
                 board[x][y] = Pawn::King;
-                to_be_moved.push_back(Action::Position{x, y});
+                kingPos = Action::Position{x, y};
+                if(is_white){
+                    to_be_moved.push_back(Action::Position{x, y});
+                }
             } else if (column == "THRONE") {
                 board[x][y] = Pawn::EmptyThrone;
             } else {
@@ -94,6 +101,10 @@ Board::Board() {
     board[4][8] = Pawn::EmptyCitadel;
     board[5][8] = Pawn::EmptyCitadel;
     board[4][7] = Pawn::EmptyCitadel;
+
+    for(auto &mask: empty) {
+        mask.reset();
+    }
 
 }
 

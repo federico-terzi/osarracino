@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include <functional>
 #include <BitMaskHandler.h>
+#include <Evaluator.h>
 #include "gtest/gtest.h"
 
 TEST(Test_isTurn, test_turn_white) {
@@ -23,6 +24,13 @@ TEST(Test_Moves, test_first_move) {
     BitMaskHandler::init_masks();
     auto result = BitMaskHandler::xorAndRun(b, 3, 0);
     EXPECT_TRUE(b.is_white) << "Turn is not white";
+}
+
+TEST(Test_Black_Eval, test_start) {
+    Board b;
+    b.load_board("{\"board\":[[\"EMPTY\",\"EMPTY\",\"EMPTY\",\"BLACK\",\"BLACK\",\"BLACK\",\"EMPTY\",\"EMPTY\",\"EMPTY\"],[\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"BLACK\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\"],[\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"WHITE\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\"],[\"BLACK\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"WHITE\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"BLACK\"],[\"BLACK\",\"BLACK\",\"WHITE\",\"WHITE\",\"KING\",\"WHITE\",\"WHITE\",\"BLACK\",\"BLACK\"],[\"BLACK\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"WHITE\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"BLACK\"],[\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"WHITE\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\"],[\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"BLACK\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\"],[\"EMPTY\",\"EMPTY\",\"EMPTY\",\"BLACK\",\"BLACK\",\"BLACK\",\"EMPTY\",\"EMPTY\",\"EMPTY\"]],\"turn\":\"BLACK\"}");
+    int moves {Evaluator::evaluate_pawn_opt(b, Action::Position{3, 0})};
+    EXPECT_EQ(moves, 2) << "FAIL";
 }
 
 

@@ -56,6 +56,8 @@ public:
     Board(Board b, Action::Position &from, Action::Position &to);
     char board[DIM][DIM];
     bool is_white;
+    int opposite_pawns = 0;
+    Action::Position kingPos;
     std::bitset<9> empty[9];
     std::vector<Action::Position> to_be_moved;
     void load_board(const std::string &json_board);
