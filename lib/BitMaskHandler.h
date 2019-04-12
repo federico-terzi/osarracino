@@ -12,7 +12,9 @@
 
 class BitMaskHandler {
 public:
-    static std::vector<Action::Position> xorAndRun(std::bitset<9> set[], int col, int row);
+    static std::vector<Action::Position> xorAndRun(Board &b, int col, int row);
+    static std::bitset<9> white_mask[9];
+    static void init_white_mask();
 };
 
 

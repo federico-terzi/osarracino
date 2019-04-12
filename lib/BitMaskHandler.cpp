@@ -4,16 +4,36 @@
 
 #include "BitMaskHandler.h"
 
-std::vector<Action::Position> BitMaskHandler::xorAndRun(std::bitset<9> set[], int col, int row) {
+std::vector<Action::Position> BitMaskHandler::xorAndRun(Board &b, int col, int row) {
     std::string vert = "";
+
     for(int i = 0; i < 9; i++){
-        vert+= set[i].to_string()[col];
+        if(b.is_white){
+            vert+= (b.empty[i] & white_mask[i]).to_string()[col];
+        } else {
+            vert+= b.empty[i].to_string()[col];
+        }
+
     }
 
-    std::string right = set[row].to_string().substr(col+1);
-    std::string left = set[row].to_string().substr(0, col);
-    std::string up = vert.substr(0, row);
-    std::string down = vert.substr(row+1);
+    std::string right;
+    std::string left;
+    std::string down;
+    std::string up;
+    if (b.is_white){
+
+        right = (b.empty[row] & white_mask[row]).to_string().substr(col+1);
+        left = (b.empty[row] & white_mask[row]).to_string().substr(0, col);
+        up = vert.substr(0, row);
+        down = vert.substr(row+1);
+
+    }else {
+        right = b.empty[row].to_string().substr(col+1);
+        left = b.empty[row].to_string().substr(0, col);
+        up = vert.substr(0, row);
+        down = vert.substr(row+1);
+
+    }
 
     std::vector<Action::Position> moves;
     //right
@@ -36,6 +56,38 @@ std::vector<Action::Position> BitMaskHandler::xorAndRun(std::bitset<9> set[], in
 
 
     return moves;
+}
+
+void BitMaskHandler::init_white_mask() {
+
+    for (auto &bitmask: white_mask) {
+        bitmask.set();
+    }
+
+    /*Setting citadel masks for white*/
+    white_mask[0].reset(3);
+    white_mask[0].reset(4);
+    white_mask[0].reset(5);
+
+    white_mask[1].reset(5);
+
+    white_mask[3].reset(0);
+    white_mask[3].reset(8);
+
+    white_mask[4].reset(0);
+    white_mask[4].reset(1);
+    white_mask[4].reset(7);
+    white_mask[4].reset(8);
+
+    white_mask[5].reset(0);
+    white_mask[5].reset(8);
+
+    white_mask[7].reset(5);
+
+    white_mask[8].reset(3);
+    white_mask[8].reset(4);
+    white_mask[8].reset(5);
+
 }
 
 
