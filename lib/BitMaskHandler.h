@@ -14,7 +14,9 @@ class BitMaskHandler {
 public:
     static std::vector<Action::Position> xorAndRun(Board &b, int col, int row);
     static std::bitset<9> white_mask[9];
-    static void init_white_mask();
+    static std::bitset<3> black_hor_mask[2];
+    static std::bitset<2> black_ver_mask[3];
+    static void init_masks();
 };
 
 

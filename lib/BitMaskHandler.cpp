@@ -8,7 +8,7 @@ std::vector<Action::Position> BitMaskHandler::xorAndRun(Board &b, int col, int r
     std::string vert = "";
 
     for(int i = 0; i < 9; i++){
-        if(b.is_white){
+        if(b.is_white || b.board[col][row] != Pawn::FullCitadel){
             vert+= (b.empty[i] & white_mask[i]).to_string()[col];
         } else {
             vert+= b.empty[i].to_string()[col];
@@ -20,7 +20,8 @@ std::vector<Action::Position> BitMaskHandler::xorAndRun(Board &b, int col, int r
     std::string left;
     std::string down;
     std::string up;
-    if (b.is_white){
+
+    if (b.is_white || b.board[col][row] != Pawn::FullCitadel){
 
         right = (b.empty[row] & white_mask[row]).to_string().substr(col+1);
         left = (b.empty[row] & white_mask[row]).to_string().substr(0, col);
@@ -54,11 +55,10 @@ std::vector<Action::Position> BitMaskHandler::xorAndRun(Board &b, int col, int r
         moves.push_back(Action::Position{col, i});
     }
 
-
     return moves;
 }
 
-void BitMaskHandler::init_white_mask() {
+void BitMaskHandler::init_masks() {
 
     for (auto &bitmask: white_mask) {
         bitmask.set();
@@ -88,6 +88,14 @@ void BitMaskHandler::init_white_mask() {
     white_mask[8].reset(4);
     white_mask[8].reset(5);
 
+    /*Set black horizontal mask*/
+    black_hor_mask[0].set(0);
+    black_hor_mask[1].set(2);
+
+    /*Set black vertical mask*/
+    black_ver_mask[0].set(1);
+    black_ver_mask[2].set(1);
 }
+
 
 
