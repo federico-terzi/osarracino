@@ -13,6 +13,7 @@ public:
     static int evaluate_white(Board &b);
     static int evaluate_black(Board &b);
     static int evaluate_pawn_opt(Board &b, const Action::Position &pos);
+    static bool evaluate_black_win(Board &b);
 
 };
 

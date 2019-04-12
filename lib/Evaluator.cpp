@@ -12,7 +12,7 @@ const int KING_OPTIONS = -2;
 const int PAWN_OPT = 2;
 const int ISOLATE = -1;
 const int WIN_COND = MAX * 2;
-const int BEHIND = -10;
+const int BEHIND = -5;
 const int MAX_OPT = 40;
 const int DEVELOPED = 4;
 const int DIAG_CONNECTION = 10;
@@ -45,13 +45,14 @@ int Evaluator::evaluate_pawn_opt(Board &b,const Action::Position &pos) {
     return pawn_opt;
 }
 
+bool Evaluator::evaluate_black_win(Board &b) {
+
+}
+
 
 int Evaluator::evaluate_black(Board &b) {
     int king_opt {evaluate_pawn_opt(b, b.kingPos)};
 
-    if(king_opt <= -2) {
-        king_opt *= 2;
-    }
 
     int pawns_opt = 0;
     for(const auto &toMove: b.to_be_moved) {
@@ -61,11 +62,12 @@ int Evaluator::evaluate_black(Board &b) {
     //TODO: Implement eat-moves.
     return PESO_PEDINE * b.to_be_moved.size() +
            BEHIND*(b.to_be_moved.size()-7 - b.opposite_pawns) +
-           PAWN_OPT * pawns_opt - MAX_OPT+
+           PAWN_OPT * pawns_opt - MAX_OPT -
            KING_OPTIONS * king_opt;
 }
 
 int Evaluator::evaluate_white(Board &b) {
     return 0;
 }
+
 

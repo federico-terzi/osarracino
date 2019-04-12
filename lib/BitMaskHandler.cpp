@@ -72,7 +72,7 @@ void BitMaskHandler::init_masks() {
     /*Setting citadel masks for white*/
     BitMaskHandler::white_mask[0].reset(3);
     BitMaskHandler::white_mask[0].reset(4);
-    BitMaskHandler::BitMaskHandler::white_mask[0].reset(5);
+    BitMaskHandler::white_mask[0].reset(5);
 
     BitMaskHandler::white_mask[1].reset(4);
 
