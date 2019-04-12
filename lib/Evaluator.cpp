@@ -49,6 +49,17 @@ bool Evaluator::evaluate_black_win(Board &b) {
 
 }
 
+int Evaluator::eval_formation(Board &b) {
+    int i = 0;
+    int result = 0;
+    for (const auto &row: b.pawns) {
+        for (int j = 0; j < 9; j++) {
+            result += row.test(j) * matrix[j][i];
+        }
+        i++;
+    }
+    return result;
+}
 
 int Evaluator::evaluate_black(Board &b) {
     int king_opt {evaluate_pawn_opt(b, b.kingPos)};

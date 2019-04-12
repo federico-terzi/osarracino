@@ -59,6 +59,8 @@ public:
     int opposite_pawns = 0;
     Action::Position kingPos;
     std::bitset<9> empty[9];
+    /*Array used for map value*/
+    std::bitset<9> pawns[9];
     std::vector<Action::Position> to_be_moved;
     void load_board(const std::string &json_board);
 

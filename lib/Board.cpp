@@ -32,6 +32,7 @@ void Board::load_board(const std::string &json_board) {
             } else if (column == "WHITE") {
                 board[x][y] = Pawn::White;
                 if(is_white){
+                    pawns[y].set(x);
                     to_be_moved.push_back(Action::Position{x, y});
                 }else {
                     opposite_pawns++;
@@ -39,6 +40,7 @@ void Board::load_board(const std::string &json_board) {
             } else if (column == "BLACK") {
                 board[x][y] |= Pawn::Black;
                 if(!is_white){
+                    pawns[y].set(x);
                     to_be_moved.push_back(Action::Position{x, y});
                 } else {
                     opposite_pawns++;
@@ -47,6 +49,7 @@ void Board::load_board(const std::string &json_board) {
                 board[x][y] = Pawn::King;
                 kingPos = Action::Position{x, y};
                 if(is_white){
+                    pawns[y].set(x);
                     to_be_moved.push_back(Action::Position{x, y});
                 }
             } else if (column == "THRONE") {
