@@ -8,8 +8,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
-#include <array>
-#include <unordered_map>
+#include <bitset>
 
 const int DIM = 9;
 const int OFFSET = 10;
@@ -44,19 +43,21 @@ namespace Action {
     struct Position {
         int column;
         int row;
-        friend bool operator==(const Position& lhs, const Position& rhs);
-    };
 
+        friend bool operator==(const Position &lhs, const Position &rhs);
+        friend std::ostream &operator<<(std::ostream &s, const Position &pos) {
+            s << "COL: " << toCol[pos.column] << " ROW: " << pos.row;
+        };
+    };
 }
 
 class Board {
 public:
-    Board();
     char board[DIM][DIM];
     bool is_white;
+    std::bitset<9> empty[9];
     std::vector<Action::Position> to_be_moved;
     void load_board(const std::string &json_board);
-    std::vector<Action::Position> get_legal_moves(const Action::Position &pos);
 
     friend std::ostream& operator<<(std::ostream &s, const Board &board){
         s << "BOARD" << std::endl;

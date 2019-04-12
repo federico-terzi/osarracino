@@ -8,14 +8,11 @@
 
 #include <bitset>
 #include <memory>
+#include "Board.h"
 
 class BitMaskHandler {
 public:
-    std::unique_ptr<std::bitset<9>[]> masks;
-    int col;
-    int row;
-    BitMaskHandler(int col, int row);
-    void xorAndRun(std::bitset<9> set[]);
+    static std::vector<Action::Position> xorAndRun(std::bitset<9> set[], int col, int row);
 };
 
 
