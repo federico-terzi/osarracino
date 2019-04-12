@@ -53,6 +53,12 @@ void Board::load_board(const std::string &json_board) {
     }
 
 }
+//TODO: Check reference or copy?
+Board::Board(std::bitset<9> *toChange, Action::Position &from, Action::Position to) {
+    toChange[from.row].reset(from.column);
+    toChange[to.row].set(to.column);
+    //TODO: Assign toChange to empty
+}
 
 bool Action::operator==(const Action::Position &lhs, const Action::Position &rhs) {
     return lhs.row == rhs.row && lhs.column == rhs.column;

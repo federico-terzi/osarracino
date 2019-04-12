@@ -35,7 +35,6 @@ std::vector<Action::Position> BitMaskHandler::xorAndRun(std::bitset<9> set[], in
     }
 
 
-
     return moves;
 }
 

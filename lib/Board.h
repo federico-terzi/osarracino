@@ -11,7 +11,6 @@
 #include <bitset>
 
 const int DIM = 9;
-const int OFFSET = 10;
 
 namespace Pawn {
     const char White = 1 << 0;
@@ -53,6 +52,7 @@ namespace Action {
 
 class Board {
 public:
+    Board(std::bitset<9> toChange[9], Action::Position &from, Action::Position to);
     char board[DIM][DIM];
     bool is_white;
     std::bitset<9> empty[9];
