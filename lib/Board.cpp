@@ -26,7 +26,7 @@ void Board::load_board(const std::string &json_board) {
         //TODO: Implement citadel assignment also in empty
         for(auto &column: row) {
             if(column == "EMPTY") {
-                board[x][y] = 0;
+                board[x][y] |= 0;
                 empty[y].flip(x);
 
             } else if (column == "WHITE") {
@@ -35,7 +35,7 @@ void Board::load_board(const std::string &json_board) {
                     to_be_moved.push_back(Action::Position{x, y});
                 }
             } else if (column == "BLACK") {
-                board[x][y] = Pawn::Black;
+                board[x][y] |= Pawn::Black;
                 if(!is_white){
                     to_be_moved.push_back(Action::Position{x, y});
                 }
@@ -53,11 +53,48 @@ void Board::load_board(const std::string &json_board) {
     }
 
 }
-//TODO: Check reference or copy?
-Board::Board(std::bitset<9> *toChange, Action::Position &from, Action::Position to) {
-    toChange[from.row].reset(from.column);
-    toChange[to.row].set(to.column);
+
+Board::Board(Board b, Action::Position &from, Action::Position &to) {
+    b.empty[from.row].reset(from.column);
+    b.empty[to.row].set(to.column);
+
+    if(b.is_white) {
+        if((b.board[from.column][from.row] & Pawn::King) != 0) {
+            b.board[from.column][from.row] -= Pawn::King;
+            b.board[to.column][to.row] += Pawn::King;
+        }
+        b.board[from.column][from.row] -= Pawn::White;
+        b.board[to.column][to.row] += Pawn::White;
+    } else {
+        b.board[from.column][from.row] -= Pawn::Black;
+        b.board[to.column][to.row] += Pawn::Black;
+    }
+
+    this->is_white = !b.is_white;
     //TODO: Assign toChange to empty
+}
+
+Board::Board() {
+    board[0][3] = Pawn::EmptyCitadel;
+    board[0][4] = Pawn::EmptyCitadel;
+    board[0][5] = Pawn::EmptyCitadel;
+    board[1][4] = Pawn::EmptyCitadel;
+
+    board[8][3] = Pawn::EmptyCitadel;
+    board[8][4] = Pawn::EmptyCitadel;
+    board[8][5] = Pawn::EmptyCitadel;
+    board[7][5] = Pawn::EmptyCitadel;
+
+    board[3][0] = Pawn::EmptyCitadel;
+    board[4][0] = Pawn::EmptyCitadel;
+    board[5][0] = Pawn::EmptyCitadel;
+    board[4][1] = Pawn::EmptyCitadel;
+
+    board[3][8] = Pawn::EmptyCitadel;
+    board[4][8] = Pawn::EmptyCitadel;
+    board[5][8] = Pawn::EmptyCitadel;
+    board[4][7] = Pawn::EmptyCitadel;
+
 }
 
 bool Action::operator==(const Action::Position &lhs, const Action::Position &rhs) {

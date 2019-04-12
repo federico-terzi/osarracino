@@ -52,7 +52,8 @@ namespace Action {
 
 class Board {
 public:
-    Board(std::bitset<9> toChange[9], Action::Position &from, Action::Position to);
+    Board();
+    Board(Board b, Action::Position &from, Action::Position &to);
     char board[DIM][DIM];
     bool is_white;
     std::bitset<9> empty[9];
