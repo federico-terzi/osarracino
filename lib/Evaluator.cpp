@@ -4,6 +4,7 @@
 
 #include "Evaluator.h"
 
+// Consts used to represents the weights of the evaluation function.
 const int PESO_PEDINE = 1;
 const int MAX = 50;
 const int MIN = -MAX;
@@ -17,8 +18,9 @@ const int MAX_OPT = 40;
 const int DEVELOPED = 4;
 const int DIAG_CONNECTION = 10;
 
-
-int Evaluator::evaluate_pawn_opt(Board &b,const Action::Position &pos) {
+// Input: Board and a position of a pawn.
+// Output: The number of directions that pawn can move to.
+int Evaluator::evaluate_pawn_opt(Board &b, const Action::Position &pos) {
     int pawn_opt = 0;
 
     for (int i = -1; i < 2; i += 2) {
@@ -49,6 +51,9 @@ bool Evaluator::evaluate_black_win(Board &b) {
 
 }
 
+// Input: Board object
+// Ouput: A score of the formation of the board based on matrix coefficients.
+// This approach could be usefull to make some geometries with the pawns.
 int Evaluator::eval_formation(Board &b) {
     int i = 0;
     int result = 0;
@@ -61,6 +66,9 @@ int Evaluator::eval_formation(Board &b) {
     return result;
 }
 
+// Input: Board object
+// Output: Total Score of the board
+// This is the black evaluation function.
 int Evaluator::evaluate_black(Board &b) {
     int king_opt {evaluate_pawn_opt(b, b.kingPos)};
 
