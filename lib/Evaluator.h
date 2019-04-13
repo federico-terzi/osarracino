@@ -8,7 +8,7 @@
 
 #include "Board.h"
 
-const int PURPLE_WG = 0;
+const int PURPLE_WG = 3;
 const int CYAN_WG = 2;
 const int BLANK_WG = 0;
 

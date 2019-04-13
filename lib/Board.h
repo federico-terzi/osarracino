@@ -13,6 +13,7 @@
 const int DIM = 9;
 
 namespace Pawn {
+    // Consts used to model the content of a cell in the board.
     const char White = 1 << 0;
     const char Black = 1 << 1;
     const char King = 1 << 2;
@@ -23,10 +24,13 @@ namespace Pawn {
     const char FullThrone = EmptyThrone | King;
     const char WinCondition = King | WinPoint;
 
+    // Map used to print out in a clever way the board
     static std::map<char,std::string> names = {{0,"║   "}, {White, "║▓▓▓"}, {Black, "║░░░"}, {King, "║ ® "}};
 }
 
 namespace Action {
+    // Map used to print columns as characters not as integer
+    // Usefull also to create the move json to send to the server.
     static std::map<int, char> toCol = {
             {0,'a'},
             {1,'b'},
@@ -39,6 +43,7 @@ namespace Action {
             {8,'i'},
     };
 
+    // Struct used to represents a Position in the board
     struct Position {
         int column;
         int row;
@@ -52,18 +57,30 @@ namespace Action {
 
 class Board {
 public:
+    /*CONSTRUCTORS*/
+
     Board();
     Board(Board b, Action::Position &from, Action::Position &to);
-    char board[DIM][DIM];
-    bool is_white;
-    int opposite_pawns = 0;
-    Action::Position kingPos;
-    std::bitset<9> empty[9];
-    /*Array used for map value*/
-    std::bitset<9> pawns[9];
-    std::vector<Action::Position> to_be_moved;
-    void load_board(const std::string &json_board);
 
+    /*ATTRIBUTES*/
+
+    // Main data structure to represent the board
+    char board[DIM][DIM];
+    // Bool used to track which player turn is.
+    bool is_white;
+    // int that tracks the number of enemy pawns.
+    int opposite_pawns = 0;
+    // Used to store the king position.
+    Action::Position kingPos;
+    // 9x9 Matrix used to track the empty spaces in the board.
+    std::bitset<9> empty[9];
+    // 9x9 Matrix used to track the position of pawn of the current turn player.
+    // Probably not needed because we have the vector -- to be moved--.
+    std::bitset<9> pawns[9];
+    // Vector of the pawns that could to be moved.
+    std::vector<Action::Position> to_be_moved;
+
+    void load_board(const std::string &json_board);
     friend std::ostream& operator<<(std::ostream &s, const Board &board){
         s << "BOARD" << std::endl;
         s << "╔═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╗" << std::endl;

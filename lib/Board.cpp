@@ -10,7 +10,8 @@
 #include <string>
 #include <cctype>
 
-
+// Input: Json String that represents the board
+// This method initializes all the data structures based on the json string.
 void Board::load_board(const std::string &json_board) {
     Json::Value root;
     Json::CharReaderBuilder rbuilder;
@@ -23,13 +24,16 @@ void Board::load_board(const std::string &json_board) {
     is_white = root["turn"] == "WHITE";
     for(auto &row : root["board"]) {
         int x = 0;
-        //TODO: Implement citadel assignment also in empty
         for(auto &column: row) {
             if(column == "EMPTY") {
                 board[x][y] |= 0;
+                // Setting the appropriate bit in the matrix of bit that represent the empty cells.
                 empty[y].set(x);
 
             } else if (column == "WHITE") {
+                // Is White turn so the board must assign Pawn::White to that cell
+                // And if is white turn we must insert that position in the vector of the pawns to be moved
+                // If is not white turn we track the number of opposite pawns.
                 board[x][y] = Pawn::White;
                 if(is_white){
                     pawns[y].set(x);
@@ -38,6 +42,9 @@ void Board::load_board(const std::string &json_board) {
                     opposite_pawns++;
                 }
             } else if (column == "BLACK") {
+                // Is White turn so the board must assign Pawn::BLACK to that cell
+                // And if is BLACK turn we must insert that position in the vector of the pawns to be moved
+                // If is not BLACK turn we track the number of opposite pawns.
                 board[x][y] |= Pawn::Black;
                 if(!is_white){
                     pawns[y].set(x);
@@ -46,6 +53,7 @@ void Board::load_board(const std::string &json_board) {
                     opposite_pawns++;
                 }
             } else if (column == "KING") {
+                // We Place the king in the board
                 board[x][y] = Pawn::King;
                 kingPos = Action::Position{x, y};
                 if(is_white){
@@ -53,6 +61,7 @@ void Board::load_board(const std::string &json_board) {
                     to_be_moved.push_back(Action::Position{x, y});
                 }
             } else if (column == "THRONE") {
+                // If the KING is not on his Throne, the server comunicates that there is a throne in the board
                 board[x][y] = Pawn::EmptyThrone;
             } else {
                 std::cerr << "Not recognized column " << column << std::endl;
@@ -63,6 +72,10 @@ void Board::load_board(const std::string &json_board) {
     }
 
 }
+// Input:
+// Board object passed by value to create a new state of the board
+// Action::Position from, to represents the move of a pawn
+// This constructor builds the data structures of the new Board instance based on the move
 
 Board::Board(Board b, Action::Position &from, Action::Position &to) {
     b.empty[from.row].reset(from.column);
@@ -82,8 +95,10 @@ Board::Board(Board b, Action::Position &from, Action::Position &to) {
 
     this->is_white = !b.is_white;
     //TODO: Assign toChange to empty
+    //TODO: Change king position if the king has been moved.
 }
 
+// This constructor initializes the board citadels, is needed because the server doesn't tell us which cells are citadels
 Board::Board() {
     board[0][3] = Pawn::EmptyCitadel;
     board[0][4] = Pawn::EmptyCitadel;
@@ -111,6 +126,7 @@ Board::Board() {
 
 }
 
+// Redefined operator == for the Action::Position data Structure.
 bool Action::operator==(const Action::Position &lhs, const Action::Position &rhs) {
     return lhs.row == rhs.row && lhs.column == rhs.column;
 }

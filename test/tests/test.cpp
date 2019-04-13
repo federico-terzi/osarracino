@@ -1,7 +1,7 @@
 #include <Board.h>
 #include <unordered_map>
 #include <functional>
-#include <BitMaskHandler.h>
+#include <MoveCalculator.h>
 #include <Evaluator.h>
 #include "gtest/gtest.h"
 

@@ -2,7 +2,7 @@
 // Created by max on 11/04/19.
 //
 
-#include "BitMaskHandler.h"
+#include "MoveCalculator.h"
 
 
 std::bitset<9> BitMaskHandler::white_mask[9];
