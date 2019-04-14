@@ -3,6 +3,7 @@
 //
 
 #include "MoveCalculator.h"
+#include <algorithm>
 
 
 std::bitset<9> MoveCalculator::white_mask[9];
@@ -43,12 +44,16 @@ std::vector<Action::Position> MoveCalculator::Get_All_Moves(const Board &b, cons
         // Take the matrix ROW apply the masks to take out the citadel and take the substring of that bitstring
         // That goes from col + 1 to the end.
         // Col + 1 stands for the next cell to the right.
-        right = (b.empty[pos.row] & MoveCalculator::white_mask[pos.row]).to_string().substr(pos.column+1);
+        right = ((b.empty[pos.row] & MoveCalculator::white_mask[pos.row])).to_string();
+        reverse(right.begin(), right.end());
+        right = right.substr(pos.column+1);
         // Take the matrix ROW apply the masks to take out the citadel and take the substring of that bitstring
         // That goes from the start to column
         // Col stands for the next cell to the left.
         // The second parameter in the substr is not included in the range so we need to specify column instead of column -1
-        left = (b.empty[pos.row] & MoveCalculator::white_mask[pos.row]).to_string().substr(0, pos.column);
+        left = ((b.empty[pos.row] & MoveCalculator::white_mask[pos.row])).to_string();
+        reverse(left.begin(), left.end());
+        left = left.substr(0, pos.column);
 
         // Those are the vertical moves, here we have already applied the masks for the citadels so there is no need to
         // Reapply.
@@ -58,13 +63,12 @@ std::vector<Action::Position> MoveCalculator::Get_All_Moves(const Board &b, cons
 
     }else {
         // This is the case where we don't need to apply masks for the citadels.
-        right = b.empty[pos.row].to_string().substr(pos.column);
+        right = b.empty[pos.row].to_string().substr(pos.column+1);
         left = b.empty[pos.row].to_string().substr(0, pos.column);
         up = vert.substr(0, pos.row);
-        down = vert.substr(pos.row);
+        down = vert.substr(pos.row+1);
 
     }
-
     // Create the vector of possible moves
     std::vector<Action::Position> moves;
 
@@ -73,7 +77,7 @@ std::vector<Action::Position> MoveCalculator::Get_All_Moves(const Board &b, cons
     // So i need to analyze the string in the classic way (first to last)
     // The 0 represents that the cell is full so i need to stop to analyze
     // Because that row is blocked by another pawn.
-    for (int i = 1; i+pos.column < 9 && right[i] != '0'; i++){
+    for (int i = 0; i+pos.column < 9 && right[i] != '0' && i < right.length(); i++){
         moves.push_back(Action::Position{i+pos.column, pos.row});
     }
 
@@ -81,7 +85,7 @@ std::vector<Action::Position> MoveCalculator::Get_All_Moves(const Board &b, cons
     // So i need to analyze the string in the classic way (first to last)
     // The 0 represents that the cell is full so i need to stop to analyze
     // Because that column is blocked by another pawn.
-    for (int i = 1; i+pos.row < 9 && down[i] != '0'; i++){
+    for (int i = 0; i+pos.row < 9 && down[i] != '0' && i < down.length(); i++){
         moves.push_back(Action::Position{pos.column, i+pos.row});
     }
 
@@ -90,7 +94,7 @@ std::vector<Action::Position> MoveCalculator::Get_All_Moves(const Board &b, cons
     // Because the last char of the string represents the closest to the pawn that we are analyzing
     // The 0 represents that the cell is full so i need to stop to analyze
     // Because that row is blocked by another pawn.
-    for(int i = pos.column-1; i >= 0 && left[i] != '0'; i--) {
+    for(int i = left.length()-1; i >= 0 && left[i] != '0'; i--) {
         moves.push_back(Action::Position{i, pos.row});
     }
 
@@ -99,7 +103,7 @@ std::vector<Action::Position> MoveCalculator::Get_All_Moves(const Board &b, cons
     // Because the last char of the string represents the closest to the pawn that we are analyzing
     // The 0 represents that the cell is full so i need to stop to analyze
     // Because that column is blocked by another pawn.
-    for(int i = pos.row -1; i>= 0 && up[i] != '0'; i--) {
+    for(int i = up.length()-1; i>= 0 && up[i] != '0'; i--) {
         moves.push_back(Action::Position{pos.column, i});
     }
 
