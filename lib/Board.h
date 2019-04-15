@@ -60,7 +60,7 @@ public:
     /*CONSTRUCTORS*/
 
     Board();
-    Board(Board b, Action::Position &from, Action::Position &to);
+    static Board from_board(Board b, Action::Position &from, Action::Position &to);
 
     /*ATTRIBUTES*/
 

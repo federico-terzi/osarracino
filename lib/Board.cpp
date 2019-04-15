@@ -72,31 +72,6 @@ void Board::load_board(const std::string &json_board) {
     }
 
 }
-// Input:
-// Board object passed by value to create a new state of the board
-// Action::Position from, to represents the move of a pawn
-// This constructor builds the data structures of the new Board instance based on the move
-
-Board::Board(Board b, Action::Position &from, Action::Position &to) {
-    b.empty[from.row].reset(from.column);
-    b.empty[to.row].set(to.column);
-
-    if(b.is_white) {
-        if((b.board[from.column][from.row] & Pawn::King) != 0) {
-            b.board[from.column][from.row] -= Pawn::King;
-            b.board[to.column][to.row] += Pawn::King;
-        }
-        b.board[from.column][from.row] -= Pawn::White;
-        b.board[to.column][to.row] += Pawn::White;
-    } else {
-        b.board[from.column][from.row] -= Pawn::Black;
-        b.board[to.column][to.row] += Pawn::Black;
-    }
-
-    this->is_white = !b.is_white;
-    //TODO: Assign toChange to empty
-    //TODO: Change king position if the king has been moved.
-}
 
 // This constructor initializes the board citadels, is needed because the server doesn't tell us which cells are citadels
 Board::Board() {
@@ -124,6 +99,37 @@ Board::Board() {
         mask.reset();
     }
 
+}
+
+
+// Input:
+// Board object passed by value to create a new state of the board
+// Action::Position from, to represents the move of a pawn
+// This constructor builds the data structures of the new Board instance based on the move
+
+Board Board::from_board(Board b, Action::Position &from, Action::Position &to) {
+    b.empty[from.row].reset(from.column);
+    b.empty[to.row].set(to.column);
+
+    if(b.is_white) {
+        if((b.board[from.column][from.row] & Pawn::King) != 0) {
+            b.board[from.column][from.row] -= Pawn::King;
+            b.board[to.column][to.row] += Pawn::King;
+        }
+        b.board[from.column][from.row] -= Pawn::White;
+        b.board[to.column][to.row] += Pawn::White;
+    } else {
+        b.board[from.column][from.row] -= Pawn::Black;
+        b.board[to.column][to.row] += Pawn::Black;
+    }
+
+    b.is_white = !b.is_white;
+    //TODO: Assign toChange to empty
+    //TODO: Change king position if the king has been moved.
+
+    // TODO: mangiate
+
+    return std::move(b);
 }
 
 // Redefined operator == for the Action::Position data Structure.
