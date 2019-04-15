@@ -78,7 +78,7 @@ std::vector<Action::Position> MoveCalculator::Get_All_Moves(const Board &b, cons
     // The 0 represents that the cell is full so i need to stop to analyze
     // Because that row is blocked by another pawn.
     for (int i = 0; i+pos.column < 9 && right[i] != '0' && i < right.length(); i++){
-        moves.push_back(Action::Position{i+pos.column, pos.row});
+        moves.push_back(Action::Position{i+pos.column+1, pos.row});
     }
 
     // Here I analyze the possible moves that goes down.
@@ -86,7 +86,7 @@ std::vector<Action::Position> MoveCalculator::Get_All_Moves(const Board &b, cons
     // The 0 represents that the cell is full so i need to stop to analyze
     // Because that column is blocked by another pawn.
     for (int i = 0; i+pos.row < 9 && down[i] != '0' && i < down.length(); i++){
-        moves.push_back(Action::Position{pos.column, i+pos.row});
+        moves.push_back(Action::Position{pos.column, i+pos.row+1});
     }
 
     // Here I analyze the possible moves that goes left.
@@ -104,7 +104,7 @@ std::vector<Action::Position> MoveCalculator::Get_All_Moves(const Board &b, cons
     // The 0 represents that the cell is full so i need to stop to analyze
     // Because that column is blocked by another pawn.
     for(int i = up.length()-1; i>= 0 && up[i] != '0'; i--) {
-        moves.push_back(Action::Position{pos.column, i});
+        moves.push_back(Action::Position{pos.column+1, i});
     }
 
     return moves;
