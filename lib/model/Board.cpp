@@ -32,6 +32,8 @@ void Board::load_board(const std::string &json_board) {
             } else if (column == "KING") {
                 board[x][y] |= Pawn::King;
                 king_pos = Position{x, y};
+            } else if (column == "EMPTY" || column == "THRONE") {
+                // Do nothing
             } else {
                 std::cerr << "Not recognized column " << column << std::endl;
             }
@@ -44,7 +46,11 @@ void Board::load_board(const std::string &json_board) {
 
 // This constructor initializes the board citadels, is needed because the server doesn't tell us which cells are citadels
 Board::Board() {
-    // TODO: initialize matrix to Empty
+    for (int x = 0; x<9; x++) {
+        for (int y = 0; y<9; y++) {
+            board[x][y] = Pawn::Empty;
+        }
+    }
 
     board[0][3] = Pawn::EmptyCitadel;
     board[0][4] = Pawn::EmptyCitadel;

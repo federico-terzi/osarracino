@@ -7,9 +7,17 @@
 
 #include "Evaluator.h"
 
-class WhiteEvalutator : public Evaluator<WhiteEvalutator>{
+class WhiteEvaluator : public Evaluator<WhiteEvaluator>{
 public:
+    WhiteEvaluator();
+
     int evaluate(const Board &b) const;
+
+
+
+private:
+    uint16_t low_mask[9];
+    uint16_t high_mask[9];
 };
 
 

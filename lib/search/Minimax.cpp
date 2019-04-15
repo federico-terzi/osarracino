@@ -5,7 +5,7 @@
 #include "Minimax.h"
 #include "evaluator/Evaluator.h"
 #include <algorithm>
-#include <evaluator/WhiteEvalutator.h>
+#include <evaluator/WhiteEvaluator.h>
 #include <evaluator/BlackEvaluator.h>
 #include <movegenerator/ThetaMoveGenerator.h>
 
@@ -35,7 +35,7 @@ int Minimax::minimax(int depth, const Evaluator<WhiteEvalType> &whiteEval,
 }
 
 std::string Minimax::best_move(Board &b) {
-    WhiteEvalutator whiteEval;
+    WhiteEvaluator whiteEval;
     BlackEvaluator blackEval;
     ThetaMoveGenerator moveGenerator;
 
