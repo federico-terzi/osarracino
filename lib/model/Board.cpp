@@ -46,6 +46,11 @@ void Board::load_board(const std::string &json_board) {
 Board::Board() {
     // TODO: initialize matrix to Empty
 
+    for(int i = 0; i < DIM; i++) {
+        for (int j = 0; j< DIM; j++) {
+            board[i][j] = Pawn::Empty;
+        }
+    }
     board[0][3] = Pawn::EmptyCitadel;
     board[0][4] = Pawn::EmptyCitadel;
     board[0][5] = Pawn::EmptyCitadel;
