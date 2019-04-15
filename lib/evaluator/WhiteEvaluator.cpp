@@ -5,18 +5,14 @@
 #include <util/BitUtils.h>
 #include "WhiteEvaluator.h"
 
-WhiteEvaluator::WhiteEvaluator() {
-    // Initialize the left and right masks
-    for (int i = 0; i<9; i++) {
-        low_mask[i] = ((uint32_t)1 << i) - 1;
-        high_mask[i] = ~(((uint32_t)1 << (i+1)) -1);
-    }
-}
-
 int WhiteEvaluator::evaluate(const Board &b) const {
     // Convert the board matrix to an array of columns and rows
     uint16_t cols[9] = {56, 16, 0, 257, 403, 257, 0, 16, 56};
     uint16_t rows[9] = {56, 16, 0, 257, 403, 257, 0, 16, 56};
+
+    int white_count = 0;
+    int black_count = 0;
+    int free_winpoint = 0;
 
     // Populate the bit matrix
 
@@ -24,6 +20,14 @@ int WhiteEvaluator::evaluate(const Board &b) const {
         for (int y = 0; y < 9; y++) {
             if ((b.board[x][y] & (Pawn::White | Pawn::Black)) != 0) {
                 cols[x] |= 1 << y;
+
+                if ((b.board[x][y] & Pawn::White) != 0) {
+                    white_count++;
+                }else{
+                    black_count++;
+                }
+            }else if ((b.board[x][y] & Pawn::WinPoint) != 0) {
+                free_winpoint++;
             }
         }
     }
@@ -42,9 +46,17 @@ int WhiteEvaluator::evaluate(const Board &b) const {
 
     int king_movement_score = std::max(horizontal_score, vertical_score);
 
-    // TODO: consider the initial situation, when the king cannot move
+    if (king_movement_score != 0) {  // King can move
+        return king_movement_score;
 
-    return king_movement_score;
+    }else{   // King cannot move, use other euristics.
+        // return a score based on the number of free win points, the number
+        // of white pawns and the number of black pawns.
+
+        return free_winpoint * WHITE_EVALUATOR_FREE_WINPOINT_MULTIPLIER +
+               white_count * WHITE_EVALUATOR_WHITE_PAWN_MULTIPLIER +
+               black_count * WHITE_EVALUATOR_BLACK_PAWN_MULTIPLIER;
+    }
 }
 
 int WhiteEvaluator::perform_search(const uint16_t *cols, const uint16_t *rows, int depth, int king_col, int king_row,

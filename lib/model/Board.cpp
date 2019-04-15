@@ -74,7 +74,25 @@ Board::Board() {
 
     board[4][4] = Pawn::EmptyThrone;
 
-    // TODO: add win point
+    board[1][0] = Pawn::WinPoint;
+    board[2][0] = Pawn::WinPoint;
+    board[6][0] = Pawn::WinPoint;
+    board[7][0] = Pawn::WinPoint;
+
+    board[1][8] = Pawn::WinPoint;
+    board[2][8] = Pawn::WinPoint;
+    board[6][8] = Pawn::WinPoint;
+    board[7][8] = Pawn::WinPoint;
+
+    board[0][1] = Pawn::WinPoint;
+    board[0][2] = Pawn::WinPoint;
+    board[0][6] = Pawn::WinPoint;
+    board[0][7] = Pawn::WinPoint;
+
+    board[8][1] = Pawn::WinPoint;
+    board[8][2] = Pawn::WinPoint;
+    board[8][6] = Pawn::WinPoint;
+    board[8][7] = Pawn::WinPoint;
 }
 
 

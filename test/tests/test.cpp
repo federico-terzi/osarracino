@@ -98,12 +98,12 @@ TEST(Test_WhiteEvaluator, test_white_evaluator_depth_3) {
     EXPECT_EQ(result, (WHITE_EVALUATOR_MAX_DEPTH-2)*WHITE_EVALUATOR_SEARCH_WIN_MULTIPLIER);
 }
 
-TEST(Test_WhiteEvaluator, test_white_slalom) {
+TEST(Test_WhiteEvaluator, test_white_too_many_steps) {
     Board b;
     b.load_board("{\"board\": [[\"EMPTY\", \"BLACK\", \"BLACK\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"BLACK\", \"KING\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"BLACK\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"BLACK\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"BLACK\", \"BLACK\", \"BLACK\", \"BLACK\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"THRONE\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"]], \"turn\": \"WHITE\"}");
     WhiteEvaluator eval;
     int result = eval.evaluate(b);
-    EXPECT_EQ(result, (WHITE_EVALUATOR_MAX_DEPTH-3)*WHITE_EVALUATOR_SEARCH_WIN_MULTIPLIER);
+    EXPECT_EQ(result, 9*WHITE_EVALUATOR_BLACK_PAWN_MULTIPLIER+12*WHITE_EVALUATOR_FREE_WINPOINT_MULTIPLIER);
 }
 
 TEST(Test_WhiteEvaluator, test_white_initial_game) {
@@ -111,7 +111,8 @@ TEST(Test_WhiteEvaluator, test_white_initial_game) {
     b.load_board("{\"board\": [[\"EMPTY\", \"EMPTY\", \"EMPTY\", \"BLACK\", \"BLACK\", \"BLACK\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"BLACK\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"WHITE\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"BLACK\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"WHITE\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"BLACK\"], [\"BLACK\", \"BLACK\", \"WHITE\", \"WHITE\", \"KING\", \"WHITE\", \"WHITE\", \"BLACK\", \"BLACK\"], [\"BLACK\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"WHITE\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"BLACK\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"WHITE\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"BLACK\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"BLACK\", \"BLACK\", \"BLACK\", \"EMPTY\", \"EMPTY\", \"EMPTY\"]], \"turn\": \"WHITE\"}");
     WhiteEvaluator eval;
     int result = eval.evaluate(b);
-    EXPECT_EQ(result, 0);
+    EXPECT_EQ(result, 16*WHITE_EVALUATOR_BLACK_PAWN_MULTIPLIER+8*WHITE_EVALUATOR_WHITE_PAWN_MULTIPLIER+
+                      16*WHITE_EVALUATOR_FREE_WINPOINT_MULTIPLIER);
 }
 
 int main(int ac, char *av[]) {
