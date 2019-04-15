@@ -52,6 +52,7 @@ namespace Action {
         friend std::ostream &operator<<(std::ostream &s, const Position &pos) {
             s << "COL: " << toCol[pos.column] << " ROW: " << pos.row;
         };
+        std::string to_move();
     };
 }
 

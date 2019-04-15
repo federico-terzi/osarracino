@@ -85,8 +85,38 @@ int Evaluator::evaluate_black(Board &b) {
            KING_OPTIONS * king_opt;
 }
 
-int Evaluator::evaluate_white(Board &b) {
-    return 0;
+int Evaluator::evaluate_white(Board &board) {
+    if (board.board[board.kingPos.column][board.kingPos.row] == Pawn::WinCondition) {
+        return 10000;
+    }
+
+    if (board.board[board.kingPos.column+1][board.kingPos.row] == Pawn::Black &&
+        board.board[board.kingPos.column-1][board.kingPos.row] == Pawn::Black) {
+        if (board.board[board.kingPos.column][board.kingPos.row] == Pawn::FullThrone) {
+            return -5000;
+        }else{
+            return -10000;
+        }
+    }
+
+    if (board.board[board.kingPos.column][board.kingPos.row-1] == Pawn::Black &&
+        board.board[board.kingPos.column][board.kingPos.row+1] == Pawn::Black) {
+        if (board.board[board.kingPos.column][board.kingPos.row] == Pawn::FullThrone) {
+            return -5000;
+        }else{
+            return -10000;
+        }
+    }
+
+    if (board.board[board.kingPos.column][board.kingPos.row-1] == Pawn::Black &&
+        board.board[board.kingPos.column][board.kingPos.row+1] == Pawn::Black &&
+        board.board[board.kingPos.column+1][board.kingPos.row] == Pawn::Black &&
+        board.board[board.kingPos.column-1][board.kingPos.row] == Pawn::Black) {
+
+        return -10000;
+    }
+
+    return 100;
 }
 
 

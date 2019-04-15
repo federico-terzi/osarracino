@@ -136,3 +136,7 @@ Board Board::from_board(Board b, Action::Position &from, Action::Position &to) {
 bool Action::operator==(const Action::Position &lhs, const Action::Position &rhs) {
     return lhs.row == rhs.row && lhs.column == rhs.column;
 }
+
+std::string Action::Position::to_move() {
+    return std::string(std::string(1, Action::toCol[this->column])+std::to_string(((this->row)+1)));
+}
