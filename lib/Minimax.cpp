@@ -24,8 +24,8 @@ int Minimax::minimax(int depth,
 
     // Terminating condition. i.e
     // leaf node is reached
-    if (depth == 3)
-        value.is_white ? Evaluator::evaluate_white(value): Evaluator::evaluate_black(value);
+    if (depth == 2)
+        return value.is_white ? Evaluator::evaluate_white(value): Evaluator::evaluate_black(value);
 
     /*Populate boards*/
 
@@ -39,6 +39,8 @@ int Minimax::minimax(int depth,
         // right children
         for (auto &move : value.to_be_moved) {
             for (auto &dest : MoveCalculator::Get_All_Moves(value, move)) {
+                if (move == dest) {continue;}
+
                 auto board  {Board::from_board(value, move, dest)};
 
                 int val = minimax(depth + 1,

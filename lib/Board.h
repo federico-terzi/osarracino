@@ -25,7 +25,9 @@ namespace Pawn {
     const char WinCondition = King | WinPoint;
 
     // Map used to print out in a clever way the board
-    static std::map<char,std::string> names = {{0,"║   "}, {White, "║▓▓▓"}, {Black, "║░░░"}, {King, "║ ® "}};
+    static std::map<char,std::string> names = {{0,"║   "}, {White, "║▓▓▓"}, {Black, "║░░░"}, {King, "║ ® "},
+                                               {EmptyThrone, "║ + "}, {EmptyCitadel, "║ O "}, {WinPoint, "║   "},
+                                               {FullThrone, "║▓▓▓"}, {FullCitadel, "║░░░"}, {WinCondition, "║WWW"}};
 }
 
 namespace Action {
@@ -87,7 +89,16 @@ public:
         s << "╔═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╗" << std::endl;
         for (int y = 0; y < DIM; y++) {
             for (int x = 0; x < DIM; x++) {
-                s << Pawn::names[board.board[x][y]];
+                if ((board.board[x][y] & Pawn::White) != 0) {
+                    s << "║▓▓▓";
+                }else if ((board.board[x][y] & Pawn::Black) != 0) {
+                    s << "║░░░";
+                }else if ((board.board[x][y] & Pawn::King) != 0) {
+                    s << "║ ® ";
+                }else{
+                    s << "║   ";
+                }
+                //s << Pawn::names[board.board[x][y]];
             }
             s << "║ " << (y + 1) << std::endl;
         }
