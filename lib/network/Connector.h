@@ -13,7 +13,7 @@ private:
     int sd;
     int port;
 public:
-    Connector(int port);
+    explicit Connector(int port);
 
     virtual ~Connector();
 

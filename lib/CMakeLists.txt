@@ -3,7 +3,7 @@ pkg_check_modules(JSONCPP jsoncpp)
 link_libraries(${JSONCPP_LIBRARIES})
 
 
-add_library(libosarracino STATIC Board.cpp Board.h Connector.cpp Connector.h MoveCalculator.cpp MoveCalculator.h Evaluator.cpp Evaluator.h Minimax.cpp Minimax.h)
+add_library(libosarracino STATIC model/Board.cpp model/Board.h network/Connector.cpp network/Connector.h evaluator/Evaluator.h search/Minimax.cpp search/Minimax.h model/Position.cpp model/Position.h evaluator/WhiteEvalutator.cpp evaluator/WhiteEvalutator.h evaluator/BlackEvaluator.cpp evaluator/BlackEvaluator.h movegenerator/MoveGenerator.h movegenerator/ThetaMoveGenerator.cpp movegenerator/ThetaMoveGenerator.h)
 target_link_libraries(libosarracino ${JSONCPP_LIBRARIES})
 
 target_include_directories (libosarracino PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

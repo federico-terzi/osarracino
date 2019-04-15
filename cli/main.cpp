@@ -1,10 +1,10 @@
 #include <iostream>
 #include <unistd.h>
-#include "../lib/Board.h"
-#include "../lib/Connector.h"
+#include "model/Board.h"
+#include "network/Connector.h"
 #include <map>
 #include <locale>
-#include <Minimax.h>
+#include <search/Minimax.h>
 
 const int PLAYER_COLOR = 1;
 
