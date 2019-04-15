@@ -26,9 +26,9 @@ std::unordered_map<Position, std::vector<Position>, pos_hash> ThetaMoveGenerator
         std::string left, right, up , down;
 
         left = horizontal.substr(0, pawn.col);
-        right = horizontal.substr(pawn.col+1);
+        right = horizontal.substr(pawn.col);
         up = vertical.substr(0, pawn.row);
-        down = vertical.substr(pawn.row+1);
+        down = vertical.substr(pawn.row);
 
         std::vector<Position> positions;
         //Left
@@ -36,7 +36,7 @@ std::unordered_map<Position, std::vector<Position>, pos_hash> ThetaMoveGenerator
             positions.push_back(Position{i, pawn.row});
         }
         //Right
-        for (int i = 0; i < right.length() && right[i] != '0'; i++) {
+        for (int i = 1; i < right.length() && right[i] != '0'; i++) {
             positions.push_back(Position{pawn.col+i, pawn.row});
         }
         //Up
@@ -44,7 +44,7 @@ std::unordered_map<Position, std::vector<Position>, pos_hash> ThetaMoveGenerator
             positions.push_back(Position{pawn.col, i});
         }
         //Down
-        for (int i = 0; i < down.length() && down[i] != '0'; i++) {
+        for (int i = 1; i < down.length() && down[i] != '0'; i++) {
             positions.push_back(Position{pawn.col, pawn.row+i});
         }
         moves_map[pawn] = positions;
