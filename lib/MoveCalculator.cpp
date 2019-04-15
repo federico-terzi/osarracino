@@ -85,7 +85,7 @@ std::vector<Action::Position> MoveCalculator::Get_All_Moves(const Board &b, cons
     // So i need to analyze the string in the classic way (first to last)
     // The 0 represents that the cell is full so i need to stop to analyze
     // Because that column is blocked by another pawn.
-    for (int i = 0; i+pos.row < 9 && down[i] != '0' && i < down.length(); i++){
+    for (int i = 0; i+pos.row+1 < 9 && down[i] != '0' && i < down.length(); i++){
         moves.push_back(Action::Position{pos.column, i+pos.row+1});
     }
 
