@@ -124,7 +124,7 @@ int BlackEvaluator::evaluate(const Board &b) {
         col_covering_points = ALL_COLS_COVERED;
     }
 
-    win_move = simple_win_condition(b) | near_throne_win_condition(b) | throne_win_condition(b);
+    win_move = simple_win_condition(b) || near_throne_win_condition(b) || throne_win_condition(b);
 
     return geometry_points + row_covering_points + col_covering_points + EZPZ * win_move;
 }
