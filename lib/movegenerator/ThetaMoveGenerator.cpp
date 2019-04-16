@@ -15,7 +15,7 @@ std::unordered_map<Position, std::vector<Position>, pos_hash> ThetaMoveGenerator
     for (const auto &pawn: to_be_moved_empty.first) {
         std::string vertical, horizontal;
         //Generate the vertical string
-        if (b.board[pawn.col][pawn.row] == Pawn::Black) {
+        if (b.board[pawn.col][pawn.row] == Pawn::Black || b.board[pawn.col][pawn.row] == Pawn::BlackWinPoint) {
             //Citadels are considered empty but if you are out them you must consider them full!
             for (int i = 0; i < 9; i++) {
                 vertical += std::to_string((to_be_moved_empty.second[i] & citadel_mask[i]).test(pawn.col));
@@ -26,7 +26,7 @@ std::unordered_map<Position, std::vector<Position>, pos_hash> ThetaMoveGenerator
             }
         }
         // Same as before.
-        if (b.board[pawn.col][pawn.row] == Pawn::Black) {
+        if (b.board[pawn.col][pawn.row] == Pawn::Black || b.board[pawn.col][pawn.row] == Pawn::BlackWinPoint) {
             horizontal = (to_be_moved_empty.second[pawn.row] & citadel_mask[pawn.row]).to_string();
         } else {
             horizontal = to_be_moved_empty.second[pawn.row].to_string();
@@ -67,7 +67,7 @@ std::unordered_map<Position, std::vector<Position>, pos_hash> ThetaMoveGenerator
 }
 
 ThetaMoveGenerator::ThetaMoveGenerator() {
-    for (auto row: citadel_mask) {
+    for (auto &row: citadel_mask) {
         row.set();
     }
     citadel_mask[0].reset(3);

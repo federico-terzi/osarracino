@@ -21,6 +21,8 @@ enum Pawn {
     EmptyThrone = 1 << 3,
     EmptyCitadel = 1 << 4,
     WinPoint = 1 << 5,
+    BlackWinPoint = WinPoint | Black,
+    WhiteWinPoint = WinPoint | White,
     FullCitadel = Black | EmptyCitadel,
     FullThrone = EmptyThrone | King,
     WinCondition = King | WinPoint
