@@ -13,12 +13,10 @@
 class Minimax {
 public:
     template <typename WhiteEvalType, typename BlackEvalType, typename MoveGeneratorType>
-    static int minimax(int depth, const Evaluator<WhiteEvalType> &whiteEval,
-                const Evaluator<BlackEvalType> &blackEval,
-                         const MoveGenerator<MoveGeneratorType> &moveGenerator,
-                         bool maximizingPlayer,
-                         Board value, int alpha,
-                         int beta);
+    static int minimax(int depth, const Evaluator<WhiteEvalType> &whiteEval, const Evaluator<BlackEvalType> &blackEval,
+                       const MoveGenerator<MoveGeneratorType> &moveGenerator, bool maximizingPlayer, Board value,
+                       int alpha,
+                       int beta, bool leading_white);
 
     static std::string best_move(Board &b);
 };

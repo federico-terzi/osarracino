@@ -19,7 +19,7 @@ void Board::load_board(const std::string &json_board) {
     std::unique_ptr<Json::CharReader> const reader(rbuilder.newCharReader());
     std::string errors;
     bool parsingSuccessful = reader->parse(json_board.c_str(), json_board.c_str() + json_board.size(), &root, &errors);
-    std::cout << root << std::endl;
+    //std::cout << root << std::endl;
     int y = 0;
     is_white = root["turn"] == "WHITE";
     for(auto &row : root["board"]) {
@@ -106,6 +106,23 @@ Board::Board() {
 // Action::Position from, to represents the move of a pawn
 // This constructor builds the data structures of the new Board instance based on the move
 
-Board Board::from_board(Board b, Position &from, Position &to) {
-    // TODO
+Board Board::from_board(Board b, const Position &from, const Position &to) {
+    if (b.king_pos == from) {
+        b.king_pos = to;
+    }
+
+    // Save the pawn
+    Pawn pawn = b.board[from.col][from.row] & SelectPawn;
+
+    // Clear the previous
+    b.board[from.col][from.row] &= ClearPawn;
+
+    b.board[to.col][to.row] |= pawn;
+
+    b.is_white = !b.is_white;
+
+    // TODO: mangia pedine
+    // TODO: tests
+
+    return std::move(b);
 }

@@ -14,7 +14,7 @@ template <typename T>
 class MoveGenerator {
 public:
     std::unordered_map<Position, std::vector<Position>, pos_hash> generate(const Board &b) const {
-        static_cast<T const&>(*this).generate(b);
+        return static_cast<T const&>(*this).generate(b);
     }
 };
 

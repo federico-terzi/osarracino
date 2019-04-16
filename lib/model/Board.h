@@ -25,6 +25,8 @@ enum Pawn {
     WhiteWinPoint = WinPoint | White,
     FullCitadel = Black | EmptyCitadel,
     FullThrone = EmptyThrone | King,
+    ClearPawn = ~(White | Black | King),
+    SelectPawn = (White | Black | King),
     WinCondition = King | WinPoint
 };
 
@@ -42,7 +44,7 @@ public:
 
     Board();
 
-    static Board from_board(Board b, Position &from, Position &to);
+    static Board from_board(Board b, const Position &from, const Position &to);
 
     /*ATTRIBUTES*/
 
@@ -56,7 +58,7 @@ public:
     void load_board(const std::string &json_board);
 
     friend std::ostream& operator<<(std::ostream &s, const Board &board){
-        s << "BOARD" << std::endl;
+        s << "BOARD - Turn: " << board.is_white << std::endl;
         s << "╔═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╗" << std::endl;
         for (int y = 0; y < DIM; y++) {
             for (int x = 0; x < DIM; x++) {

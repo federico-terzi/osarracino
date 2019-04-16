@@ -5,6 +5,18 @@
 #include <util/BitUtils.h>
 #include "WhiteEvaluator.h"
 
+const uint16_t winpoints[9] = {
+        0b00000000'11000110,
+        0b00000001'00000001,
+        0b00000001'00000001,
+        0b00000000'00000000,
+        0b00000000'00000000,
+        0b00000000'00000000,
+        0b00000001'00000001,
+        0b00000001'00000001,
+        0b00000000'11000110
+};
+
 int WhiteEvaluator::evaluate(const Board &b) const {
     // Convert the board matrix to an array of columns and rows
     uint16_t cols[9] = {56, 16, 0, 257, 403, 257, 0, 16, 56};
@@ -65,6 +77,12 @@ int WhiteEvaluator::perform_search(const uint16_t *cols, const uint16_t *rows, i
         return 0;  // TODO: return a value based on the distance from the nearest win point
     }
 
+    // TODO: optimize
+    // TODO: test
+    if ((winpoints[king_col] & (1u << king_row)) != 0) {
+        return WHITE_EVALUATOR_SEARCH_WIN_MULTIPLIER;
+    }
+
     int high_score = 0;
     int low_score = 0;
 
@@ -74,9 +92,9 @@ int WhiteEvaluator::perform_search(const uint16_t *cols, const uint16_t *rows, i
 
         // Check if the king is in a win position
         if (king_col - low_moves == 0 && king_col + high_moves == 8) {  // Double side winning
-            return WHITE_EVALUATOR_SEARCH_WIN_MULTIPLIER*depth * 2;
+            return WHITE_EVALUATOR_SEARCH_WIN_POTENTIAL_MULTIPLIER*depth * 2;
         }else if (king_col - low_moves == 0 || king_col + high_moves == 8) {  // Single side winning
-            return WHITE_EVALUATOR_SEARCH_WIN_MULTIPLIER*depth;
+            return WHITE_EVALUATOR_SEARCH_WIN_POTENTIAL_MULTIPLIER*depth;
         }
 
         for (int i = (king_col+1); i <= (king_col + high_moves); i++) {
@@ -91,9 +109,9 @@ int WhiteEvaluator::perform_search(const uint16_t *cols, const uint16_t *rows, i
 
         // Check if the king is in a win position
         if (king_row - low_moves == 0 && king_row + high_moves == 8) {  // Double side winning
-            return WHITE_EVALUATOR_SEARCH_WIN_MULTIPLIER*depth * 2;
+            return WHITE_EVALUATOR_SEARCH_WIN_POTENTIAL_MULTIPLIER*depth * 2;
         }else if (king_row - low_moves == 0 || king_row + high_moves == 8) {  // Single side winning
-            return WHITE_EVALUATOR_SEARCH_WIN_MULTIPLIER*depth;
+            return WHITE_EVALUATOR_SEARCH_WIN_POTENTIAL_MULTIPLIER*depth;
         }
 
         for (int i = (king_row+1); i <= (king_row + high_moves); i++) {

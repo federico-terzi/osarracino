@@ -12,7 +12,7 @@ template <typename T>
 class Evaluator {
 public:
     int evaluate(const Board &b) const {
-        static_cast<T const&>(*this).evaluate(b);
+        return static_cast<T const&>(*this).evaluate(b);
     }
 };
 
