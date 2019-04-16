@@ -6,11 +6,11 @@
 #include <set>
 
 
-bool BlackEvaluator::is_king_in_throne(const Board &b) {
+bool BlackEvaluator::is_king_in_throne(const Board &b) const{
     return b.board[b.king_pos.col][b.king_pos.row] == Pawn::FullThrone;
 }
 
-Direction BlackEvaluator::is_king_near_throne(const Board &b) {
+Direction BlackEvaluator::is_king_near_throne(const Board &b) const {
     auto it = near_throne.find(b.king_pos);
     if (it != near_throne.end()) {
         return it->second;
@@ -18,7 +18,7 @@ Direction BlackEvaluator::is_king_near_throne(const Board &b) {
     return Direction::None;
 }
 
-bool BlackEvaluator::throne_win_condition(const Board &b) {
+bool BlackEvaluator::throne_win_condition(const Board &b) const {
     if (is_king_in_throne(b)) {
         return b.board[b.king_pos.row][b.king_pos.col+1] == Pawn::Black &&      //RIGHT
                b.board[b.king_pos.row][b.king_pos.col-1] == Pawn::Black &&      //LEFT
@@ -29,17 +29,17 @@ bool BlackEvaluator::throne_win_condition(const Board &b) {
     return false;
 }
 
-bool BlackEvaluator::near_throne_win_condition(const Board &b) {
+bool BlackEvaluator::near_throne_win_condition(const Board &b) const {
     Direction dir = is_king_near_throne(b);
     if (dir == Direction::None) {
         return false;
     } else {
-        return near_checks[dir](dir, b);
+        return near_checks.at(dir)(dir, b);
     }
 
 }
 
-bool BlackEvaluator::simple_win_condition(const Board &b) {
+bool BlackEvaluator::simple_win_condition(const Board &b) const {
     //Se il re non è sul trono o adiacente
     return (!is_king_in_throne(b)) && (! is_king_in_throne(b)) &&
 
@@ -91,7 +91,7 @@ std::pair<std::vector<Position>, std::array<std::bitset<9>,9>> BlackEvaluator::G
     return std::pair<std::vector<Position>, std::array<std::bitset<9>,9>>(to_be_moved, empty);
 }
 
-int BlackEvaluator::evaluate(const Board &b) {
+int BlackEvaluator::evaluate(const Board &b) const {
     int geometry_points {0};
     int row_covering_points {0};
     int col_covering_points {0};

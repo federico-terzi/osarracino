@@ -28,12 +28,12 @@ public:
     std::unordered_map<Position, Direction, pos_hash> near_throne;
     std::unordered_map<Direction, std::function<bool(Direction,const Board&)>> near_checks;
 
-    int evaluate(const Board &b) ;
-    bool simple_win_condition(const Board &b);
-    bool throne_win_condition(const Board &b);
-    bool near_throne_win_condition(const Board &b);
-    bool is_king_in_throne(const Board &b);
-    Direction is_king_near_throne(const Board &b);
+    int evaluate(const Board &b) const;
+    bool simple_win_condition(const Board &b) const;
+    bool throne_win_condition(const Board &b) const;
+    bool near_throne_win_condition(const Board &b) const;
+    bool is_king_in_throne(const Board &b) const;
+    Direction is_king_near_throne(const Board &b) const;
 
     static std::pair<std::vector<Position>, std::array<std::bitset<9>, 9>> Get_empty_and_to_move(const Board &b);
     int color_matrix[9][9] = {
