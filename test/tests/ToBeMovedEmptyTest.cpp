@@ -5,6 +5,7 @@
 #include<gtest/gtest.h>
 #include <model/Board.h>
 #include <evaluator/BlackEvaluator.h>
+#include <movegenerator/ThetaMoveGenerator.h>
 
 class ToBeMovedEmptyTest : public ::testing::Test {
 protected:
@@ -23,4 +24,31 @@ TEST_F(ToBeMovedEmptyTest, Test_Turn_bug) {
     b.load_board(board_string);
     auto result = BlackEvaluator::Get_empty_and_to_move(b);
     EXPECT_EQ(result.first.size(), 9);
+}
+
+TEST_F(ToBeMovedEmptyTest, Test_White_To_citadel_bug_game) {
+    Board b;
+    ThetaMoveGenerator gen;
+    std::string board_string {"{\"board\":[[\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"BLACK\",\"BLACK\",\"EMPTY\",\"EMPTY\",\"EMPTY\"],[\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"BLACK\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\"],[\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"WHITE\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\"],[\"BLACK\",\"EMPTY\",\"EMPTY\",\"BLACK\",\"WHITE\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"BLACK\"],[\"BLACK\",\"EMPTY\",\"WHITE\",\"EMPTY\",\"THRONE\",\"WHITE\",\"WHITE\",\"EMPTY\",\"BLACK\"],[\"BLACK\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"KING\",\"EMPTY\",\"WHITE\",\"EMPTY\",\"EMPTY\"],[\"EMPTY\",\"EMPTY\",\"BLACK\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"WHITE\"],[\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"BLACK\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\"],[\"EMPTY\",\"BLACK\",\"EMPTY\",\"EMPTY\",\"BLACK\",\"BLACK\",\"EMPTY\",\"EMPTY\",\"EMPTY\"]],\"turn\":\"WHITE\"}"};
+    b.load_board(board_string);
+    auto result = BlackEvaluator::Get_empty_and_to_move(b);
+    Position test {6, 5};
+    ASSERT_FALSE(result.second[test.row].test(test.col)); //Casella piena.
+    auto moves = gen.generate(b);
+    auto needed_moves = moves[test];
+    ASSERT_EQ(needed_moves.size(), 5);
+
+}
+TEST_F(ToBeMovedEmptyTest, Test_White_To_citadel_bug_game_2) {
+    Board b;
+    ThetaMoveGenerator gen;
+    std::string board_string {"{\"board\":[[\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"BLACK\",\"BLACK\",\"EMPTY\",\"EMPTY\",\"EMPTY\"],[\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"BLACK\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\"],[\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"WHITE\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\"],[\"BLACK\",\"EMPTY\",\"EMPTY\",\"BLACK\",\"WHITE\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"BLACK\"],[\"BLACK\",\"EMPTY\",\"WHITE\",\"EMPTY\",\"THRONE\",\"WHITE\",\"WHITE\",\"EMPTY\",\"BLACK\"],[\"BLACK\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"KING\",\"EMPTY\",\"WHITE\",\"EMPTY\",\"EMPTY\"],[\"EMPTY\",\"EMPTY\",\"BLACK\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"WHITE\"],[\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"BLACK\",\"EMPTY\",\"EMPTY\",\"EMPTY\",\"EMPTY\"],[\"EMPTY\",\"BLACK\",\"EMPTY\",\"EMPTY\",\"BLACK\",\"BLACK\",\"EMPTY\",\"EMPTY\",\"EMPTY\"]],\"turn\":\"WHITE\"}"};
+    b.load_board(board_string);
+    auto result = BlackEvaluator::Get_empty_and_to_move(b);
+    Position test {6, 4};
+    ASSERT_FALSE(result.second[test.row].test(test.col)); //Casella piena.
+    auto moves = gen.generate(b);
+    auto needed_moves = moves[test];
+    ASSERT_EQ(needed_moves.size(), 4);
+
 }

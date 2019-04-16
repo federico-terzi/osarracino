@@ -60,12 +60,14 @@ Board::Board() {
     board[0][3] = Pawn::EmptyCitadel;
     board[0][4] = Pawn::EmptyCitadel;
     board[0][5] = Pawn::EmptyCitadel;
+
     board[1][4] = Pawn::EmptyCitadel;
 
     board[8][3] = Pawn::EmptyCitadel;
     board[8][4] = Pawn::EmptyCitadel;
     board[8][5] = Pawn::EmptyCitadel;
-    board[7][5] = Pawn::EmptyCitadel;
+
+    board[7][4] = Pawn::EmptyCitadel;
 
     board[3][0] = Pawn::EmptyCitadel;
     board[4][0] = Pawn::EmptyCitadel;
