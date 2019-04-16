@@ -28,7 +28,6 @@ std::pair<std::vector<Position>, std::array<std::bitset<9>,9>> BlackEvaluator::G
             } else if(!b.is_white && (b.board[col][row] == Pawn::Black || b.board[col][row] == Pawn::FullCitadel)) {
                 to_be_moved.push_back(Position{col, row});
             }
-            // TODO: Add masks to make the full_citadel_viable
         }
     }
 
