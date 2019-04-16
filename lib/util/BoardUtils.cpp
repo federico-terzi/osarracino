@@ -11,7 +11,6 @@ std::pair<std::vector<Position>, std::array<std::bitset<9>,9>> BoardUtils::Get_e
     for(int col = 0; col < 9; col++) {
         for (int row = 0; row < 9; row++) {
             //If is empty set the mask
-            //TODO: Add winpoints.
             if((b.is_white && b.board[col][row] == Pawn::Empty) || (b.board[col][row] == Pawn::WinPoint)) {
                 empty[row].set(col);
             } else if ((!b.is_white && b.board[col][row] == Pawn::EmptyCitadel) || b.board[col][row] == Pawn::Empty || b.board[col][row] == Pawn::WinPoint) {
