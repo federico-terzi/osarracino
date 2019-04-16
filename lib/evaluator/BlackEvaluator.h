@@ -25,7 +25,7 @@ const int EZPZ = 5000;
 class BlackEvaluator : public Evaluator<BlackEvaluator>{
 public:
     BlackEvaluator();
-    std::unordered_map<Position, Direction> near_throne;
+    std::unordered_map<Position, Direction, pos_hash> near_throne;
     std::unordered_map<Direction, std::function<bool(Direction,const Board&)>> near_checks;
 
     int evaluate(const Board &b) ;

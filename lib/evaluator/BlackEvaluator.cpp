@@ -11,7 +11,7 @@ bool BlackEvaluator::is_king_in_throne(const Board &b) {
 }
 
 Direction BlackEvaluator::is_king_near_throne(const Board &b) {
-    std::map<Position, Direction>::iterator it = near_throne.find(b.king_pos);
+    auto it = near_throne.find(b.king_pos);
     if (it != near_throne.end()) {
         return it->second;
     }
