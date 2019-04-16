@@ -3,7 +3,7 @@ include_directories(${GTEST_INCLUDE_DIRS})
 
 add_executable(osarracino_tests_run MainTestAll.cpp
         ThetaMoveGeneratorTest.cpp BitUtilsTest.cpp
-        WhiteEvaluatorTest.cpp)
+        WhiteEvaluatorTest.cpp ToBeMovedEmptyTest.cpp)
 
 target_link_libraries(osarracino_tests_run libosarracino)
 target_link_libraries(osarracino_tests_run ${GTEST_LIBRARIES} pthread)
