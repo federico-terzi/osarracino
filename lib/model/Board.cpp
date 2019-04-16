@@ -57,45 +57,53 @@ Board::Board() {
             board[i][j] = Pawn::Empty;
         }
     }
+
+    //LEFT BLOCK CITADEL
     board[0][3] = Pawn::EmptyCitadel;
     board[0][4] = Pawn::EmptyCitadel;
     board[0][5] = Pawn::EmptyCitadel;
-
     board[1][4] = Pawn::EmptyCitadel;
 
+    //RIGHT BLOCK CITADEL
     board[8][3] = Pawn::EmptyCitadel;
     board[8][4] = Pawn::EmptyCitadel;
     board[8][5] = Pawn::EmptyCitadel;
-
     board[7][4] = Pawn::EmptyCitadel;
 
+    //UP BLOCK CITADEL
     board[3][0] = Pawn::EmptyCitadel;
     board[4][0] = Pawn::EmptyCitadel;
     board[5][0] = Pawn::EmptyCitadel;
     board[4][1] = Pawn::EmptyCitadel;
 
+    //DOWN BLOCK CITADEL
     board[3][8] = Pawn::EmptyCitadel;
     board[4][8] = Pawn::EmptyCitadel;
     board[5][8] = Pawn::EmptyCitadel;
     board[4][7] = Pawn::EmptyCitadel;
 
+    //THRONE
     board[4][4] = Pawn::EmptyThrone;
 
+    //UP-LEFT CORNER CITADEL
     board[1][0] = Pawn::WinPoint;
     board[2][0] = Pawn::WinPoint;
     board[6][0] = Pawn::WinPoint;
     board[7][0] = Pawn::WinPoint;
 
+    //UP-RIGHT CORNER CITADEL
     board[1][8] = Pawn::WinPoint;
     board[2][8] = Pawn::WinPoint;
     board[6][8] = Pawn::WinPoint;
     board[7][8] = Pawn::WinPoint;
 
+    //DOWN-LEFT CORNER CITADEL
     board[0][1] = Pawn::WinPoint;
     board[0][2] = Pawn::WinPoint;
     board[0][6] = Pawn::WinPoint;
     board[0][7] = Pawn::WinPoint;
 
+    //DOWN-RIGHT CORNER CITADEL
     board[8][1] = Pawn::WinPoint;
     board[8][2] = Pawn::WinPoint;
     board[8][6] = Pawn::WinPoint;
