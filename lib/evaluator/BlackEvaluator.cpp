@@ -15,7 +15,10 @@ std::pair<std::vector<Position>, std::array<std::bitset<9>,9>> BlackEvaluator::G
     for(int col = 0; col < 9; col++) {
         for (int row = 0; row < 9; row++) {
             //If is empty set the mask
-            if(b.board[col][row] == Pawn::Empty) {
+            //TODO: Add winpoints.
+            if(b.is_white && b.board[col][row] == Pawn::Empty) {
+                empty[row].set(col);
+            } else if ((!b.is_white && b.board[col][row] == Pawn::EmptyCitadel) || b.board[col][row] == Pawn::Empty) {
                 empty[row].set(col);
             //Is white turn and is or a simple white or a king then add that position
             } else if(b.is_white && (b.board[col][row] == Pawn::White || b.board[col][row] == Pawn::King || b.board[col][row] == Pawn::FullThrone)) {
@@ -25,6 +28,7 @@ std::pair<std::vector<Position>, std::array<std::bitset<9>,9>> BlackEvaluator::G
             } else if(!b.is_white && (b.board[col][row] == Pawn::Black || b.board[col][row] == Pawn::FullCitadel)) {
                 to_be_moved.push_back(Position{col, row});
             }
+            // TODO: Add masks to make the full_citadel_viable
         }
     }
 

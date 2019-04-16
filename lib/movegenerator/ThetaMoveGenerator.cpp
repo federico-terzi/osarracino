@@ -15,10 +15,23 @@ std::unordered_map<Position, std::vector<Position>, pos_hash> ThetaMoveGenerator
     for (const auto &pawn: to_be_moved_empty.first) {
         std::string vertical, horizontal;
         //Generate the vertical string
-        for (int i = 0; i < 9; i++) {
-            vertical += std::to_string(to_be_moved_empty.second[i].test(pawn.col));
+        if (b.board[pawn.col][pawn.row] == Pawn::Black) {
+            //Citadels are considered empty but if you are out them you must consider them full!
+            for (int i = 0; i < 9; i++) {
+                vertical += std::to_string((to_be_moved_empty.second[i] & citadel_mask[i]).test(pawn.col));
+            }
+        } else {
+            for (int i = 0; i < 9; i++) {
+                vertical += std::to_string(to_be_moved_empty.second[i].test(pawn.col));
+            }
         }
-        horizontal = to_be_moved_empty.second[pawn.row].to_string();
+        // Same as before.
+        if (b.board[pawn.col][pawn.row] == Pawn::Black) {
+            horizontal = (to_be_moved_empty.second[pawn.row] & citadel_mask[pawn.row]).to_string();
+        } else {
+            horizontal = to_be_moved_empty.second[pawn.row].to_string();
+
+        }
         // Reverse the string to match the real representation
         std::reverse(horizontal.begin(), horizontal.end());
 
@@ -51,4 +64,34 @@ std::unordered_map<Position, std::vector<Position>, pos_hash> ThetaMoveGenerator
     }
 
     return std::move(moves_map);
+}
+
+ThetaMoveGenerator::ThetaMoveGenerator() {
+    for (auto row: citadel_mask) {
+        row.set();
+    }
+    citadel_mask[0].reset(3);
+    citadel_mask[0].reset(4);
+    citadel_mask[0].reset(5);
+
+    citadel_mask[1].reset(4);
+
+    citadel_mask[3].reset(0);
+    citadel_mask[3].reset(8);
+
+    citadel_mask[4].reset(0);
+    citadel_mask[4].reset(1);
+    citadel_mask[4].reset(7);
+    citadel_mask[4].reset(8);
+
+    citadel_mask[5].reset(0);
+    citadel_mask[5].reset(8);
+
+    citadel_mask[7].reset(4);
+
+    citadel_mask[8].reset(3);
+    citadel_mask[8].reset(4);
+    citadel_mask[8].reset(5);
+
+
 }

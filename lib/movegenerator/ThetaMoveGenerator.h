@@ -9,6 +9,8 @@
 
 class ThetaMoveGenerator : public MoveGenerator<ThetaMoveGenerator>{
 public:
+    ThetaMoveGenerator();
+    std::array<std::bitset<9>, 9> citadel_mask;
     std::unordered_map<Position, std::vector<Position>, pos_hash> generate(const Board &b) const;
 };
 
