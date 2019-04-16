@@ -13,7 +13,7 @@ add_library(libosarracino STATIC
         evaluator/BlackEvaluator.cpp evaluator/BlackEvaluator.h
         movegenerator/MoveGenerator.h
         movegenerator/ThetaMoveGenerator.cpp movegenerator/ThetaMoveGenerator.h
-        util/BitUtils.cpp util/BitUtils.h)
+        util/BitUtils.cpp util/BitUtils.h util/BoardUtils.cpp util/BoardUtils.h)
 
 target_link_libraries(libosarracino ${JSONCPP_LIBRARIES})
 

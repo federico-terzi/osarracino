@@ -35,8 +35,6 @@ public:
     bool is_king_in_throne(const Board &b) const;
     Direction is_king_near_throne(const Board &b) const;
 
-    static std::pair<std::vector<Position>, std::array<std::bitset<9>, 9>> Get_empty_and_to_move(const Board &b);
-
     int color_matrix[9][9] = {
             {BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG},
             {BLANK_WG, BLANK_WG, PURPLE_WG, BLANK_WG, CYAN_WG, BLANK_WG, PURPLE_WG},

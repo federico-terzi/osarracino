@@ -2,15 +2,15 @@
 // Created by freddy on 15/04/19.
 //
 
-#include <evaluator/BlackEvaluator.h>
 #include "ThetaMoveGenerator.h"
 #include <algorithm>
+#include <util/BoardUtils.h>
 
 
 std::unordered_map<Position, std::vector<Position>, pos_hash> ThetaMoveGenerator::generate(const Board &b) const {
     std::unordered_map<Position, std::vector<Position>, pos_hash> moves_map;
 
-    auto to_be_moved_empty = BlackEvaluator::Get_empty_and_to_move(b);
+    auto to_be_moved_empty = BoardUtils::Get_empty_and_to_move(b);
 
     for (const auto &pawn: to_be_moved_empty.first) {
         std::string vertical, horizontal;
