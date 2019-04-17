@@ -138,3 +138,9 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
 
     return std::move(b);
 }
+
+Board Board::from_json(const std::string &json) {
+    Board b;
+    b.load_board(json);
+    return b;
+}

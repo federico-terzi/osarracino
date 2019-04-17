@@ -46,6 +46,7 @@ public:
     Board();
 
     static Board from_board(Board b, const Position &from, const Position &to);
+    static Board from_json(const std::string &json);
 
     /*ATTRIBUTES*/
 
