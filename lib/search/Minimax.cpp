@@ -30,11 +30,11 @@ int Minimax::minimax(int depth, const Evaluator<WhiteEvalType> &whiteEval, const
     // Terminating condition. i.e
     // leaf node is reached
     // TODO: valutate the sign of the evaluation based on the turn
-    if (depth == 6) {
+    if (depth == 4) {
         if (leading_white) {
-            return value.is_white ? whiteEval.evaluate(value) : -blackEval.evaluate(value);
+            return whiteEval.evaluate(value);
         } else {
-            return value.is_white ? -whiteEval.evaluate(value) : blackEval.evaluate(value);
+            return blackEval.evaluate(value);
         }
     }
 
@@ -78,7 +78,7 @@ int Minimax::minimax(int depth, const Evaluator<WhiteEvalType> &whiteEval, const
                                   true, board, alpha, beta, leading_white);
 
                 best = std::min(best, val);
-                beta = std::min(alpha, best);
+                beta = std::min(beta, best);
 
                 // Alpha Beta Pruning
                 if (beta <= alpha)
