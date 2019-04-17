@@ -16,7 +16,7 @@ add_library(libosarracino STATIC
         util/BitUtils.cpp util/BitUtils.h util/BoardUtils.cpp util/BoardUtils.h)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 target_link_libraries(libosarracino ${JSONCPP_LIBRARIES})
