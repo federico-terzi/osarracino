@@ -8,6 +8,7 @@
 #include <evaluator/WhiteEvaluator.h>
 #include <evaluator/BlackEvaluator.h>
 #include <movegenerator/ThetaMoveGenerator.h>
+#include <movegenerator/ArnoldMoveGenerator.h>
 
 // Returns optimal value for
 // current player(Initially called
@@ -96,7 +97,7 @@ int Minimax::minimax(int depth, const Evaluator<WhiteEvalType> &whiteEval, const
 std::string Minimax::best_move(Board &b) {
     WhiteEvaluator whiteEval;
     BlackEvaluator blackEval;
-    ThetaMoveGenerator moveGenerator;
+    ArnoldMoveGenerator moveGenerator;
 
     const clock_t begin_time = clock();
 

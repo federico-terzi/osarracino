@@ -27,6 +27,7 @@ enum Pawn {
     FullThrone = EmptyThrone | King,
     ClearPawn = ~(White | Black | King),
     SelectPawn = (White | Black | King),
+    KingOrWhite = (White | King),
     WinCondition = King | WinPoint
 };
 
