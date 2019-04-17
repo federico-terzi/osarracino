@@ -34,14 +34,14 @@ bool BlackEvaluator::near_throne_win_condition(const Board &b) const {
     if (dir == Direction::None) {
         return false;
     } else {
-        return near_checks.at(dir)(dir, b);
+        return near_checks.at(dir)(b);
     }
 
 }
 
 bool BlackEvaluator::simple_win_condition(const Board &b) const {
     //Se il re non è sul trono o adiacente
-    return (!is_king_in_throne(b)) && (! is_king_in_throne(b)) &&
+    return (!is_king_in_throne(b)) && (!is_king_in_throne(b)) &&
 
            (((b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::Black
               || b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::FullCitadel
@@ -97,7 +97,9 @@ int BlackEvaluator::evaluate(const Board &b) const {
         col_covering_points = ALL_COLS_COVERED;
     }
 
-    win_move = simple_win_condition(b) || near_throne_win_condition(b) || throne_win_condition(b);
+    if (is_moved_near(b, b.king_pos)) {
+        win_move = simple_win_condition(b) || near_throne_win_condition(b) || throne_win_condition(b);
+    }
 
     return geometry_points + row_covering_points + col_covering_points + EZPZ * win_move;
 }
@@ -108,29 +110,38 @@ BlackEvaluator::BlackEvaluator() {
     near_throne[Position{4,3}] = Direction::Up;
     near_throne[Position{4,5}] = Direction::Down;
 
-    near_checks[Direction::Right] = [](Direction dir, const Board &b) -> bool {
+    near_checks[Direction::Right] = [](const Board &b) -> bool {
         return (b.board[b.king_pos.col][b.king_pos.row-1] == Pawn::Black &&   //UP
                 b.board[b.king_pos.col][b.king_pos.row+1] == Pawn::Black &&   //DOWN
                 b.board[b.king_pos.col+1][b.king_pos.row] == Pawn::Black      //RIGHT
         );
     };
-    near_checks[Direction::Left] = [](Direction dir, const Board &b) -> bool {
+    near_checks[Direction::Left] = [](const Board &b) -> bool {
         return (b.board[b.king_pos.col][b.king_pos.row-1] == Pawn::Black &&   //UP
                 b.board[b.king_pos.col][b.king_pos.row+1] == Pawn::Black &&   //DOWN
                 b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::Black      //LEFT
         );
     };
-    near_checks[Direction::Up] = [](Direction dir, const Board &b) -> bool {
+    near_checks[Direction::Up] = [](const Board &b) -> bool {
         return (b.board[b.king_pos.col][b.king_pos.row-1] == Pawn::Black &&   //UP
                 b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::Black &&   //LEFT
                 b.board[b.king_pos.col+1][b.king_pos.row] == Pawn::Black      //RIGHT
         );
     };
-    near_checks[Direction::Down] = [](Direction dir, const Board &b) -> bool {
+    near_checks[Direction::Down] = [](const Board &b) -> bool {
         return (b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::Black &&   //LEFT
                 b.board[b.king_pos.col][b.king_pos.row+1] == Pawn::Black &&   //DOWN
                 b.board[b.king_pos.col+1][b.king_pos.row] == Pawn::Black      //RIGHT
         );
     };
+
+    is_moved_near = [](const Board &b , const Position &pos) -> bool {
+        return (b.last_move == Position{pos.col+1, pos.row} || //RIGHT
+                b.last_move == Position{pos.col-1, pos.row} || //LEFT
+                b.last_move == Position{pos.col, pos.row-1} || //UP
+                b.last_move == Position{pos.col, pos.row+1}    //DOWN
+                );
+    };
 }
+
 

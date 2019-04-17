@@ -26,7 +26,8 @@ class BlackEvaluator : public Evaluator<BlackEvaluator>{
 public:
     BlackEvaluator();
     std::unordered_map<Position, Direction, pos_hash> near_throne;
-    std::unordered_map<Direction, std::function<bool(Direction,const Board&)>> near_checks;
+    std::unordered_map<Direction, std::function<bool(const Board&)>> near_checks;
+    std::function<bool(const Board&, const Position&)> is_moved_near;
 
     int evaluate(const Board &b) const;
     bool simple_win_condition(const Board &b) const;
