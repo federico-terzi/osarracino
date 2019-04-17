@@ -53,6 +53,7 @@ public:
     // Bool used to track which player turn is.
     bool is_white;
     Position king_pos;
+    Position last_move;
 
 
     void load_board(const std::string &json_board);

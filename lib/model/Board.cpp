@@ -131,6 +131,8 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
 
     b.is_white = !b.is_white;
 
+    b.last_move = to;
+
     // TODO: mangia pedine
     // TODO: tests
 
