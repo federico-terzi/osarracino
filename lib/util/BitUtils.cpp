@@ -21,3 +21,11 @@ int BitUtils::get_low_moves(uint16_t row, int index) {
         return index;
     }
 }
+
+int BitUtils::get_surrounded(uint16_t row, int index) {
+    if (index > 0) {
+        return __builtin_popcount((row >> (index - 1)) & 0b0000'0101);
+    }else{
+        return (row & 0b0000'0010) != 0;
+    }
+}

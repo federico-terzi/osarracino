@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <functional>
 #include <evaluator/Evaluator.h>
-#include <evaluator/WhiteEvaluator.h>
+#include <evaluator/TorettoWhiteEvaluator.h>
 #include <util/BitUtils.h>
 #include "gtest/gtest.h"
 
@@ -80,52 +80,43 @@ TEST_F(BitUtilsTest, test_low_moves_last_limit) {
     uint16_t row = 0b0000'0001'0000'0001;
     EXPECT_EQ(BitUtils::get_low_moves(row, 8), 7);
 }
-//
-//TEST(Test_WhiteEvaluator, test_white_evaluator_double_side_winning_move) {
-//    Board b;
-//    b.load_board("{\"board\": [[\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"KING\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"THRONE\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"]], \"turn\": \"WHITE\"}");
-//    WhiteEvaluator eval;
-//    int result = eval.evaluate(b);
-//    EXPECT_EQ(result, WHITE_EVALUATOR_MAX_DEPTH*WHITE_EVALUATOR_SEARCH_WIN_MULTIPLIER*2);
-//}
-//
-//TEST(Test_WhiteEvaluator, test_white_evaluator_single_side_winning_move) {
-//    Board b;
-//    b.load_board("{\"board\": [[\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"KING\", \"EMPTY\", \"EMPTY\", \"BLACK\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"THRONE\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"]], \"turn\": \"WHITE\"}");
-//    WhiteEvaluator eval;
-//    int result = eval.evaluate(b);
-//    EXPECT_EQ(result, WHITE_EVALUATOR_MAX_DEPTH*WHITE_EVALUATOR_SEARCH_WIN_MULTIPLIER);
-//}
-//
-//TEST(Test_WhiteEvaluator, test_white_evaluator_depth_2) {
-//    Board b;
-//    b.load_board("{\"board\": [[\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"BLACK\", \"KING\", \"EMPTY\", \"BLACK\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"THRONE\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"BLACK\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"]], \"turn\": \"WHITE\"}");
-//    WhiteEvaluator eval;
-//    int result = eval.evaluate(b);
-//    EXPECT_EQ(result, (WHITE_EVALUATOR_MAX_DEPTH-1)*WHITE_EVALUATOR_SEARCH_WIN_MULTIPLIER);
-//}
-//
-//TEST(Test_WhiteEvaluator, test_white_evaluator_depth_3) {
-//    Board b;
-//    b.load_board("{\"board\": [[\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"BLACK\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"BLACK\", \"KING\", \"EMPTY\", \"BLACK\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"THRONE\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"BLACK\", \"EMPTY\", \"EMPTY\", \"BLACK\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"]], \"turn\": \"WHITE\"}");
-//    WhiteEvaluator eval;
-//    int result = eval.evaluate(b);
-//    EXPECT_EQ(result, (WHITE_EVALUATOR_MAX_DEPTH-2)*WHITE_EVALUATOR_SEARCH_WIN_MULTIPLIER);
-//}
-//
-//TEST(Test_WhiteEvaluator, test_white_too_many_steps) {
-//    Board b;
-//    b.load_board("{\"board\": [[\"EMPTY\", \"BLACK\", \"BLACK\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"BLACK\", \"KING\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"BLACK\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"BLACK\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"BLACK\", \"BLACK\", \"BLACK\", \"BLACK\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"THRONE\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"]], \"turn\": \"WHITE\"}");
-//    WhiteEvaluator eval;
-//    int result = eval.evaluate(b);
-//    EXPECT_EQ(result, 9*WHITE_EVALUATOR_BLACK_PAWN_MULTIPLIER+12*WHITE_EVALUATOR_FREE_WINPOINT_MULTIPLIER);
-//}
-//
-//TEST(Test_WhiteEvaluator, test_white_initial_game) {
-//    Board b;
-//    b.load_board("{\"board\": [[\"EMPTY\", \"EMPTY\", \"EMPTY\", \"BLACK\", \"BLACK\", \"BLACK\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"BLACK\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"WHITE\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"BLACK\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"WHITE\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"BLACK\"], [\"BLACK\", \"BLACK\", \"WHITE\", \"WHITE\", \"KING\", \"WHITE\", \"WHITE\", \"BLACK\", \"BLACK\"], [\"BLACK\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"WHITE\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"BLACK\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"WHITE\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"BLACK\", \"EMPTY\", \"EMPTY\", \"EMPTY\", \"EMPTY\"], [\"EMPTY\", \"EMPTY\", \"EMPTY\", \"BLACK\", \"BLACK\", \"BLACK\", \"EMPTY\", \"EMPTY\", \"EMPTY\"]], \"turn\": \"WHITE\"}");
-//    WhiteEvaluator eval;
-//    int result = eval.evaluate(b);
-//    EXPECT_EQ(result, 16*WHITE_EVALUATOR_BLACK_PAWN_MULTIPLIER+8*WHITE_EVALUATOR_WHITE_PAWN_MULTIPLIER+
-//                      16*WHITE_EVALUATOR_FREE_WINPOINT_MULTIPLIER);
-//}
+
+TEST_F(BitUtilsTest, test_get_surrounded_simple_double) {
+    uint16_t row = 0b0000'0001'0001'1101;
+    EXPECT_EQ(BitUtils::get_surrounded(row, 3), 2);
+}
+
+TEST_F(BitUtilsTest, test_get_surrounded_simple_single) {
+    uint16_t row = 0b0000'0001'0001'1001;
+    EXPECT_EQ(BitUtils::get_surrounded(row, 3), 1);
+}
+
+TEST_F(BitUtilsTest, test_get_surrounded_simple_free) {
+    uint16_t row = 0b0000'0001'0000'1001;
+    EXPECT_EQ(BitUtils::get_surrounded(row, 3), 0);
+}
+
+TEST_F(BitUtilsTest, test_get_surrounded_right_blocked) {
+    uint16_t row = 0b0000'0001'0000'0011;
+    EXPECT_EQ(BitUtils::get_surrounded(row, 0), 1);
+}
+
+TEST_F(BitUtilsTest, test_get_surrounded_right_free) {
+    uint16_t row = 0b0000'0001'0000'0001;
+    EXPECT_EQ(BitUtils::get_surrounded(row, 0), 0);
+}
+
+TEST_F(BitUtilsTest, test_get_surrounded_left_blocked) {
+    uint16_t row = 0b0000'0001'1000'0001;
+    EXPECT_EQ(BitUtils::get_surrounded(row, 8), 1);
+}
+
+TEST_F(BitUtilsTest, test_get_surrounded_left_free) {
+    uint16_t row = 0b0000'0001'0000'0001;
+    EXPECT_EQ(BitUtils::get_surrounded(row, 8), 0);
+}
+
+TEST_F(BitUtilsTest, test_get_surrounded_left_double) {
+    uint16_t row = 0b0000'0001'1100'0001;
+    EXPECT_EQ(BitUtils::get_surrounded(row, 7), 2);
+}

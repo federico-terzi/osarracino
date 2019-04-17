@@ -35,6 +35,12 @@ class BitUtils {
 public:
     static int get_high_moves(uint16_t row, int index);
     static int get_low_moves(uint16_t row, int index);
+
+    /*
+     * Return 0 if not surrounded, 1 if surrounded from
+     * a single side and 2 if surrounded by both sides.
+     */
+    static int get_surrounded(uint16_t row, int index);
 };
 
 

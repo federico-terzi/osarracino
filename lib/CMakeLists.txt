@@ -9,7 +9,7 @@ add_library(libosarracino STATIC
         evaluator/Evaluator.h
         search/Minimax.cpp search/Minimax.h
         model/Position.cpp model/Position.h
-        evaluator/WhiteEvaluator.cpp evaluator/WhiteEvaluator.h
+        evaluator/TorettoWhiteEvaluator.cpp evaluator/TorettoWhiteEvaluator.h
         evaluator/BlackEvaluator.cpp evaluator/BlackEvaluator.h
         movegenerator/MoveGenerator.h
         movegenerator/ThetaMoveGenerator.cpp movegenerator/ThetaMoveGenerator.h
