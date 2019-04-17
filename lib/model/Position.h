@@ -15,6 +15,7 @@ struct Position {
     friend bool operator==(const Position &lhs, const Position &rhs);
     friend std::ostream &operator<<(std::ostream &s, const Position &pos) {
         s << pos.to_move();
+        return s;
     };
 
     std::string to_move() const;

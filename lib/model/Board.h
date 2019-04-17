@@ -76,6 +76,7 @@ public:
         }
         s << "╚═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╝" << std::endl;
         s << "  A   B   C   D   E   F   G   H   I" << std::endl;
+        return s;
     }
 
 };

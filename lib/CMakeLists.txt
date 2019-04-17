@@ -15,6 +15,10 @@ add_library(libosarracino STATIC
         movegenerator/ThetaMoveGenerator.cpp movegenerator/ThetaMoveGenerator.h
         util/BitUtils.cpp util/BitUtils.h util/BoardUtils.cpp util/BoardUtils.h)
 
+set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
 target_link_libraries(libosarracino ${JSONCPP_LIBRARIES})
 
 target_include_directories (libosarracino PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
