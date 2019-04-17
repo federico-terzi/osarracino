@@ -136,5 +136,5 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
     // TODO: mangia pedine
     // TODO: tests
 
-    return std::move(b);
+    return b;
 }

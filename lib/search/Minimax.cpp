@@ -9,6 +9,8 @@
 #include <evaluator/BlackEvaluator.h>
 #include <movegenerator/ThetaMoveGenerator.h>
 
+#define DEPTH 1
+
 // Returns optimal value for
 // current player(Initially called
 // for root and maximizer)
@@ -18,6 +20,7 @@ const int MIN = -MAX;
 Position from;
 Position to;
 int moves = 0;
+int act_val = 0;
 
 template <typename WhiteEvalType, typename BlackEvalType, typename MoveGeneratorType>
 int Minimax::minimax(int depth, const Evaluator<WhiteEvalType> &whiteEval, const Evaluator<BlackEvalType> &blackEval,
@@ -30,11 +33,11 @@ int Minimax::minimax(int depth, const Evaluator<WhiteEvalType> &whiteEval, const
     // Terminating condition. i.e
     // leaf node is reached
     // TODO: valutate the sign of the evaluation based on the turn
-    if (depth == 6) {
+    if (depth == DEPTH) {
         if (leading_white) {
-            return value.is_white ? whiteEval.evaluate(value): -blackEval.evaluate(value);
+            return value.is_white ?  -blackEval.evaluate(value): whiteEval.evaluate(value);
         }else{
-            return value.is_white ? -whiteEval.evaluate(value): blackEval.evaluate(value);
+            return value.is_white ? blackEval.evaluate(value): -whiteEval.evaluate(value);
         }
     }
 
@@ -59,6 +62,7 @@ int Minimax::minimax(int depth, const Evaluator<WhiteEvalType> &whiteEval, const
                 if(depth == 0 && best == val) {
                     from = pawnMoves.first;
                     to = dest;
+                    act_val = best;
                 }
 
                 // Alpha Beta Pruning
@@ -106,6 +110,7 @@ std::string Minimax::best_move(Board &b) {
 
 
     std::cout << "Explored "<<moves << " moves in " << float( clock () - begin_time ) /  CLOCKS_PER_SEC << std::endl;
+    std::cout << act_val <<std::endl;
     std::string color = b.is_white ? "WHITE" : "BLACK";
 
     return std::string("{\"from\":\""+from.to_move()+"\",\"to\":\""+to.to_move()+"\",\"turn\":\""+color+"\"}");

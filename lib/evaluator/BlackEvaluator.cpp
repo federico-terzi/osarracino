@@ -4,6 +4,9 @@
 
 #include "BlackEvaluator.h"
 #include <set>
+#include <bitset>
+#include <algorithm>
+#include <util/BoardUtils.h>
 
 
 bool BlackEvaluator::is_king_in_throne(const Board &b) const{
@@ -44,21 +47,25 @@ bool BlackEvaluator::simple_win_condition(const Board &b) const {
     return (!is_king_in_throne(b)) && (!is_king_in_throne(b)) &&
 
            (((b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::Black
+              || b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::BlackWinPoint
               || b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::FullCitadel
               || b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::EmptyCitadel)
              &&
              (b.board[b.king_pos.col+1][b.king_pos.row] == Pawn::Black
+              || b.board[b.king_pos.col+1][b.king_pos.row] == Pawn::BlackWinPoint
               || b.board[b.king_pos.col+1][b.king_pos.row] == Pawn::FullCitadel
               || b.board[b.king_pos.col+1][b.king_pos.row] == Pawn::EmptyCitadel))
 
             ||
 
             ((b.board[b.king_pos.col][b.king_pos.row-1] == Pawn::Black
+              || b.board[b.king_pos.col][b.king_pos.row-1] == Pawn::BlackWinPoint
               || b.board[b.king_pos.col][b.king_pos.row-1] == Pawn::FullCitadel
               || b.board[b.king_pos.col][b.king_pos.row-1] == Pawn::EmptyCitadel)
              &&
              (b.board[b.king_pos.col][b.king_pos.row+1] == Pawn::Black
               || b.board[b.king_pos.col][b.king_pos.row+1] == Pawn::FullCitadel
+              || b.board[b.king_pos.col][b.king_pos.row+1] == Pawn::BlackWinPoint
               || b.board[b.king_pos.col][b.king_pos.row+1] == Pawn::EmptyCitadel)));
 
 }
@@ -76,7 +83,7 @@ int BlackEvaluator::evaluate(const Board &b) const {
         for (int j = 0; j < 9; j++) {
             //Calcolo della geometria
             if (b.board[i][j] == Pawn::Black || b.board[i][j] == Pawn::FullCitadel) {
-                geometry_points += color_matrix[i][j];
+                //  geometry_points += color_matrix[i][j];
                 row_covered.insert(i);
                 col_covered.insert(j);
                 //TODO: This is not global covering, for global covering we must consider every quarter of the board.
@@ -101,7 +108,7 @@ int BlackEvaluator::evaluate(const Board &b) const {
         win_move = simple_win_condition(b) || near_throne_win_condition(b) || throne_win_condition(b);
     }
 
-    return geometry_points + row_covering_points + col_covering_points + EZPZ * win_move;
+    return geometry_points + row_covering_points + col_covering_points + EZPZ * win_move - EZPZ * get_direction_of_move_check(b).size();
 }
 
 BlackEvaluator::BlackEvaluator() {
@@ -140,8 +147,54 @@ BlackEvaluator::BlackEvaluator() {
                 b.last_move == Position{pos.col-1, pos.row} || //LEFT
                 b.last_move == Position{pos.col, pos.row-1} || //UP
                 b.last_move == Position{pos.col, pos.row+1}    //DOWN
-                );
+        );
     };
 }
+
+//TODO: Tests of the positions of the king.
+std::vector<Direction> BlackEvaluator::get_direction_of_move_check(const Board &b) const {
+
+    //King not in place to win.
+    auto col = std::find(win_rows_cols.begin(), win_rows_cols.end(), b.king_pos.col);
+    auto row = std::find(win_rows_cols.begin(), win_rows_cols.end(), b.king_pos.row);
+
+    std::vector<Direction> positions;
+
+    // Check obstacle, if a part contains obstacles don't checkit.
+
+    if (row == win_rows_cols.end() && col == win_rows_cols.end()) {
+        return positions;
+    }
+
+    if (col != win_rows_cols.end()) { // Re su una riga possibilmente vincente quindi o destra o sinistra
+        for (int i = b.king_pos.row+1; i < 9 && (b.board[b.king_pos.col][i] == Pawn::Empty ||b.board[b.king_pos.col][i] == Pawn::WinPoint); i++) {
+            if (i == 8) {
+                positions.push_back(Direction::Down);
+            }
+        }
+        for (int i = b.king_pos.row - 1; i >=0 && (b.board[b.king_pos.col][i] == Pawn::Empty ||b.board[b.king_pos.col][i] == Pawn::WinPoint); i--) {
+            if (i == 0) {
+                positions.push_back(Direction::Up);
+            }
+        }
+    }
+
+    if (row != win_rows_cols.end()) { //Re su una colonna vincente quindi o su o giu
+        for (int i = b.king_pos.col+1; i < 9 && (b.board[i][b.king_pos.row] == Pawn::Empty ||b.board[i][b.king_pos.row] == Pawn::WinPoint); i++) {
+            if (i == 8) {
+                positions.push_back(Direction::Right);
+            }
+        }
+
+        for (int i = b.king_pos.col-1; i >=0 && (b.board[i][b.king_pos.row] == Pawn::Empty ||b.board[i][b.king_pos.row] == Pawn::WinPoint); i--) {
+            if (i == 0) {
+                positions.push_back(Direction::Left);
+            }
+        }
+    }
+    return positions;
+
+}
+
 
 
