@@ -82,6 +82,10 @@ public:
         return s;
     }
 
+    bool operator==(const Board &rhs) const;
+
+    bool operator!=(const Board &rhs) const;
+
 };
 
 

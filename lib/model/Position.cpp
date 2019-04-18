@@ -4,10 +4,15 @@
 
 #include "Position.h"
 
-bool operator==(const Position &lhs, const Position &rhs) {
-    return lhs.row == rhs.row && lhs.col == rhs.col;
-}
-
 std::string Position::to_move() const {
     return std::string(std::string(1, ('a'+this->col))+std::to_string(((this->row)+1)));
+}
+
+bool Position::operator==(const Position &rhs) const {
+    return col == rhs.col &&
+           row == rhs.row;
+}
+
+bool Position::operator!=(const Position &rhs) const {
+    return !(rhs == *this);
 }

@@ -108,6 +108,10 @@ Board::Board() {
     board[8][2] = Pawn::WinPoint;
     board[8][6] = Pawn::WinPoint;
     board[8][7] = Pawn::WinPoint;
+
+    // Initialize the fields
+    king_pos = {0, 0};
+    last_move = {0, 0};
 }
 
 
@@ -173,11 +177,33 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
     // TODO: mangia pedine
     // TODO: tests
 
-    return std::move(b);
+    return b;
 }
 
 Board Board::from_json(const std::string &json) {
     Board b;
     b.load_board(json);
     return b;
+}
+
+bool board_equal(const Pawn b1[DIM][DIM], const Pawn b2[DIM][DIM]) {
+    for (int x = 0; x<9; x++) {
+        for (int y = 0; y<9; y++) {
+            if (b1[x][y] != b2[x][y]) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+bool Board::operator==(const Board &rhs) const {
+    return board_equal(board, rhs.board) &&
+           is_white == rhs.is_white &&
+           king_pos == rhs.king_pos &&
+           last_move == rhs.last_move;
+}
+
+bool Board::operator!=(const Board &rhs) const {
+    return !(rhs == *this);
 }
