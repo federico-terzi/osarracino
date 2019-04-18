@@ -133,6 +133,43 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
 
     b.last_move = to;
 
+    // TODO: improve performance
+    // Eat the pawn
+
+    Pawn enemy_pawn = Black;
+    if (pawn == Black) {
+        enemy_pawn = KingOrWhite;
+    }
+
+    // Left eat
+    if (to.col > 1) {
+        if ((b.board[to.col-1][to.row] & enemy_pawn) != 0 &&
+            (b.board[to.col-2][to.row] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
+            b.board[to.col-1][to.row] &= ClearPawn;
+        }
+    }
+    // Right eat
+    if (to.col < 7) {
+        if ((b.board[to.col+1][to.row] & enemy_pawn) != 0 &&
+            (b.board[to.col+2][to.row] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
+            b.board[to.col+1][to.row] &= ClearPawn;
+        }
+    }
+    // Up eat
+    if (to.row > 1) {
+        if ((b.board[to.col][to.row-1] & enemy_pawn) != 0 &&
+            (b.board[to.col][to.row-2] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
+            b.board[to.col][to.row-1] &= ClearPawn;
+        }
+    }
+    // Down eat
+    if (to.row < 7) {
+        if ((b.board[to.col][to.row+1] & enemy_pawn) != 0 &&
+            (b.board[to.col][to.row+2] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
+            b.board[to.col][to.row+1] &= ClearPawn;
+        }
+    }
+
     // TODO: mangia pedine
     // TODO: tests
 
