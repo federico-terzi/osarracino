@@ -5,16 +5,16 @@
 #include <util/BitUtils.h>
 #include "TorettoWhiteEvaluator.h"
 
-const uint16_t winpoints[9] = {
-        0b00000000'11000110,
-        0b00000001'00000001,
-        0b00000001'00000001,
-        0b00000000'00000000,
-        0b00000000'00000000,
-        0b00000000'00000000,
-        0b00000001'00000001,
-        0b00000001'00000001,
-        0b00000000'11000110
+const bool winpoints[9][9] = {
+        {0, 1, 1, 0, 0, 0, 1, 1, 0},
+        {1, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 1},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {1, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 1},
+        {0, 1, 1, 0, 0, 0, 1, 1, 0},
 };
 
 int TorettoWhiteEvaluator::evaluate(const Board &b) const {
@@ -80,7 +80,7 @@ TorettoWhiteEvaluator::perform_search(const uint16_t *cols, const uint16_t *rows
 
     // TODO: optimize
     // TODO: test
-    if ((winpoints[king_col] & (1u << king_row)) != 0) {
+    if (winpoints[king_col][king_row]) {
         return WHITE_EVALUATOR_SEARCH_WIN_MULTIPLIER;
     }
 
