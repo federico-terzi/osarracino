@@ -21,16 +21,16 @@ Position to;
 int moves = 0;
 
 template<typename WhiteEvalType, typename BlackEvalType, typename MoveGeneratorType>
-int Minimax::minimax(int depth, const Evaluator<WhiteEvalType> &whiteEval, const Evaluator<BlackEvalType> &blackEval,
+int Minimax::minimax(int depth, int max_depth, const Evaluator<WhiteEvalType> &whiteEval,
+                     const Evaluator<BlackEvalType> &blackEval,
                      const MoveGenerator<MoveGeneratorType> &moveGenerator, bool maximizingPlayer, Board value,
-                     int alpha,
-                     int beta, bool leading_white) {
+                     int alpha, int beta, bool leading_white) {
     moves++;
 
     // Terminating condition. i.e
     // leaf node is reached
     // TODO: valutate the sign of the evaluation based on the turn
-    if (depth == 4) {
+    if (depth == max_depth) {
         if (leading_white) {
             return whiteEval.evaluate(value);
         } else {
@@ -49,7 +49,7 @@ int Minimax::minimax(int depth, const Evaluator<WhiteEvalType> &whiteEval, const
             for (auto &dest : pawnMoves.second) {
                 auto board{Board::from_board(value, pawnMoves.first, dest)};
 
-                int val = minimax(depth + 1, whiteEval, blackEval, moveGenerator,
+                int val = minimax(depth + 1, max_depth, whiteEval, blackEval, moveGenerator,
                                   false, board, alpha, beta, leading_white);
 
                 best = std::max(best, val);
@@ -74,7 +74,7 @@ int Minimax::minimax(int depth, const Evaluator<WhiteEvalType> &whiteEval, const
             for (auto &dest : pawnMoves.second) {
                 auto board{Board::from_board(value, pawnMoves.first, dest)};
 
-                int val = minimax(depth + 1, whiteEval, blackEval, moveGenerator,
+                int val = minimax(depth + 1, max_depth, whiteEval, blackEval, moveGenerator,
                                   true, board, alpha, beta, leading_white);
 
                 best = std::min(best, val);
@@ -99,7 +99,15 @@ std::string Minimax::best_move(Board &b) {
     const clock_t begin_time = clock();
 
     moves = 0;
-    int best_score = minimax(0, whiteEval, blackEval, moveGenerator, true, b, MIN, MAX, b.is_white);
+    // Incremental deepening
+
+    int best_score = 0;
+    for (int depth = 1; depth <= 4; depth++) {
+         best_score = minimax(0, depth, whiteEval, blackEval, moveGenerator, true, b, MIN, MAX, b.is_white);
+         if (best_score > 100000) {
+             break;
+         }
+    }
 
     std::cout << "Explored " << moves << " moves in " <<
               float(clock() - begin_time) / CLOCKS_PER_SEC << " seconds, with a score of: "
