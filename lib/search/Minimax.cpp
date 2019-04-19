@@ -5,11 +5,9 @@
 #include "Minimax.h"
 #include "evaluator/Evaluator.h"
 #include <algorithm>
-#include <evaluator/WhiteEvaluator.h>
 #include <evaluator/BlackEvaluator.h>
 #include <movegenerator/ThetaMoveGenerator.h>
-
-#define DEPTH 1
+#include <evaluator/WhiteEvaluator.h>
 
 // Returns optimal value for
 // current player(Initially called
@@ -20,38 +18,35 @@ const int MIN = -MAX;
 Position from;
 Position to;
 int moves = 0;
-int act_val = 0;
 
-template <typename WhiteEvalType, typename BlackEvalType, typename MoveGeneratorType>
+template<typename WhiteEvalType, typename BlackEvalType, typename MoveGeneratorType>
 int Minimax::minimax(int depth, const Evaluator<WhiteEvalType> &whiteEval, const Evaluator<BlackEvalType> &blackEval,
                      const MoveGenerator<MoveGeneratorType> &moveGenerator, bool maximizingPlayer, Board value,
                      int alpha,
-                     int beta, bool leading_white)
-{
+                     int beta, bool leading_white) {
     moves++;
 
     // Terminating condition. i.e
     // leaf node is reached
     // TODO: valutate the sign of the evaluation based on the turn
-    if (depth == DEPTH) {
+    if (depth == 4) {
         if (leading_white) {
-            return value.is_white ?  -blackEval.evaluate(value): whiteEval.evaluate(value);
-        }else{
-            return value.is_white ? blackEval.evaluate(value): -whiteEval.evaluate(value);
+            return whiteEval.evaluate(value);
+        } else {
+            return blackEval.evaluate(value);
         }
     }
 
     /*Populate boards*/
 
-    if (maximizingPlayer)
-    {
+    if (maximizingPlayer) {
         int best = MIN;
 
-        auto moves { moveGenerator.generate(value)};
+        auto moves{moveGenerator.generate(value)};
 
         for (auto &pawnMoves : moves) {
             for (auto &dest : pawnMoves.second) {
-                auto board {Board::from_board(value, pawnMoves.first, dest)};
+                auto board{Board::from_board(value, pawnMoves.first, dest)};
 
                 int val = minimax(depth + 1, whiteEval, blackEval, moveGenerator,
                                   false, board, alpha, beta, leading_white);
@@ -59,10 +54,9 @@ int Minimax::minimax(int depth, const Evaluator<WhiteEvalType> &whiteEval, const
                 best = std::max(best, val);
                 alpha = std::max(alpha, best);
 
-                if(depth == 0 && best == val) {
+                if (depth == 0 && best == val) {
                     from = pawnMoves.first;
                     to = dest;
-                    act_val = best;
                 }
 
                 // Alpha Beta Pruning
@@ -72,20 +66,18 @@ int Minimax::minimax(int depth, const Evaluator<WhiteEvalType> &whiteEval, const
         }
 
         return best;
-    }
-    else
-    {
+    } else {
         int best = MAX;
 
         for (auto &pawnMoves : moveGenerator.generate(value)) {
             for (auto &dest : pawnMoves.second) {
-                auto board {Board::from_board(value, pawnMoves.first, dest)};
+                auto board{Board::from_board(value, pawnMoves.first, dest)};
 
                 int val = minimax(depth + 1, whiteEval, blackEval, moveGenerator,
                                   true, board, alpha, beta, leading_white);
 
                 best = std::min(best, val);
-                beta = std::min(alpha, best);
+                beta = std::min(beta, best);
 
                 // Alpha Beta Pruning
                 if (beta <= alpha)
@@ -100,18 +92,20 @@ int Minimax::minimax(int depth, const Evaluator<WhiteEvalType> &whiteEval, const
 std::string Minimax::best_move(Board &b) {
     WhiteEvaluator whiteEval;
     BlackEvaluator blackEval;
+    // ArnoldMoveGenerator moveGenerator;
     ThetaMoveGenerator moveGenerator;
 
     const clock_t begin_time = clock();
 
     moves = 0;
-    minimax(0, whiteEval, blackEval, moveGenerator, true, b, MIN, MAX, b.is_white);
+    int best_score = minimax(0, whiteEval, blackEval, moveGenerator, true, b, MIN, MAX, b.is_white);
 
+    std::cout << "Explored " << moves << " moves in " <<
+              float(clock() - begin_time) / CLOCKS_PER_SEC << " seconds, with a score of: "
+              << best_score << std::endl;
 
-
-    std::cout << "Explored "<<moves << " moves in " << float( clock () - begin_time ) /  CLOCKS_PER_SEC << std::endl;
-    std::cout << act_val <<std::endl;
     std::string color = b.is_white ? "WHITE" : "BLACK";
 
-    return std::string("{\"from\":\""+from.to_move()+"\",\"to\":\""+to.to_move()+"\",\"turn\":\""+color+"\"}");
+    return std::string(
+            "{\"from\":\"" + from.to_move() + "\",\"to\":\"" + to.to_move() + "\",\"turn\":\"" + color + "\"}");
 }
