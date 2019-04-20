@@ -102,16 +102,24 @@ std::string Minimax::best_move(Board &b) {
     // Incremental deepening
 
     int best_score = 0;
-    for (int depth = 1; depth <= 4; depth++) {
+    int final_depth = 0;
+    for (int depth = 1; depth <= 5; depth++) {
          best_score = minimax(0, depth, whiteEval, blackEval, moveGenerator, true, b, MIN, MAX, b.is_white);
+         final_depth = depth;
          if (best_score > 100000) {
              break;
          }
     }
 
-    std::cout << "Explored " << moves << " moves in " <<
-              float(clock() - begin_time) / CLOCKS_PER_SEC << " seconds, with a score of: "
-              << best_score << std::endl;
+    // Print statistics
+
+    float elapsed = (clock() - begin_time) / float(CLOCKS_PER_SEC);
+    float speed = float(moves) / elapsed;
+    std::cout << "Evaluation completed. Results: " << std::endl;
+    std::cout << "Explored " << moves << " moves in " << elapsed << " seconds " << std::endl;
+    std::cout << "Best score: " << best_score << std::endl;
+    std::cout << "Speed: " << speed << " moves/second." << std::endl;
+    std::cout << "Reached depth: " << final_depth << std::endl;
 
     std::string color = b.is_white ? "WHITE" : "BLACK";
 
