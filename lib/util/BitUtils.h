@@ -31,16 +31,36 @@ const uint16_t high_mask[9] = {
         0b11111110'00000000,
 };
 
-class BitUtils {
-public:
-    static int get_high_moves(uint16_t row, int index);
-    static int get_low_moves(uint16_t row, int index);
+namespace BitUtils {
+    inline int get_high_moves(uint16_t row, int index) {
+        uint16_t select_high = row & high_mask[index];
+        if (select_high != 0) {
+            return (__builtin_ffs(select_high) - index - 2);
+        }else{
+            return 8 - index;
+        }
+    }
+
+    inline int get_low_moves(uint16_t row, int index) {
+        uint16_t select_low = row & low_mask[index];
+        if (select_low != 0) {
+            return (__builtin_clz(select_low) - 32 + index);
+        }else{
+            return index;
+        }
+    }
 
     /*
      * Return 0 if not surrounded, 1 if surrounded from
      * a single side and 2 if surrounded by both sides.
      */
-    static int get_surrounded(uint16_t row, int index);
+    inline int get_surrounded(uint16_t row, int index) {
+        if (index > 0) {
+            return __builtin_popcount((row >> (index - 1)) & 0b0000'0101);
+        }else{
+            return (row & 0b0000'0010) != 0;
+        }
+    }
 };
 
 
