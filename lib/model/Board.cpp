@@ -211,11 +211,12 @@ bool Board::operator!=(const Board &rhs) const {
 }
 
 Board Board::from_path(const std::string &path) {
-    Board b;
     std::ifstream t(path);
+    if (t.fail()) {
+        throw std::invalid_argument("The file does not exist");
+    }
     std::stringstream buffer;
     buffer << t.rdbuf();
-    b.load_board(buffer.str());
     t.close();
-    return b;
+    return Board::from_json(buffer.str());
 }
