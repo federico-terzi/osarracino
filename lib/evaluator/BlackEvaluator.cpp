@@ -8,6 +8,11 @@
 #include <algorithm>
 #include <util/BoardUtils.h>
 
+#define  FIRST_QUARTER 4,8,0,4
+#define  SECOND_QUARTER 4,8,4,8
+#define  THIRD_QUARTER 0,4,4,8
+#define  FOURTH_QUARTER 0,4,0,4
+
 
 bool BlackEvaluator::is_king_in_throne(const Board &b) const{
     return b.board[b.king_pos.col][b.king_pos.row] == Pawn::FullThrone;
@@ -70,45 +75,77 @@ bool BlackEvaluator::simple_win_condition(const Board &b) const {
 
 }
 
+//If the blacks is near the king -> bonus points!
+int BlackEvaluator::black_block_king(const Board &b) const {
+    int blocks {0};
 
-int BlackEvaluator::evaluate(const Board &b) const {
-    int geometry_points {0};
-    int row_covering_points {0};
-    int col_covering_points {0};
-    bool win_move = false;
-    std::set<int> row_covered, col_covered;
+    auto check_pos = [&b](const Position &pos) ->bool {
+        return b.board[pos.col][pos.row] == Pawn::Black ||
+               b.board[pos.col][pos.row] == Pawn::EmptyCitadel ||
+               b.board[pos.col][pos.row] == Pawn::FullCitadel;
+    };
 
+    if (check_pos(Position{b.king_pos.col, b.king_pos.row-1})) { //UP
+        blocks++;
+    }
+    if (check_pos(Position{b.king_pos.col, b.king_pos.row+1})) { //DOWN
+        blocks++;
+    }
+    if (check_pos(Position{b.king_pos.col-1, b.king_pos.row})) { //LEFT
+        blocks++;
+    }
+    if (check_pos(Position{b.king_pos.col+1, b.king_pos.row})) { // RIGHT
+        blocks++;
+    }
 
-    for (int i = 0; i < 9; i++) {
-        for (int j = 0; j < 9; j++) {
-            //Calcolo della geometria
-            if (b.board[i][j] == Pawn::Black || b.board[i][j] == Pawn::FullCitadel) {
-                //  geometry_points += color_matrix[i][j];
-                row_covered.insert(i);
-                col_covered.insert(j);
-                //TODO: This is not global covering, for global covering we must consider every quarter of the board.
+    return blocks;
+}
+
+//Differences of pawns based on quarters! TO TEST
+int BlackEvaluator::pawn_differences(const Board &b) const {
+    int current_difference {0};
+
+    // Function that calculates the differences based on the cols;
+    auto counter = [&b](int start_col, int max_col, int start_row,int max_row) -> int {
+        int black {0};
+        int white {0};
+        for (int col = start_col; col <= max_col; col++) {
+            for (int row = start_row; row <= max_row; row++) {
+                if (b.board[col][row] == Pawn::White || b.board[col][row] == Pawn::FullThrone || b.board[col][row] == Pawn::King) {
+                    white++;
+                } else if (b.board[col][row] == Pawn::Black || b.board[col][row] == Pawn::FullCitadel) {
+                    black++;
+                }
             }
         }
-    }
+        return black - white;
+    };
 
-    // Calculate if all rows are covered
-    if (row_covered.size() < 9) {
-        row_covering_points = (row_covered.size() - 9) * ALL_ROWS_COVERED;
-    } else {
-        row_covering_points = ALL_ROWS_COVERED;
-    }
+    current_difference += counter(FIRST_QUARTER);
+    current_difference += counter(SECOND_QUARTER);
+    current_difference += counter(THIRD_QUARTER);
+    current_difference += counter(FOURTH_QUARTER);
 
-    if (col_covered.size() < 9) {
-        col_covering_points = (col_covered.size() - 9) * ALL_COLS_COVERED;
-    } else {
-        col_covering_points = ALL_COLS_COVERED;
-    }
+    return current_difference;
+}
 
-    if (is_moved_near(b, b.king_pos)) {
+
+
+
+int BlackEvaluator::evaluate(const Board &b) const {
+    bool win_move = false;
+
+    int block_the_king = black_block_king(b);
+
+    if (is_moved_near(b, b.king_pos)) { //Check if blacks can win can win
         win_move = simple_win_condition(b) || near_throne_win_condition(b) || throne_win_condition(b);
     }
 
-    return geometry_points + row_covering_points + col_covering_points + EZPZ * win_move - EZPZ * get_direction_of_move_check(b).size();
+    if (win_move) { //We can win
+        return EZPZ;
+    } else { // We cannot win, so we have to defend, insert here all state calculation
+        return -EZPZ * get_direction_of_move_check(b).size() + block_the_king + pawn_differences(b);
+    }
 }
 
 BlackEvaluator::BlackEvaluator() {
@@ -151,7 +188,6 @@ BlackEvaluator::BlackEvaluator() {
     };
 }
 
-//TODO: Tests of the positions of the king.
 std::vector<Direction> BlackEvaluator::get_direction_of_move_check(const Board &b) const {
 
     //King not in place to win.

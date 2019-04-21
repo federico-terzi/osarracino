@@ -23,6 +23,8 @@ public:
     std::function<bool(const Board&, const Position&)> is_moved_near;
 
     int evaluate(const Board &b) const;
+    int black_block_king(const Board &b) const;
+    int pawn_differences(const Board &b) const;
     bool simple_win_condition(const Board &b) const;
     bool throne_win_condition(const Board &b) const;
     bool near_throne_win_condition(const Board &b) const;
