@@ -1,130 +1,148 @@
-import pygame, json, sys
+import gi
 
-pygame.init()
-pygame.font.init()
-fnt = pygame.font.SysFont("Arial", 30)
-
-BLACK = ( 0, 0, 0)
-GRAY = ( 96,96,96)
-WHITE = ( 255, 255, 255)
-BLUE = ( 92,142,255)
-ORANGE = ( 255,178,102)
-YELLOW= ( 243,232,102)
-RED = ( 255, 0, 0)
-
-CSIZE = 50
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, Gdk
 
 
-size = (510, 500)
-screen = pygame.display.set_mode(size)
-pygame.display.set_caption("Tablut Mode Editor")
+class EditorWindow(Gtk.Window):
 
-board = [[0,1,1,2,2,2,1,1,0],
-         [1,0,0,0,2,0,0,0,1],
-         [1,0,0,0,0,0,0,0,1],
-         [2,0,0,0,0,0,0,0,2],
-         [2,2,0,0,3,0,0,2,2],
-         [2,0,0,0,0,0,0,0,2],
-         [1,0,0,0,0,0,0,0,1],
-         [1,0,0,0,2,0,0,0,1],
-         [0,1,1,2,2,2,1,1,0]]
+    def __init__(self):
+        Gtk.Window.__init__(self, title="Tablut Board Editor")
+        self.set_default_size(600, 600)
+        self.set_resizable(False)
 
-matrix =[[0,0,0,0,0,0,0,0,0],
-         [0,0,0,0,0,0,0,0,0],
-         [0,0,0,0,0,0,0,0,0],
-         [0,0,0,0,0,0,0,0,0],
-         [0,0,0,0,0,0,0,0,0],
-         [0,0,0,0,0,0,0,0,0],
-         [0,0,0,0,0,0,0,0,0],
-         [0,0,0,0,0,0,0,0,0],
-         [0,0,0,0,0,0,0,0,0]]
+        self.board = [[0, 1, 1, 2, 2, 2, 1, 1, 0],
+                      [1, 0, 0, 0, 2, 0, 0, 0, 1],
+                      [1, 0, 0, 0, 0, 0, 0, 0, 1],
+                      [2, 0, 0, 0, 0, 0, 0, 0, 2],
+                      [2, 2, 0, 0, 3, 0, 0, 2, 2],
+                      [2, 0, 0, 0, 0, 0, 0, 0, 2],
+                      [1, 0, 0, 0, 0, 0, 0, 0, 1],
+                      [1, 0, 0, 0, 2, 0, 0, 0, 1],
+                      [0, 1, 1, 2, 2, 2, 1, 1, 0]]
 
-def load_matrix(json, matrix):
-    for y, row in enumerate(json["board"]):
-        for x, cell in enumerate(row):
-            if cell == "WHITE":
-                matrix[y][x] = 2
-            elif cell == "BLACK":
-                matrix[y][x] = 1
-            elif cell == "KING":
-                matrix[y][x] = 3
+        self.pawns = [[0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 1, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
-if len(sys.argv) > 1:
-    option = sys.argv[1]
-    if option == "default":
-        load_matrix(json.loads('{"board": [["EMPTY", "EMPTY", "EMPTY", "BLACK", "BLACK", "BLACK", "EMPTY", "EMPTY", "EMPTY"], ["EMPTY", "EMPTY", "EMPTY", "EMPTY", "BLACK", "EMPTY", "EMPTY", "EMPTY", "EMPTY"], ["EMPTY", "EMPTY", "EMPTY", "EMPTY", "WHITE", "EMPTY", "EMPTY", "EMPTY", "EMPTY"], ["BLACK", "EMPTY", "EMPTY", "EMPTY", "WHITE", "EMPTY", "EMPTY", "EMPTY", "BLACK"], ["BLACK", "BLACK", "WHITE", "WHITE", "KING", "WHITE", "WHITE", "BLACK", "BLACK"], ["BLACK", "EMPTY", "EMPTY", "EMPTY", "WHITE", "EMPTY", "EMPTY", "EMPTY", "BLACK"], ["EMPTY", "EMPTY", "EMPTY", "EMPTY", "WHITE", "EMPTY", "EMPTY", "EMPTY", "EMPTY"], ["EMPTY", "EMPTY", "EMPTY", "EMPTY", "BLACK", "EMPTY", "EMPTY", "EMPTY", "EMPTY"], ["EMPTY", "EMPTY", "EMPTY", "BLACK", "BLACK", "BLACK", "EMPTY", "EMPTY", "EMPTY"]], "turn": "WHITE"}'), matrix)
-    else:
-        load_matrix(json.loads(option), matrix)
+        self.header = Gtk.HeaderBar(title="Tablut Board Editor")
+        self.header.set_subtitle("* Unnamed board")
+        self.header.props.show_close_button = True
+        self.set_titlebar(self.header)
+
+        vbox = Gtk.VBox()
+
+        self.grid = Gtk.Grid(column_homogeneous=True, row_homogeneous=True)
+        vbox.pack_start(self.grid, True, True, 0)
+
+        self.statusbar = Gtk.Statusbar()
+        self.statusbar.set_vexpand(False)
+        vbox.pack_start(self.statusbar, False, False, 0)
+
+        self.add(vbox)
+
+        self.buttons = []
+
+        for y in range(9):
+            self.buttons.append([])
+            for x in range(9):
+                button = Gtk.Button()
+                button.set_hexpand(True)
+                button.set_vexpand(True)
+
+                button.get_style_context().add_class("board-btn")
+                if self.board[y][x] == 0:
+                    button.get_style_context().add_class("empty-btn")
+                elif self.board[y][x] == 1:
+                    button.get_style_context().add_class("winpoint-btn")
+                elif self.board[y][x] == 2:
+                    button.get_style_context().add_class("citadel-btn")
+                elif self.board[y][x] == 3:
+                    button.get_style_context().add_class("throne-btn")
+
+                button.board_x = x
+                button.board_y = y
+
+                button.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, [], Gdk.DragAction.MOVE)
+                button.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.MOVE)
+                button.drag_source_add_text_targets()
+                button.drag_dest_add_text_targets()
+
+                button.connect("clicked", self.on_board_button_clicked)
+                button.connect("enter", self.on_board_button_hover)
+                button.connect("drag-data-received", self.on_drag_data_received)
+                button.connect("drag-data-get", self.on_drag_data_get)
+
+                self.buttons[y].append(button)
+                self.grid.attach(button, x, y, 1, 1)
+
+            label = Gtk.Label(str(y + 1))
+            label.set_hexpand(True)
+            label.get_style_context().add_class("board-label")
+            self.grid.attach(label, 9, y, 1, 1)
+
+        for x in range(9):
+            label = Gtk.Label(str(chr(ord("a") + x)).upper())
+            label.set_vexpand(True)
+            label.get_style_context().add_class("board-label")
+            self.grid.attach(label, x, 9, 1, 1)
+
+        self.render_board()
+
+    def render_board(self):
+        for y in range(9):
+            for x in range(9):
+                if self.pawns[y][x] == 0:
+                    self.buttons[y][x].set_image(None)
+                elif self.pawns[y][x] == 1:
+                    image = Gtk.Image()
+                    image.set_from_file("resources/black.png")
+                    self.buttons[y][x].set_image(image)
+                elif self.pawns[y][x] == 2:
+                    image = Gtk.Image()
+                    image.set_from_file("resources/white.png")
+                    self.buttons[y][x].set_image(image)
+                elif self.pawns[y][x] == 3:
+                    image = Gtk.Image()
+                    image.set_from_file("resources/king.png")
+                    self.buttons[y][x].set_image(image)
+
+    def on_board_button_clicked(self, widget):
+        self.pawns[widget.board_y][widget.board_x] = 1
+        self.render_board()
+
+    def on_board_button_hover(self, widget):
+        cell = str(chr(ord("a") + widget.board_x)) + str(widget.board_y + 1)
+        message = f"x: {widget.board_x} | y: {widget.board_y} | Literal: {cell}"
+        self.statusbar.push(1, message)
+
+    def on_drag_data_received(self, widget, drag_context, x, y, data, info, time):
+        sx, sy = data.get_text().split(":")
+        x, y = int(sx), int(sy)
+        pawn = self.pawns[y][x]
+        self.pawns[y][x] = 0
+        self.pawns[widget.board_y][widget.board_x] = pawn
+        self.render_board()
+
+    def on_drag_data_get(self, widget, drag_context, data, info, time):
+        data.set_text(f"{widget.board_x}:{widget.board_y}", -1)
 
 
-carryOn = True 
-clock = pygame.time.Clock()
- 
-# -------- Main Program Loop -----------
-while carryOn:
-    # --- Main event loop
-    for event in pygame.event.get(): # User did something
-        if event.type == pygame.MOUSEBUTTONUP:
-            pos = pygame.mouse.get_pos()
-            x = int(pos[0]/CSIZE)
-            y = int(pos[1]/CSIZE)
-            if x>8 or y>8:
-                continue
-            matrix[y][x] += 1
-            if matrix[y][x] > 3:
-                matrix[y][x] = 0
-                
-            # Export the  matrix layout
-            output = []
-            for y, row in enumerate(matrix):
-                output.append([])
-                for x, cell in enumerate(row):
-                    if cell == 1:
-                        output[y].append("BLACK")
-                    elif cell == 2:
-                        output[y].append("WHITE")
-                    elif cell == 3:
-                        output[y].append("KING")
-                    elif board[y][x] == 3:
-                        output[y].append("THRONE")
-                    else:
-                        output[y].append("EMPTY")
-            print()
-            print(json.dumps({"board":output, "turn": "WHITE"}))            
+style_provider = Gtk.CssProvider()
+style_provider.load_from_path("resources/style.css")
+Gtk.StyleContext.add_provider_for_screen(
+    Gdk.Screen.get_default(),
+    style_provider,
+    Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+)
 
-        if event.type == pygame.QUIT: # If user clicked close
-            carryOn = False # Flag that we are done so we exit this loop
- 
-    screen.fill(BLACK)
-    
-    # Draw the board
-    for y, row in enumerate(board):
-        for x, cell in enumerate(row):
-            color = YELLOW
-            if cell == 2:
-                color = GRAY
-            elif cell == 1:
-                color = BLUE
-            elif cell == 3:
-                color = ORANGE
-            pygame.draw.rect(screen, color, [x*CSIZE+2, y*CSIZE+2, CSIZE-2, CSIZE-2])
-            
-            # Render the pawn
-            if matrix[y][x] > 0:
-                colors = [BLACK, WHITE, RED]
-                pygame.draw.circle(screen, colors[matrix[y][x]-1], (x*CSIZE+int(CSIZE/2), y* CSIZE + int(CSIZE/2)), 20)
-        text = fnt.render(str(y+1), True, WHITE)
-        screen.blit(text, (9*CSIZE + 10, y*CSIZE+10))
-
-    for col in range(9):
-        text = fnt.render(str(chr(ord('a')+col)).upper(), True, WHITE)
-        screen.blit(text, (col * CSIZE + 15, 9*CSIZE+5))
-
-    # --- Go ahead and update the screen with what we've drawn.
-    pygame.display.flip()
-
-    # --- Limit to 60 frames per second
-    clock.tick(60)
-
-#Once we have exited the main program loop we can stop the game engine:
-pygame.quit()
+win = EditorWindow()
+win.connect("destroy", Gtk.main_quit)
+win.show_all()
+Gtk.main()

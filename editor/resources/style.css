@@ -1,0 +1,40 @@
+grid {
+    padding: 15px 15px 0 15px;
+    background: transparent;
+}
+
+.board-label {
+    font-size: 23px;
+}
+
+.board-btn {
+    padding: 0px;
+}
+
+.citadel-btn {
+    background: #666461;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #000000;
+}
+
+.empty-btn {
+    background: #ffe755;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #000000;
+}
+
+.winpoint-btn {
+    background: #0a85ff;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #000000;
+}
+
+.throne-btn {
+    background: #ff4500;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #000000;
+}
