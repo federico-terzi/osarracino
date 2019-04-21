@@ -37,11 +37,12 @@ int main(int argc, char **argv) {
             connector.send_string(move);
         }
 
-        b.load_board(connector.receive_string());
-        std::cout << b << std::endl;
+        Board b2;
+        b2.load_board(connector.receive_string());
+        std::cout << b2 << std::endl;
 
         if (player_color == "black") {
-            std::string move {Minimax::best_move(b)};
+            std::string move {Minimax::best_move(b2)};
             std::cout << move << std::endl;
             connector.send_string(move);
         }
