@@ -1,6 +1,14 @@
 grid {
-    padding: 15px 15px 0 15px;
+    padding: 15px 5px 0 15px;
     background: transparent;
+}
+
+frame {
+    padding: 0px 15px 0 15px;
+}
+
+statusbar {
+    padding: 0;
 }
 
 .board-label {

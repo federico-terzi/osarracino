@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Tablut Board Editor
+Comment=A simple application to edito Tablut Board Files
+Exec=python3 /home/freddy/projects/osarracino/editor/editor.py %f
+MimeType=text/tablutboard;
+Terminal=false
