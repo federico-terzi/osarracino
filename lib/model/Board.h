@@ -45,6 +45,7 @@ public:
     Board();
 
     static Board from_board(Board b, const Position &from, const Position &to);
+    static Board from_path(const std::string &path);
 
     /*ATTRIBUTES*/
 

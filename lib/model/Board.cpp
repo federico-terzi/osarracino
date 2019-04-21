@@ -8,7 +8,9 @@
 #include <iostream>
 #include <algorithm>
 #include <string>
+#include <sstream>
 #include <cctype>
+#include <fstream>
 
 // Input: Json String that represents the board
 // This method initializes all the data structures based on the json string.
@@ -137,4 +139,14 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
     // TODO: tests
 
     return std::move(b);
+}
+
+Board Board::from_path(const std::string &path) {
+    Board b;
+    std::ifstream t(path);
+    std::stringstream buffer;
+    buffer << t.rdbuf();
+    b.load_board(buffer.str());
+    t.close();
+    return b;
 }
