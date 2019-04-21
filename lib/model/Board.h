@@ -27,6 +27,7 @@ enum Pawn {
     FullThrone = EmptyThrone | King,
     ClearPawn = ~(White | Black | King),
     SelectPawn = (White | Black | King),
+    KingOrWhite = (White | King),
     WinCondition = King | WinPoint
 };
 
@@ -45,6 +46,7 @@ public:
     Board();
 
     static Board from_board(Board b, const Position &from, const Position &to);
+    static Board from_json(const std::string &json);
     static Board from_path(const std::string &path);
 
     /*ATTRIBUTES*/
@@ -80,6 +82,10 @@ public:
         s << "  A   B   C   D   E   F   G   H   I" << std::endl;
         return s;
     }
+
+    bool operator==(const Board &rhs) const;
+
+    bool operator!=(const Board &rhs) const;
 
 };
 

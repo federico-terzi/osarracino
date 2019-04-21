@@ -63,7 +63,7 @@ std::unordered_map<Position, std::vector<Position>, pos_hash> ThetaMoveGenerator
         moves_map[pawn] = positions;
     }
 
-    return std::move(moves_map);
+    return moves_map;
 }
 
 ThetaMoveGenerator::ThetaMoveGenerator() {
