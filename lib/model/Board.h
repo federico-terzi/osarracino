@@ -39,6 +39,30 @@ inline Pawn& operator|= (Pawn& a, Pawn b) { return (Pawn&)((int&)a |= (int)b); }
 inline Pawn& operator&= (Pawn& a, Pawn b) { return (Pawn&)((int&)a &= (int)b); }
 inline Pawn& operator^= (Pawn& a, Pawn b) { return (Pawn&)((int&)a ^= (int)b); }
 
+const bool winpoints[9][9] = {
+        {0, 1, 1, 0, 0, 0, 1, 1, 0},
+        {1, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 1},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {1, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 1},
+        {0, 1, 1, 0, 0, 0, 1, 1, 0},
+};
+
+const bool adiacent_throne[9][9] = {
+        {0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 1, 0, 0, 0, 0},
+        {0, 0, 0, 1, 0, 1, 0, 0, 0},
+        {0, 0, 0, 0, 1, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0},
+};
+
 class Board {
 public:
     /*CONSTRUCTORS*/
@@ -58,6 +82,17 @@ public:
     Position king_pos;
     Position last_move;
 
+    /**
+     * Check if the current board is a winning board for the black pawns
+     * @return true if winning for blacks, false otherwise.
+     */
+    bool is_black_win() const;
+
+    /**
+     * Check if the current board is a winning board for the white panws.
+     * @return true if winning for whites, false otherwise.
+     */
+    bool is_white_win() const;
 
     void load_board(const std::string &json_board);
 

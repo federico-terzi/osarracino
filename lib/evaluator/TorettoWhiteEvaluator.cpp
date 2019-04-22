@@ -5,18 +5,6 @@
 #include <util/BitUtils.h>
 #include "TorettoWhiteEvaluator.h"
 
-const bool winpoints[9][9] = {
-        {0, 1, 1, 0, 0, 0, 1, 1, 0},
-        {1, 0, 0, 0, 0, 0, 0, 0, 1},
-        {1, 0, 0, 0, 0, 0, 0, 0, 1},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {1, 0, 0, 0, 0, 0, 0, 0, 1},
-        {1, 0, 0, 0, 0, 0, 0, 0, 1},
-        {0, 1, 1, 0, 0, 0, 1, 1, 0},
-};
-
 // Bonus or penality for the given king position
 const int position_weight[9][9] = {
         {   0, 1000, 1000,   0,    0,   0, 1000, 1000,    0},
@@ -31,6 +19,14 @@ const int position_weight[9][9] = {
 };
 
 int TorettoWhiteEvaluator::evaluate(const Board &b) const {
+    // Check if the board is a winning board
+    if (b.is_white_win()) {
+        return WHITE_EVALUATOR_SEARCH_WIN_MULTIPLIER;
+    }else if (b.is_black_win()) {
+        return WHITE_EVALUATOR_SEARCH_LOSE_MULTIPLIER;
+    }
+
+
     // Convert the board matrix to an array of columns and rows
     uint16_t cols[9] = {56, 16, 0, 257, 403, 257, 0, 16, 56};
     uint16_t rows[9] = {56, 16, 0, 257, 403, 257, 0, 16, 56};
@@ -84,11 +80,6 @@ int TorettoWhiteEvaluator::evaluate(const Board &b) const {
     // Consider the position weight
     score += position_weight[b.king_pos.col][b.king_pos.row];
 
-    // Check if king is in a loosing position
-    if (!b.is_white) {
-        score += check_lose_situation(b);
-    }
-
     return score;
 }
 
@@ -97,12 +88,6 @@ TorettoWhiteEvaluator::perform_search(const uint16_t *cols, const uint16_t *rows
                                       bool horizontal) const {
     if (depth == 0) {
         return 0;  // TODO: return a value based on the distance from the nearest win point
-    }
-
-    // TODO: optimize
-    // TODO: test
-    if (winpoints[king_col][king_row]) {
-        return WHITE_EVALUATOR_SEARCH_WIN_MULTIPLIER;
     }
 
     int high_score = 0;
@@ -156,41 +141,4 @@ int TorettoWhiteEvaluator::calculate_surrounded_penality(const uint16_t *cols, c
 
     return horizontal_surroundings * WHITE_EVALUATOR_BLACK_SURROUNDED_MULTIPLIER +
            vertical_surroundings * WHITE_EVALUATOR_BLACK_SURROUNDED_MULTIPLIER;
-}
-
-int TorettoWhiteEvaluator::check_lose_situation(const Board &b) const {
-    // TODO: tests
-
-    // Left eat
-    if (b.last_move.col > 1) {
-        if ((b.board[b.last_move.col-1][b.last_move.row] & King) != 0 &&
-            (b.board[b.last_move.col-2][b.last_move.row] & (Black | EmptyCitadel | EmptyThrone)) != 0) {
-            return WHITE_EVALUATOR_SEARCH_LOSE_MULTIPLIER;
-        }
-    }
-    // Right eat
-    if (b.last_move.col < 7) {
-        if ((b.board[b.last_move.col+1][b.last_move.row] & King) != 0 &&
-            (b.board[b.last_move.col+2][b.last_move.row] & (Black | EmptyCitadel | EmptyThrone)) != 0) {
-            return WHITE_EVALUATOR_SEARCH_LOSE_MULTIPLIER;
-        }
-    }
-    // Up eat
-    if (b.last_move.row > 1) {
-        if ((b.board[b.last_move.col][b.last_move.row-1] & King) != 0 &&
-            (b.board[b.last_move.col][b.last_move.row-2] & (Black | EmptyCitadel | EmptyThrone)) != 0) {
-            return WHITE_EVALUATOR_SEARCH_LOSE_MULTIPLIER;
-        }
-    }
-    // Down eat
-    if (b.last_move.row < 7) {
-        if ((b.board[b.last_move.col][b.last_move.row+1] & King) != 0 &&
-            (b.board[b.last_move.col][b.last_move.row+2] & (Black | EmptyCitadel | EmptyThrone)) != 0) {
-            return WHITE_EVALUATOR_SEARCH_LOSE_MULTIPLIER;
-        }
-    }
-
-    // TODO: special case of in throne or adiacent of throne
-
-    return 0;
 }

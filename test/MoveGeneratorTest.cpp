@@ -129,3 +129,57 @@ TYPED_TEST(MoveGeneratorTest, Test_King_can_move_5) {
 
     EXPECT_EQ(result[king].size(), 0);
 }
+
+TYPED_TEST(MoveGeneratorTest, Test_black_can_exit_citadel) {
+    using MoveGeneratorType  = typename TestFixture::MoveGeneratorType ;
+    auto b {Board::from_path("boards/test_black_can_exit_citadel.tbbf")};
+    MoveGeneratorType generator;
+    auto result = generator.generate(b);
+    Position test = Position {0, 3};
+
+    EXPECT_EQ(result[test].size(), 10);
+}
+
+TYPED_TEST(MoveGeneratorTest, Test_central_black_cant_exit_citadel) {
+    // It can exit because it is surrounded by other pawns
+    using MoveGeneratorType  = typename TestFixture::MoveGeneratorType ;
+    auto b {Board::from_path("boards/test_central_black_cant_exit_citadel.tbbf")};
+    MoveGeneratorType generator;
+    auto result = generator.generate(b);
+    Position test = Position {0, 4};
+
+    EXPECT_EQ(result[test].size(), 0);
+}
+
+TYPED_TEST(MoveGeneratorTest, Test_central_black_can_exit_citadel) {
+    // Not surrounded anymore
+    using MoveGeneratorType  = typename TestFixture::MoveGeneratorType ;
+    auto b {Board::from_path("boards/test_central_black_can_exit_citadel.tbbf")};
+    MoveGeneratorType generator;
+    auto result = generator.generate(b);
+    Position test = Position {0, 4};
+
+    EXPECT_EQ(result[test].size(), 11);
+}
+
+TYPED_TEST(MoveGeneratorTest, Test_black_can_move_in_citadel) {
+    // Not surrounded anymore
+    using MoveGeneratorType  = typename TestFixture::MoveGeneratorType ;
+    auto b {Board::from_path("boards/test_black_can_move_in_citadel.tbbf")};
+    MoveGeneratorType generator;
+    auto result = generator.generate(b);
+    Position test = Position {1, 4};
+
+    EXPECT_EQ(result[test].size(), 11);
+}
+
+TYPED_TEST(MoveGeneratorTest, Test_black_cant_enter_back_in_citadel) {
+    // Not surrounded anymore
+    using MoveGeneratorType  = typename TestFixture::MoveGeneratorType ;
+    auto b {Board::from_path("boards/test_black_cant_enter_back_in_citadel.tbbf")};
+    MoveGeneratorType generator;
+    auto result = generator.generate(b);
+    Position test = Position {0, 7};
+
+    EXPECT_EQ(result[test].size(), 5);
+}

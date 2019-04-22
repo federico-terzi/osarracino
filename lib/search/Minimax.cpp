@@ -18,14 +18,14 @@ const int MIN = -MAX;
 
 Position from;
 Position to;
-int moves = 0;
+int move_count = 0;
 
 template<typename WhiteEvalType, typename BlackEvalType, typename MoveGeneratorType>
 int Minimax::minimax(int depth, int max_depth, const Evaluator<WhiteEvalType> &whiteEval,
                      const Evaluator<BlackEvalType> &blackEval,
                      const MoveGenerator<MoveGeneratorType> &moveGenerator, bool maximizingPlayer, Board value,
                      int alpha, int beta, bool leading_white) {
-    moves++;
+    move_count++;
 
     // Terminating condition. i.e
     // leaf node is reached
@@ -38,12 +38,20 @@ int Minimax::minimax(int depth, int max_depth, const Evaluator<WhiteEvalType> &w
         }
     }
 
+    auto moves {moveGenerator.generate(value)};
+
+    if (moves.empty()) {
+        if (leading_white) {
+            return whiteEval.evaluate(value);
+        } else {
+            return blackEval.evaluate(value);
+        }
+    }
+
     /*Populate boards*/
 
     if (maximizingPlayer) {
         int best = MIN;
-
-        auto moves{moveGenerator.generate(value)};
 
         for (auto &pawnMoves : moves) {
             for (auto &dest : pawnMoves.second) {
@@ -70,7 +78,7 @@ int Minimax::minimax(int depth, int max_depth, const Evaluator<WhiteEvalType> &w
     } else {
         int best = MAX;
 
-        for (auto &pawnMoves : moveGenerator.generate(value)) {
+        for (auto &pawnMoves : moves) {
             for (auto &dest : pawnMoves.second) {
                 auto board{Board::from_board(value, pawnMoves.first, dest)};
 
@@ -98,7 +106,7 @@ std::string Minimax::best_move(Board &b) {
 
     const clock_t begin_time = clock();
 
-    moves = 0;
+    move_count = 0;
     // Incremental deepening
 
     int best_score = 0;
@@ -114,9 +122,9 @@ std::string Minimax::best_move(Board &b) {
     // Print statistics
 
     float elapsed = (clock() - begin_time) / float(CLOCKS_PER_SEC);
-    float speed = float(moves) / elapsed;
+    float speed = float(move_count) / elapsed;
     std::cout << "Evaluation completed. Results: " << std::endl;
-    std::cout << "Explored " << moves << " moves in " << elapsed << " seconds " << std::endl;
+    std::cout << "Explored " << move_count << " moves in " << elapsed << " seconds " << std::endl;
     std::cout << "Best score: " << best_score << std::endl;
     std::cout << "Speed: " << speed << " moves/second." << std::endl;
     std::cout << "Reached depth: " << final_depth << std::endl;

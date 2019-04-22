@@ -25,8 +25,6 @@ public:
 
     int calculate_surrounded_penality(const uint16_t *cols, const uint16_t *rows,
                                       int king_col, int king_row) const;
-
-    int check_lose_situation(const Board &b) const;
 };
 
 
