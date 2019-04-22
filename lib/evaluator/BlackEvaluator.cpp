@@ -118,7 +118,7 @@ int BlackEvaluator::pawn_differences(const Board &b) const {
                 }
             }
         }
-        return black - white;
+        return black - white - 1;
     };
 
     current_difference += counter(FIRST_QUARTER);
@@ -130,7 +130,9 @@ int BlackEvaluator::pawn_differences(const Board &b) const {
 }
 
 
-
+// TODO: Block the king based on the turns
+// TODO: Add coverage for the rows and columns for every quarter using the color matrix
+// TODO: Coverage based on white moves.
 
 int BlackEvaluator::evaluate(const Board &b) const {
     bool win_move = false;
