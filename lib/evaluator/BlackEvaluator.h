@@ -38,7 +38,7 @@ public:
     static const int BLANK_WG = 0;
     static const int CYAN_WG = 1;
     static const int PURPLE_WG = 1;
-    static const int EZPZ = 5000;
+    static const int EZPZ = 10000;
     static const int PREVENT_CHECKMATE = -100;
 
     int color_matrix[9][9] = {

@@ -43,9 +43,9 @@ int Minimax::minimax(int depth, int max_depth, const Evaluator<WhiteEvalType> &w
     if (maximizingPlayer) {
         int best = MIN;
 
-        auto moves{moveGenerator.generate(value)};
+        auto all_moves{moveGenerator.generate(value)};
 
-        for (auto &pawnMoves : moves) {
+        for (auto &pawnMoves : all_moves) {
             for (auto &dest : pawnMoves.second) {
                 auto board{Board::from_board(value, pawnMoves.first, dest)};
 
@@ -106,7 +106,7 @@ std::string Minimax::best_move(Board &b) {
     for (int depth = 1; depth <= 5; depth++) {
          best_score = minimax(0, depth, whiteEval, blackEval, moveGenerator, true, b, MIN, MAX, b.is_white);
          final_depth = depth;
-         if (best_score > 100000) {
+         if (best_score > 9999) {
              break;
          }
     }
