@@ -130,66 +130,6 @@ int BlackEvaluator::pawn_differences(const Board &b) const {
 }
 
 
-// TODO: Block the king based on the turns
-// TODO: Add coverage for the rows and columns for every quarter using the color matrix
-// TODO: Coverage based on white moves.
-
-int BlackEvaluator::evaluate(const Board &b) const {
-    bool win_move = false;
-
-    int block_the_king = black_block_king(b);
-
-    if (is_moved_near(b, b.king_pos)) { //Check if blacks can win can win
-        win_move = simple_win_condition(b) || near_throne_win_condition(b) || throne_win_condition(b);
-    }
-
-    if (win_move) { //We can win
-        return EZPZ;
-    } else { // We cannot win, so we have to defend, insert here all state calculation
-        return -EZPZ * get_direction_of_move_check(b).size() + block_the_king + pawn_differences(b);
-    }
-}
-
-BlackEvaluator::BlackEvaluator() {
-    near_throne[Position{5,4}] = Direction::Right;
-    near_throne[Position{3,4}] = Direction::Left;
-    near_throne[Position{4,3}] = Direction::Up;
-    near_throne[Position{4,5}] = Direction::Down;
-
-    near_checks[Direction::Right] = [](const Board &b) -> bool {
-        return (b.board[b.king_pos.col][b.king_pos.row-1] == Pawn::Black &&   //UP
-                b.board[b.king_pos.col][b.king_pos.row+1] == Pawn::Black &&   //DOWN
-                b.board[b.king_pos.col+1][b.king_pos.row] == Pawn::Black      //RIGHT
-        );
-    };
-    near_checks[Direction::Left] = [](const Board &b) -> bool {
-        return (b.board[b.king_pos.col][b.king_pos.row-1] == Pawn::Black &&   //UP
-                b.board[b.king_pos.col][b.king_pos.row+1] == Pawn::Black &&   //DOWN
-                b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::Black      //LEFT
-        );
-    };
-    near_checks[Direction::Up] = [](const Board &b) -> bool {
-        return (b.board[b.king_pos.col][b.king_pos.row-1] == Pawn::Black &&   //UP
-                b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::Black &&   //LEFT
-                b.board[b.king_pos.col+1][b.king_pos.row] == Pawn::Black      //RIGHT
-        );
-    };
-    near_checks[Direction::Down] = [](const Board &b) -> bool {
-        return (b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::Black &&   //LEFT
-                b.board[b.king_pos.col][b.king_pos.row+1] == Pawn::Black &&   //DOWN
-                b.board[b.king_pos.col+1][b.king_pos.row] == Pawn::Black      //RIGHT
-        );
-    };
-
-    is_moved_near = [](const Board &b , const Position &pos) -> bool {
-        return (b.last_move == Position{pos.col+1, pos.row} || //RIGHT
-                b.last_move == Position{pos.col-1, pos.row} || //LEFT
-                b.last_move == Position{pos.col, pos.row-1} || //UP
-                b.last_move == Position{pos.col, pos.row+1}    //DOWN
-        );
-    };
-}
-
 std::vector<Direction> BlackEvaluator::get_direction_of_move_check(const Board &b) const {
 
     //King not in place to win.
@@ -234,5 +174,76 @@ std::vector<Direction> BlackEvaluator::get_direction_of_move_check(const Board &
 
 }
 
+
+// TODO: Block the king based on the turns
+// TODO: Add coverage for the rows and columns for every quarter using the color matrix
+// TODO: Coverage based on white moves.
+
+
+BlackEvaluator::BlackEvaluator() {
+    near_throne[Position{5,4}] = Direction::Right;
+    near_throne[Position{3,4}] = Direction::Left;
+    near_throne[Position{4,3}] = Direction::Up;
+    near_throne[Position{4,5}] = Direction::Down;
+
+    near_checks[Direction::Right] = [](const Board &b) -> bool {
+        return (b.board[b.king_pos.col][b.king_pos.row-1] == Pawn::Black &&   //UP
+                b.board[b.king_pos.col][b.king_pos.row+1] == Pawn::Black &&   //DOWN
+                b.board[b.king_pos.col+1][b.king_pos.row] == Pawn::Black      //RIGHT
+        );
+    };
+    near_checks[Direction::Left] = [](const Board &b) -> bool {
+        return (b.board[b.king_pos.col][b.king_pos.row-1] == Pawn::Black &&   //UP
+                b.board[b.king_pos.col][b.king_pos.row+1] == Pawn::Black &&   //DOWN
+                b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::Black      //LEFT
+        );
+    };
+    near_checks[Direction::Up] = [](const Board &b) -> bool {
+        return (b.board[b.king_pos.col][b.king_pos.row-1] == Pawn::Black &&   //UP
+                b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::Black &&   //LEFT
+                b.board[b.king_pos.col+1][b.king_pos.row] == Pawn::Black      //RIGHT
+        );
+    };
+    near_checks[Direction::Down] = [](const Board &b) -> bool {
+        return (b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::Black &&   //LEFT
+                b.board[b.king_pos.col][b.king_pos.row+1] == Pawn::Black &&   //DOWN
+                b.board[b.king_pos.col+1][b.king_pos.row] == Pawn::Black      //RIGHT
+        );
+    };
+
+    is_moved_near = [](const Board &b , const Position &pos) -> bool {
+        return (b.last_move == Position{pos.col+1, pos.row} || //RIGHT
+                b.last_move == Position{pos.col-1, pos.row} || //LEFT
+                b.last_move == Position{pos.col, pos.row-1} || //UP
+                b.last_move == Position{pos.col, pos.row+1}    //DOWN
+        );
+    };
+}
+
+int BlackEvaluator::evaluate(const Board &b) const {
+    bool win_move = false;
+
+    int block_the_king = black_block_king(b);
+
+    if (is_moved_near(b, b.king_pos)) { //Check if blacks can win can win
+        win_move = simple_win_condition(b) || near_throne_win_condition(b) || throne_win_condition(b);
+    }
+
+    if (win_move) { //We can win
+        return EZPZ;
+    } else { // We cannot win, so we have to defend, insert here all state calculation
+        return -EZPZ * get_direction_of_move_check(b).size() + block_the_king + pawn_differences(b) +geometry_points(b);
+    }
+}
+
+int BlackEvaluator::geometry_points(const Board &b) const {
+    int result {0};
+    for (int i = 0; i < 9; i++) {
+        for (int j = 0; j < 9; j++) {
+            result += color_matrix[i][j];
+        }
+    }
+    return result;
+}
 
 
