@@ -3,8 +3,9 @@
 Create the mime type
 
 ```
-sudo cp tbbf.xml /usr/share/mime
-sudo update-mime-database /usr/share/mime
+mkdir ~/.local/share/mime/packages -p
+cp tbbf.xml ~/.local/share/mime/packages
+update-mime-database ~/.local/share/mime
 ```
 
 Copy the desktop entry
@@ -31,3 +32,5 @@ To:
 ```
 Exec=python3 <PATH_TO_THE_PROJECT>/osarracino/editor/editor.py %f
 ```
+
+Then click on a `tbbf` file and select "Tablut Board Editor" as the default choice.
