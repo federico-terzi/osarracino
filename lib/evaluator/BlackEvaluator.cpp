@@ -232,7 +232,12 @@ int BlackEvaluator::evaluate(const Board &b) const {
     if (win_move) { //We can win
         return EZPZ;
     } else { // We cannot win, so we have to defend, insert here all state calculation
-        return -EZPZ * get_direction_of_move_check(b).size() + block_the_king + pawn_differences(b) +geometry_points(b);
+        return -EZPZ * get_direction_of_move_check(b).size()
+        + block_the_king
+        + pawn_differences(b)
+        + geometry_points(b)
+        + get_empty_row(b) * PREVENT_CHECKMATE
+        + get_empty_col(b) * PREVENT_CHECKMATE;
     }
 }
 
@@ -240,10 +245,41 @@ int BlackEvaluator::geometry_points(const Board &b) const {
     int result {0};
     for (int i = 0; i < 9; i++) {
         for (int j = 0; j < 9; j++) {
-            result += color_matrix[i][j];
+            if (b.board[i][j] == Pawn::Black) {
+                result += color_matrix[i][j];
+            }
         }
     }
     return result;
 }
+
+
+// Da considerare colonna 2 colonna 6
+// Da considerare riga 2 riga 6
+
+int BlackEvaluator::get_empty_row(const Board &b) const {
+    bool isEmpty2 = true;
+    bool isEmpty6 = true;
+    for (int i = 0; i < 9 && isEmpty2; i++) {
+        isEmpty2 = isEmpty2 && b.board[2][i] == Pawn::Empty;
+    }
+    for (int i = 0; i < 9 && isEmpty6; i++) {
+        isEmpty6 = isEmpty6 && b.board[6][i] == Pawn::Empty;
+    }
+    return isEmpty2 || isEmpty6 ? 1: 0;
+}
+
+int BlackEvaluator::get_empty_col(const Board &b) const {
+    bool isEmpty2 = true;
+    bool isEmpty6 = true;
+    for (int i = 0; i < 9 && isEmpty2; i++) {
+        isEmpty2 = isEmpty2 && b.board[i][2] == Pawn::Empty;
+    }
+    for (int i = 0; i < 9 && isEmpty6; i++) {
+        isEmpty6 = isEmpty6 && b.board[i][6] == Pawn::Empty;
+    }
+    return isEmpty2 || isEmpty6 ? 1 : 0;
+}
+
 
 

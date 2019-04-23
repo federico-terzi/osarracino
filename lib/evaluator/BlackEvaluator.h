@@ -28,6 +28,8 @@ public:
     bool simple_win_condition(const Board &b) const;
     bool throne_win_condition(const Board &b) const;
     int geometry_points(const Board &b) const;
+    int get_empty_row(const Board &b) const;
+    int get_empty_col(const Board &b) const;
     bool near_throne_win_condition(const Board &b) const;
     bool is_king_in_throne(const Board &b) const;
     Direction is_king_near_throne(const Board &b) const;
@@ -37,6 +39,7 @@ public:
     static const int CYAN_WG = 1;
     static const int PURPLE_WG = 1;
     static const int EZPZ = 5000;
+    static const int PREVENT_CHECKMATE = -100;
 
     int color_matrix[9][9] = {
             {BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG},
