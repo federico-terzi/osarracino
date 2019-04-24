@@ -27,14 +27,11 @@ Direction BlackEvaluator::is_king_near_throne(const Board &b) const {
 }
 
 bool BlackEvaluator::throne_win_condition(const Board &b) const {
-    if (is_king_in_throne(b)) {
         return b.board[b.king_pos.row][b.king_pos.col+1] == Pawn::Black &&      //RIGHT
                b.board[b.king_pos.row][b.king_pos.col-1] == Pawn::Black &&      //LEFT
                b.board[b.king_pos.row-1][b.king_pos.col] == Pawn::Black &&      //UP
                b.board[b.king_pos.row+1][b.king_pos.col] == Pawn::Black;        //DOWN
 
-    }
-    return false;
 }
 
 bool BlackEvaluator::near_throne_win_condition(const Board &b) const {
@@ -226,7 +223,13 @@ int BlackEvaluator::evaluate(const Board &b) const {
     int block_the_king = black_block_king(b);
 
     if (is_moved_near(b, b.king_pos)) { //Check if blacks can win can win
-        win_move = simple_win_condition(b) || near_throne_win_condition(b) || throne_win_condition(b);
+        if (is_king_in_throne(b)) {
+            win_move = throne_win_condition(b);
+        } else if (is_king_near_throne(b)) {
+            win_move = near_throne_win_condition(b);
+        } else {
+            win_move = simple_win_condition(b);
+        }
     }
 
     if (win_move) { //We can win

@@ -106,7 +106,7 @@ std::string Minimax::best_move(Board &b) {
     for (int depth = 1; depth <= 5; depth++) {
          best_score = minimax(0, depth, whiteEval, blackEval, moveGenerator, true, b, MIN, MAX, b.is_white);
          final_depth = depth;
-         if (best_score > 9999) {
+         if (best_score > 10000) {
              break;
          }
     }

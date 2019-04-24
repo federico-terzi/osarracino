@@ -159,6 +159,6 @@ TEST_F(BlackEvaluatorTest, Test_WinCondition) {
     b.last_move = {3,3};
     BlackEvaluator eval;
     auto result = eval.evaluate(b);
-    EXPECT_EQ(result, 10000);
+    EXPECT_EQ(result, 20000);
 }
 
