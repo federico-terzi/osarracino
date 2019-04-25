@@ -5,6 +5,7 @@
 #ifndef OSARRACINO_MINIMAX_H
 #define OSARRACINO_MINIMAX_H
 
+#include <model/DTranspositionTable.h>
 #include "evaluator/Evaluator.h"
 #include "model/Board.h"
 #include "movegenerator/MoveGenerator.h"
@@ -16,7 +17,7 @@ public:
     static int minimax(int depth, int max_depth, const Evaluator<WhiteEvalType> &whiteEval,
                        const Evaluator<BlackEvalType> &blackEval,
                        const MoveGenerator<MoveGeneratorType> &moveGenerator, bool maximizingPlayer, Board value,
-                       int alpha, int beta, bool leading_white);
+                       int alpha, int beta, bool leading_white, DTranspositionTable &table);
 
     static std::string best_move(Board &b);
 };

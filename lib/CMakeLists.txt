@@ -13,7 +13,7 @@ add_library(libosarracino STATIC
         evaluator/BlackEvaluator.cpp evaluator/BlackEvaluator.h
         movegenerator/MoveGenerator.h
         movegenerator/ThetaMoveGenerator.cpp movegenerator/ThetaMoveGenerator.h
-        util/BitUtils.h util/BoardUtils.cpp util/BoardUtils.h movegenerator/ArnoldMoveGenerator.cpp movegenerator/ArnoldMoveGenerator.h model/ZobristHash.cpp model/ZobristHash.h)
+        util/BitUtils.h util/BoardUtils.cpp util/BoardUtils.h movegenerator/ArnoldMoveGenerator.cpp movegenerator/ArnoldMoveGenerator.h model/ZobristHash.cpp model/ZobristHash.h model/DTranspositionTable.cpp model/DTranspositionTable.h)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")

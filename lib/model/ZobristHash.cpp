@@ -12,6 +12,7 @@ ZobristHash::ZobristHash() {
 
     std::default_random_engine generator;
 
+    /*Generating the seed*/
     unsigned int random_seed, random_seed_a, random_seed_b;
     std::ifstream file ("/dev/urandom", std::ios::binary);
     if (file.is_open())
@@ -31,6 +32,7 @@ ZobristHash::ZobristHash() {
     random_seed_b = time(0);
     random_seed = random_seed_a xor random_seed_b;
 
+    /*Seeding the generator*/
     generator.seed(random_seed);
 
     std::uniform_int_distribution<uint16_t> distribution(1, 65535);
