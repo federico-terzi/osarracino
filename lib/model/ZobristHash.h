@@ -17,10 +17,10 @@ public:
     const int black_pawn = 1;
     const int king = 2;
 
-    uint16_t table[81][3];
+    uint64_t table[81][3];
 
     ZobristHash();
-    uint16_t hash(const Board &b) const;
+    uint64_t hash(const Board &b) const;
 
 
 };

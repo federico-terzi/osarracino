@@ -35,7 +35,7 @@ ZobristHash::ZobristHash() {
     /*Seeding the generator*/
     generator.seed(random_seed);
 
-    std::uniform_int_distribution<uint16_t> distribution(1, 65535);
+    std::uniform_int_distribution<uint64_t> distribution(1, 9223372036854775807);
     for (int i = 0; i < 81; i++) {
         for (int j = 0; j < 3; j++) {
             table[i][j] = distribution(generator);
@@ -43,8 +43,8 @@ ZobristHash::ZobristHash() {
     }
 }
 
-uint16_t ZobristHash::hash(const Board &b) const {
-    uint16_t h = 0;
+uint64_t ZobristHash::hash(const Board &b) const {
+    uint64_t h = 0;
     for (int i = 0; i < 81; i++) {
         Position pos = {i%9, i/9};
         if (b.board[pos.col][pos.row] != Pawn::Empty &&

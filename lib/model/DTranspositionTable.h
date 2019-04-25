@@ -21,7 +21,7 @@ struct BoardEvaluation {
     int score;
     std::pair<Position, Position> best_move;
     Flag flag;
-    uint16_t zobrist_key;
+    uint64_t zobrist_key;
     int depth;
 };
 
