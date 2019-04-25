@@ -24,9 +24,10 @@ template<typename WhiteEvalType, typename BlackEvalType, typename MoveGeneratorT
 int Minimax::minimax(int depth, int max_depth, const Evaluator<WhiteEvalType> &whiteEval,
                      const Evaluator<BlackEvalType> &blackEval,
                      const MoveGenerator<MoveGeneratorType> &moveGenerator, bool maximizingPlayer, Board value,
-                     int alpha, int beta, bool leading_white) {
+                     int alpha, int beta, bool leading_white, Line &pline) {
     moves++;
 
+    Line line;
     // Terminating condition. i.e
     // leaf node is reached
     // TODO: valutate the sign of the evaluation based on the turn
@@ -50,11 +51,17 @@ int Minimax::minimax(int depth, int max_depth, const Evaluator<WhiteEvalType> &w
                 auto board{Board::from_board(value, pawnMoves.first, dest)};
 
                 int val = minimax(depth + 1, max_depth, whiteEval, blackEval, moveGenerator,
-                                  false, board, alpha, beta, leading_white);
+                                  false, board, alpha, beta, leading_white, line);
 
                 best = std::max(best, val);
-                alpha = std::max(alpha, best);
-
+                alpha = std::max(best, alpha);
+                if (val == best) {
+                    pline.counter = 0;
+                    pline.move[pline.counter++] = {pawnMoves.first, dest};
+                    for (int i = 0; i < line.counter; i++) {
+                        pline.move[pline.counter++] = line.move[i];
+                    }
+                }
                 if (depth == 0 && best == val) {
                     from = pawnMoves.first;
                     to = dest;
@@ -75,11 +82,17 @@ int Minimax::minimax(int depth, int max_depth, const Evaluator<WhiteEvalType> &w
                 auto board{Board::from_board(value, pawnMoves.first, dest)};
 
                 int val = minimax(depth + 1, max_depth, whiteEval, blackEval, moveGenerator,
-                                  true, board, alpha, beta, leading_white);
+                                  true, board, alpha, beta, leading_white, line);
 
                 best = std::min(best, val);
                 beta = std::min(beta, best);
-
+                if (val == best) {
+                    pline.counter = 0;
+                    pline.move[pline.counter++] = {pawnMoves.first, dest};
+                    for (int i = 0; i < line.counter; i++) {
+                        pline.move[pline.counter++] = line.move[i];
+                    }
+                }
                 // Alpha Beta Pruning
                 if (beta <= alpha)
                     break;
@@ -101,14 +114,20 @@ std::string Minimax::best_move(Board &b) {
     moves = 0;
     // Incremental deepening
 
+
     int best_score = 0;
     int final_depth = 0;
     for (int depth = 1; depth <= 5; depth++) {
-         best_score = minimax(0, depth, whiteEval, blackEval, moveGenerator, true, b, MIN, MAX, b.is_white);
-         final_depth = depth;
-         if (best_score > 100000) {
-             break;
-         }
+        Line main_line;
+        best_score = minimax(0, depth, whiteEval, blackEval, moveGenerator, true, b, MIN, MAX, b.is_white, main_line);
+        final_depth = depth;
+        std::cout << "Iteration:" << depth << std::endl;
+        for (int i = 0; i < main_line.counter; i++) {
+            std::cout << "From:" << main_line.move[i].first << " To:" << main_line.move[i].second << std::endl;
+        }
+        if (best_score > 100000) {
+            break;
+        }
     }
 
     // Print statistics
@@ -120,6 +139,7 @@ std::string Minimax::best_move(Board &b) {
     std::cout << "Best score: " << best_score << std::endl;
     std::cout << "Speed: " << speed << " moves/second." << std::endl;
     std::cout << "Reached depth: " << final_depth << std::endl;
+
 
     std::string color = b.is_white ? "WHITE" : "BLACK";
 

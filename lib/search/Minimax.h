@@ -8,6 +8,12 @@
 #include "evaluator/Evaluator.h"
 #include "model/Board.h"
 #include "movegenerator/MoveGenerator.h"
+#include <vector>
+
+struct Line {
+   std::array<std::pair<Position, Position>, 10> move;
+   int counter = 0;
+};
 
 
 class Minimax {
@@ -16,7 +22,7 @@ public:
     static int minimax(int depth, int max_depth, const Evaluator<WhiteEvalType> &whiteEval,
                        const Evaluator<BlackEvalType> &blackEval,
                        const MoveGenerator<MoveGeneratorType> &moveGenerator, bool maximizingPlayer, Board value,
-                       int alpha, int beta, bool leading_white);
+                       int alpha, int beta, bool leading_white, Line &pline);
 
     static std::string best_move(Board &b);
 };
