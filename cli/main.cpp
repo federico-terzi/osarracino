@@ -5,6 +5,7 @@
 #include <map>
 #include <locale>
 #include <search/Minimax.h>
+#include <search/RamboSearchEngine.h>
 
 const int PLAYER_COLOR = 1;
 
@@ -24,6 +25,8 @@ int main(int argc, char **argv) {
     Connector connector{ports[player_color]};
     connector.send_name("Pippo");
 
+    RamboSearchEngine searchEngine;
+
     bool end_game = true;
     while (end_game) {
         Board b;
@@ -32,7 +35,8 @@ int main(int argc, char **argv) {
 
         // TODO: change
         if (player_color == "white") {
-            std::string move {Minimax::best_move(b)};
+            //std::string move {Minimax::best_move(b)};
+            std::string move {searchEngine.make_decision(b)};
             std::cout << move << std::endl;
             connector.send_string(move);
         }
@@ -42,7 +46,8 @@ int main(int argc, char **argv) {
         std::cout << b2 << std::endl;
 
         if (player_color == "black") {
-            std::string move {Minimax::best_move(b2)};
+            //std::string move {Minimax::best_move(b2)};
+            std::string move {searchEngine.make_decision(b2)};
             std::cout << move << std::endl;
             connector.send_string(move);
         }
