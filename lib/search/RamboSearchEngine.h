@@ -142,19 +142,19 @@ public:
             future_states.push_back({move, board, score});
         }
 
-        std::sort(future_states.begin(), future_states.end(), [](const auto &s1, const auto &s2) {
-            return s1.score > s2.score;
-        });
-
         int current_depth_limit = 0;
         bool force_exit = false;
         do {
-            std::cout << "Searching depth: " << current_depth_limit << std::endl;
+            std::cout << "Searching depth: " << current_depth_limit << ". Explored " << move_count << " moves in "
+                      << timer.elapsed() << " s" << std::endl;
 
-            // TODO: ordering
+            // Reorder the moves based on the score
+            std::sort(future_states.begin(), future_states.end(), [](const auto &s1, const auto &s2) {
+                return s1.score > s2.score;
+            });
 
-            for (const auto &state: future_states) {
-                int value = ordered_minimax(current_depth_limit, eval, move_generator, false, state.board,
+            for (auto &state: future_states) {
+                int value = minimax(current_depth_limit, eval, move_generator, false, state.board,
                                     std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 
                 if (value > best_score) {
@@ -162,7 +162,8 @@ public:
                     best_score = value;
                 }
 
-                std::cout << value << " " << state.move << std::endl;
+                // Update future score based on the minmax search
+                state.score = value;
 
                 if (value > 100000) {
                     std::cout << "Stopping evaluation with winning move: " << state.move << " at depth: "
@@ -173,7 +174,7 @@ public:
             }
 
             current_depth_limit++;
-        } while (current_depth_limit <= 4 && !force_exit && !timer.is_timed_out());
+        } while (current_depth_limit <= 8 && !force_exit && !timer.is_timed_out());
 
         if (timer.is_timed_out()) {
             std::cout << "TIMED OUT" << std::endl;
