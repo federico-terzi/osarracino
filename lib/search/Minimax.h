@@ -11,18 +11,28 @@
 #include <vector>
 
 struct Line {
-   std::array<std::pair<Position, Position>, 10> move;
-   int counter = 0;
+    std::array<std::pair<Position, Position>, 10> move;
+    int counter = 0;
 };
 
 
 class Minimax {
 public:
     template <typename WhiteEvalType, typename BlackEvalType, typename MoveGeneratorType>
-    static int minimax(int depth, int max_depth, const Evaluator<WhiteEvalType> &whiteEval,
+    static std::tuple<int, Position, Position> make_decision(int depth,
+                                                             const Evaluator<WhiteEvalType> &whiteEval,
+                                                             const Evaluator<BlackEvalType> &blackEval,
+                                                             const MoveGenerator<MoveGeneratorType> &moveGenerator,Board game_state,
+                                                             Line &pline);
+
+    template <typename WhiteEvalType, typename BlackEvalType, typename MoveGeneratorType>
+    static int minimax(int depth, int max_depth,
+                       const Evaluator<WhiteEvalType> &whiteEval,
                        const Evaluator<BlackEvalType> &blackEval,
-                       const MoveGenerator<MoveGeneratorType> &moveGenerator, bool maximizingPlayer, Board value,
-                       int alpha, int beta, bool leading_white, Line &pline);
+                       const MoveGenerator<MoveGeneratorType> &moveGenerator,
+                       bool maximizingPlayer,
+                       Board game_state, int alpha, int beta, bool leading_white,
+                       Line &pline);
 
     static std::string best_move(Board &b);
 };

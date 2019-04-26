@@ -24,9 +24,9 @@ void Board::load_board(const std::string &json_board) {
     //std::cout << root << std::endl;
     int y = 0;
     is_white = root["turn"] == "WHITE";
-    for(auto &row : root["board"]) {
+    for (auto &row : root["board"]) {
         int x = 0;
-        for(auto &column: row) {
+        for (auto &column: row) {
             if (column == "WHITE") {
                 board[x][y] |= Pawn::White;
             } else if (column == "BLACK") {
@@ -48,14 +48,14 @@ void Board::load_board(const std::string &json_board) {
 
 // This constructor initializes the board citadels, is needed because the server doesn't tell us which cells are citadels
 Board::Board() {
-    for (int x = 0; x<9; x++) {
-        for (int y = 0; y<9; y++) {
+    for (int x = 0; x < 9; x++) {
+        for (int y = 0; y < 9; y++) {
             board[x][y] = Pawn::Empty;
         }
     }
 
-    for(int i = 0; i < DIM; i++) {
-        for (int j = 0; j< DIM; j++) {
+    for (int i = 0; i < DIM; i++) {
+        for (int j = 0; j < DIM; j++) {
             board[i][j] = Pawn::Empty;
         }
     }
@@ -149,30 +149,30 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
 
     // Left eat
     if (to.col > 1) {
-        if ((b.board[to.col-1][to.row] & enemy_pawn) != 0 &&
-            (b.board[to.col-2][to.row] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
-            b.board[to.col-1][to.row] &= ClearPawn;
+        if ((b.board[to.col - 1][to.row] & enemy_pawn) != 0 &&
+            (b.board[to.col - 2][to.row] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
+            b.board[to.col - 1][to.row] &= ClearPawn;
         }
     }
     // Right eat
     if (to.col < 7) {
-        if ((b.board[to.col+1][to.row] & enemy_pawn) != 0 &&
-            (b.board[to.col+2][to.row] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
-            b.board[to.col+1][to.row] &= ClearPawn;
+        if ((b.board[to.col + 1][to.row] & enemy_pawn) != 0 &&
+            (b.board[to.col + 2][to.row] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
+            b.board[to.col + 1][to.row] &= ClearPawn;
         }
     }
     // Up eat
     if (to.row > 1) {
-        if ((b.board[to.col][to.row-1] & enemy_pawn) != 0 &&
-            (b.board[to.col][to.row-2] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
-            b.board[to.col][to.row-1] &= ClearPawn;
+        if ((b.board[to.col][to.row - 1] & enemy_pawn) != 0 &&
+            (b.board[to.col][to.row - 2] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
+            b.board[to.col][to.row - 1] &= ClearPawn;
         }
     }
     // Down eat
     if (to.row < 7) {
-        if ((b.board[to.col][to.row+1] & enemy_pawn) != 0 &&
-            (b.board[to.col][to.row+2] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
-            b.board[to.col][to.row+1] &= ClearPawn;
+        if ((b.board[to.col][to.row + 1] & enemy_pawn) != 0 &&
+            (b.board[to.col][to.row + 2] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
+            b.board[to.col][to.row + 1] &= ClearPawn;
         }
     }
 
@@ -189,8 +189,8 @@ Board Board::from_json(const std::string &json) {
 }
 
 bool board_equal(const Pawn b1[DIM][DIM], const Pawn b2[DIM][DIM]) {
-    for (int x = 0; x<9; x++) {
-        for (int y = 0; y<9; y++) {
+    for (int x = 0; x < 9; x++) {
+        for (int y = 0; y < 9; y++) {
             if (b1[x][y] != b2[x][y]) {
                 return false;
             }
@@ -219,4 +219,68 @@ Board Board::from_path(const std::string &path) {
     buffer << t.rdbuf();
     t.close();
     return Board::from_json(buffer.str());
+}
+
+bool Board::is_black_win() const {
+    // TODO: tests
+
+    // TODO: optimize
+
+    // Check if the last move is surrounding the king
+    if ((last_move.col == king_pos.col &&
+         (last_move.row == king_pos.row - 1 || last_move.row == king_pos.row + 1)
+        ) ||
+        (last_move.row == king_pos.row &&
+         (last_move.col == king_pos.col - 1 || last_move.col == king_pos.col + 1)
+        )) {
+
+        // Check the cases based on the king position
+        if (king_pos.col == 4 && king_pos.row == 4) {  // King in throne
+            return (board[4][3] & Black) != 0 &&
+                   (board[5][4] & Black) != 0 &&
+                   (board[4][5] & Black) != 0 &&
+                   (board[3][4] & Black) != 0;
+        } else if (adiacent_throne[king_pos.col][king_pos.row]) {  // King adiacent throne
+            return (board[king_pos.col + 1][king_pos.row] & (Black | EmptyThrone)) != 0 &&
+                   (board[king_pos.col - 1][king_pos.row] & (Black | EmptyThrone)) != 0 &&
+                   (board[king_pos.col][king_pos.row + 1] & (Black | EmptyThrone)) != 0 &&
+                   (board[king_pos.col][king_pos.row - 1] & (Black | EmptyThrone)) != 0;
+        } else {  // Everywhere else
+            // Left eat
+            if (last_move.col > 1) {
+                if ((board[last_move.col - 1][last_move.row] & King) != 0 &&
+                    (board[last_move.col - 2][last_move.row] & (Black | EmptyCitadel | EmptyThrone)) != 0) {
+                    return true;
+                }
+            }
+            // Right eat
+            if (last_move.col < 7) {
+                if ((board[last_move.col + 1][last_move.row] & King) != 0 &&
+                    (board[last_move.col + 2][last_move.row] & (Black | EmptyCitadel | EmptyThrone)) != 0) {
+                    return true;
+                }
+            }
+            // Up eat
+            if (last_move.row > 1) {
+                if ((board[last_move.col][last_move.row - 1] & King) != 0 &&
+                    (board[last_move.col][last_move.row - 2] & (Black | EmptyCitadel | EmptyThrone)) != 0) {
+                    return true;
+                }
+            }
+            // Down eat
+            if (last_move.row < 7) {
+                if ((board[last_move.col][last_move.row + 1] & King) != 0 &&
+                    (board[last_move.col][last_move.row + 2] & (Black | EmptyCitadel | EmptyThrone)) != 0) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+bool Board::is_white_win() const{
+    // Check if the king is in a win point
+    return board_winpoints[king_pos.col][king_pos.row];
 }
