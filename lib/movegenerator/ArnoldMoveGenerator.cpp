@@ -3,9 +3,10 @@
 //
 
 #include <util/BitUtils.h>
+#include <utility>
 #include "ArnoldMoveGenerator.h"
 
-std::unordered_map<Position, std::vector<Position>, pos_hash> ArnoldMoveGenerator::generate(const Board &b) const {
+std::vector<std::pair<Position,Position>> ArnoldMoveGenerator::generate(const Board &b) const {
     // Convert the board matrix to an array of columns and rows
     uint16_t cols[9] = {56, 16, 0, 257, 403, 257, 0, 16, 56};
     uint16_t rows[9] = {56, 16, 0, 257, 403, 257, 0, 16, 56};
@@ -36,33 +37,30 @@ std::unordered_map<Position, std::vector<Position>, pos_hash> ArnoldMoveGenerato
         }
     }
 
-    std::unordered_map<Position, std::vector<Position>, pos_hash> moves_map;
+    std::vector<std::pair<Position,Position>> current_moves;
 
     for (auto &pawn : to_be_moved) {
-        std::vector<Position> current_moves;
 
         int horizontal_high_moves = BitUtils::get_high_moves(rows[pawn.row], pawn.col);
         for (int i = (pawn.col+1); i <= (pawn.col + horizontal_high_moves); i++) {
-            current_moves.push_back(Position{i, pawn.row});
+            current_moves.emplace_back(pawn, Position{i, pawn.row});
         }
 
         int horizontal_low_moves = BitUtils::get_low_moves(rows[pawn.row], pawn.col);
         for (int i = (pawn.col-1); i >= (pawn.col- horizontal_low_moves); i--) {
-            current_moves.push_back(Position{i, pawn.row});
+            current_moves.emplace_back(pawn ,Position{i, pawn.row});
         }
 
         int vertical_high_moves = BitUtils::get_high_moves(cols[pawn.col], pawn.row);
         for (int i = (pawn.row+1); i <= (pawn.row + vertical_high_moves); i++) {
-            current_moves.push_back(Position{pawn.col, i});
+            current_moves.emplace_back(pawn, Position{pawn.col, i});
         }
 
         int vertical_low_moves = BitUtils::get_low_moves(cols[pawn.col], pawn.row);
         for (int i = (pawn.row-1); i >= (pawn.row - vertical_low_moves); i--) {
-            current_moves.push_back(Position{pawn.col, i});
+            current_moves.emplace_back(pawn, Position{pawn.col, i});
         }
-
-        moves_map[pawn] = std::move(current_moves);
     }
 
-    return moves_map;
+    return current_moves;
 }

@@ -7,13 +7,12 @@
 
 #include "model/Position.h"
 #include "model/Board.h"
-#include <unordered_map>
 #include <vector>
 
 template <typename T>
 class MoveGenerator {
 public:
-    std::unordered_map<Position, std::vector<Position>, pos_hash> generate(const Board &b) const {
+    std::vector<std::pair<Position,Position>> generate(const Board &b) const {
         return static_cast<T const&>(*this).generate(b);
     }
 };
