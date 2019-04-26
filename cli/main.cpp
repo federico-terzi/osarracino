@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include "model/Board.h"
 #include "network/Connector.h"
+#include "GameManager.h"
 #include <map>
 #include <locale>
 #include <search/Minimax.h>
@@ -22,8 +23,23 @@ int main(int argc, char **argv) {
 
     std::cout << "Starting as " << player_color << std::endl;
 
+    std::cout << " ┌─┐ ┌─┐ ┌─┐ ┬─┐ ┬─┐ ┌─┐ ┌─┐ ┬ ┌┐┌ ┌─┐ " << std::endl;
+    std::cout << " │ │ └─┐ ├─┤ ├┬┘ ├┬┘ ├─┤ │   │ │││ │ │ " << std::endl;
+    std::cout << " └─┘ └─┘ ┴ ┴ ┴└─ ┴└─ ┴ ┴ └─┘ ┴ ┘└┘ └─┘ " << std::endl;
+    std::cout << "    ♫ ♪ ( BEEELLUU FUNTOOREEEE ) ♫ ♪   " << std::endl << std::endl;
+
+    std::cout << "Connecting to server... " << std::flush;
+
     Connector connector{ports[player_color]};
-    connector.send_name("Pippo");
+    std::cout << "Connected!" << std::endl;
+
+    std::cout << "Sending player name... " << std::flush;
+
+    connector.send_name("osarracino");
+    std::cout << "Done!" << std::endl;
+
+    GameManager game_manager(connector);
+    game_manager.game_loop();
 
     RamboSearchEngine searchEngine;
 
