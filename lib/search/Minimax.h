@@ -15,8 +15,8 @@ public:
     template <typename WhiteEvalType, typename BlackEvalType, typename MoveGeneratorType>
     static int minimax(int depth, int max_depth, const Evaluator<WhiteEvalType> &whiteEval,
                        const Evaluator<BlackEvalType> &blackEval,
-                       const MoveGenerator<MoveGeneratorType> &moveGenerator, bool maximizingPlayer, Board value,
-                       int alpha, int beta, bool leading_white);
+                       const MoveGenerator<MoveGeneratorType> &moveGenerator, bool maximizingPlayer, const Board& value,
+                       int alpha, int beta, bool leading_white, int shallow_score);
 
     static std::string best_move(Board &b);
 };

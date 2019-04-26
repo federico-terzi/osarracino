@@ -9,11 +9,11 @@
 const int position_weight[9][9] = {
         {   0, 1000, 1000,   0,    0,   0, 1000, 1000,    0},
         {1000,  100,  200, 100,    0, 100,  200,  100, 1000},
-        {1000,  200,  200,  50,   50,  50,  200,  200, 1000},
-        {   0,  100,   50,   0,    0,   0,   50,  100,    0},
-        {   0,    0,   50,   0,-9000,   0,   50,    0,    0},
-        {   0,  100,   50,   0,    0,   0,   50,  100,    0},
-        {1000,  200,  200,  50,   50,  50,  200,  200, 1000},
+        {1000,  200,  200, 200,  200, 200,  200,  200, 1000},
+        {   0,  100,  200,   0,    0,   0,  200,  100,    0},
+        {   0,    0,  200,   0,-9000,   0,  200,    0,    0},
+        {   0,  100,  200,   0,    0,   0,  200,  100,    0},
+        {1000,  200,  200, 200,  200, 200,  200,  200, 1000},
         {1000,  100,  200, 100,    0, 100,  200,  100, 1000},
         {   0, 1000, 1000,   0,    0,   0, 1000, 1000,    0},
 };
@@ -31,6 +31,9 @@ int TorettoWhiteEvaluator::evaluate(const Board &b) const {
     uint16_t cols[9] = {56, 16, 0, 257, 403, 257, 0, 16, 56};
     uint16_t rows[9] = {56, 16, 0, 257, 403, 257, 0, 16, 56};
 
+    uint16_t black_cols[9] = {56, 16, 0, 257, 403, 257, 0, 16, 56};
+    uint16_t black_rows[9] = {56, 16, 0, 257, 403, 257, 0, 16, 56};
+
     int white_count = 0;
     int black_count = 0;
     int free_winpoint = 0;
@@ -46,6 +49,8 @@ int TorettoWhiteEvaluator::evaluate(const Board &b) const {
                     white_count++;
                 } else {
                     black_count++;
+
+                    black_cols[x] |= 1 << y;
                 }
             } else if ((b.board[x][y] & Pawn::WinPoint) != 0) {
                 free_winpoint++;
@@ -57,6 +62,10 @@ int TorettoWhiteEvaluator::evaluate(const Board &b) const {
         for (int x = 0; x < 9; x++) {
             if ((b.board[x][y] & (Pawn::White | Pawn::Black)) != 0) {
                 rows[y] |= 1 << x;
+
+                if (b.board[x][y] & (Pawn::Black) != 0) {
+                    black_rows[y] |= 1 << x;
+                }
             }
         }
     }
@@ -75,7 +84,7 @@ int TorettoWhiteEvaluator::evaluate(const Board &b) const {
 
 
     // Consider the amount of cells that surround the king
-    score += calculate_surrounded_penality(cols, rows, b.king_pos.col, b.king_pos.row);
+    score += calculate_surrounded_penality(black_cols, black_rows, b.king_pos.col, b.king_pos.row);
 
     // Consider the position weight
     score += position_weight[b.king_pos.col][b.king_pos.row];
@@ -134,7 +143,6 @@ TorettoWhiteEvaluator::perform_search(const uint16_t *cols, const uint16_t *rows
 
 int TorettoWhiteEvaluator::calculate_surrounded_penality(const uint16_t *cols, const uint16_t *rows, int king_col,
                                                          int king_row) const {
-    // TODO: consider also white surrounding as not so bad
 
     int horizontal_surroundings = BitUtils::get_surrounded(rows[king_row], king_col);
     int vertical_surroundings = BitUtils::get_surrounded(cols[king_col], king_row);

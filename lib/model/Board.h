@@ -97,7 +97,8 @@ public:
     void load_board(const std::string &json_board);
 
     friend std::ostream& operator<<(std::ostream &s, const Board &board){
-        s << "BOARD - Turn: " << board.is_white << std::endl;
+        std::string turn = (board.is_white) ? "WHITE" : "BLACK";
+        s << "BOARD - Turn: " << turn << std::endl;
         s << "╔═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╗" << std::endl;
         for (int y = 0; y < DIM; y++) {
             for (int x = 0; x < DIM; x++) {

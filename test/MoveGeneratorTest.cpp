@@ -184,3 +184,14 @@ TYPED_TEST(MoveGeneratorTest, Test_black_cant_enter_back_in_citadel) {
 
     EXPECT_EQ(moves::all_from_position(result, test).size(), 5);
 }
+
+TYPED_TEST(MoveGeneratorTest, Test_king_can_move_6) {
+    // Not surrounded anymore
+    using MoveGeneratorType  = typename TestFixture::MoveGeneratorType ;
+    auto b {Board::from_path("boards/test_king_can_move_6.tbbf")};
+    MoveGeneratorType generator;
+    auto result = generator.generate(b);
+    Position test = Position {2, 6};
+
+    EXPECT_EQ(moves::all_from_position(result, test).size(), 6);
+}
