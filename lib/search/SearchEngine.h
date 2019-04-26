@@ -22,7 +22,7 @@ public:
         float speed = float(move_count) / elapsed;
         std::cout << "Explored " << move_count << " moves in " << elapsed << " seconds " << std::endl;
         std::cout << "Speed: " << speed << " moves/second." << std::endl;
-        std::cout << "Evaluation completed." << std::endl;
+        std::cout << "Evaluation completed. Move: " << move << std::endl;
 
         std::string color = b.is_white ? "WHITE" : "BLACK";
         return std::string(

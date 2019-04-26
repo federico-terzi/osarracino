@@ -15,7 +15,7 @@ int RamboSearchEngine::minimax(int depth, const Evaluator<EvalType> &eval,
                                const Board &board, int alpha, int beta) {
     move_count++;
 
-    if (depth == 0 || board.is_black_win() || board.is_white_win()) {
+    if (depth == 0 || timer.is_timed_out() ||board.is_black_win() || board.is_white_win()) {
         return eval.evaluate(board);
     }
 
@@ -65,8 +65,10 @@ Move RamboSearchEngine::__make_decision_internal(const Board &b) {
     // TODO: ordering
 
     int current_depth_limit = 0;
+    bool force_exit = false;
     do {
         current_depth_limit++;
+        std::cout << "Searching depth: "<<current_depth_limit << std::endl;
 
         // TODO: ordering
 
@@ -88,10 +90,18 @@ Move RamboSearchEngine::__make_decision_internal(const Board &b) {
             }
 
             if (value > 100000) {
+                std::cout << "Stopping evaluation with winning move: "<< move << " at depth: "<<current_depth_limit << std::endl;
+                force_exit = true;
                 break;
             }
         }
-    }while(current_depth_limit <= 3);
+    }while(current_depth_limit <= 3 && !force_exit && !timer.is_timed_out());
+
+    if (timer.is_timed_out()) {
+        std::cout << "TIMED OUT" << std::endl;
+    }
+    std::cout << "Best score: " << best_score << std::endl;
+    std::cout << "Reached depth: " << current_depth_limit << std::endl;
 
     return best_move;
 }

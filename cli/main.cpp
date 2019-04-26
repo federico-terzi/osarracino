@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
         if (player_color == "white") {
             //std::string move {Minimax::best_move(b)};
             std::string move {searchEngine.make_decision(b)};
-            std::cout << move << std::endl;
+            //std::cout << move << std::endl;
             connector.send_string(move);
         }
 
@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
         if (player_color == "black") {
             //std::string move {Minimax::best_move(b2)};
             std::string move {searchEngine.make_decision(b2)};
-            std::cout << move << std::endl;
+            //std::cout << move << std::endl;
             connector.send_string(move);
         }
     }
