@@ -9,7 +9,7 @@
 
 class ArnoldMoveGenerator  : public MoveGenerator<ArnoldMoveGenerator>{
 public:
-    std::unordered_map<Position, std::vector<Position>, pos_hash> generate(const Board &b) const;
+    std::vector<Move> generate(const Board &b) const;
 };
 
 

@@ -35,7 +35,7 @@ TEST_F(ToBeMovedEmptyTest, Test_White_To_citadel_bug_game) {
     Position test {6, 5};
     ASSERT_FALSE(result.second[test.row].test(test.col)); //Casella piena.
     auto moves = gen.generate(b);
-    auto needed_moves = moves[test];
+    auto needed_moves = moves::all_from_position(moves, test);
     ASSERT_EQ(needed_moves.size(), 5);
 
 }
@@ -48,7 +48,7 @@ TEST_F(ToBeMovedEmptyTest, Test_White_To_citadel_bug_game_2) {
     Position test {6, 4};
     ASSERT_FALSE(result.second[test.row].test(test.col)); //Casella piena.
     auto moves = gen.generate(b);
-    auto needed_moves = moves[test];
+    auto needed_moves = moves::all_from_position(moves, test);
     ASSERT_EQ(needed_moves.size(), 4);
 
 }

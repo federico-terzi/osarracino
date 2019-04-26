@@ -7,8 +7,6 @@
 #include <util/BitUtils.h>
 #include "ArnoldMoveGenerator.h"
 
-auto rng = std::default_random_engine{};
-
 const bool citadels[9][9] = {
         {0, 0, 0, 1, 1, 1, 0, 0, 0},
         {0, 0, 0, 0, 1, 0, 0, 0, 0},
@@ -33,14 +31,7 @@ const uint16_t citadel_masks[9] = {
         0b0000000'111000111,
 };
 
-std::unordered_map<Position, std::vector<Position>, pos_hash> ArnoldMoveGenerator::generate(const Board &b) const {
-    std::unordered_map<Position, std::vector<Position>, pos_hash> moves_map;
-
-    // If this is a winning board, don't generate new moves
-    if (b.is_black_win() || b.is_white_win()) {
-        return moves_map;
-    }
-
+std::vector<Move> ArnoldMoveGenerator::generate(const Board &b) const {
     // Convert the board matrix to an array of columns and rows
     uint16_t obstacle_cols[9] = {56, 16, 0, 257, 403, 257, 0, 16, 56};
     uint16_t obstacle_rows[9] = {56, 16, 0, 257, 403, 257, 0, 16, 56};
@@ -74,9 +65,10 @@ std::unordered_map<Position, std::vector<Position>, pos_hash> ArnoldMoveGenerato
         }
     }
 
-    for (auto &pawn : to_be_moved) {
-        std::vector<Position> current_moves;
+    std::vector<Move> current_moves;
+    current_moves.reserve(30);
 
+    for (auto &pawn : to_be_moved) {
         uint16_t target_col = cols[pawn.col] | obstacle_cols[pawn.col];
         uint16_t target_row = rows[pawn.row] | obstacle_rows[pawn.row];
 
@@ -90,29 +82,24 @@ std::unordered_map<Position, std::vector<Position>, pos_hash> ArnoldMoveGenerato
 
         int horizontal_high_moves = BitUtils::get_high_moves(target_row, pawn.col);
         for (int i = (pawn.col+1); i <= (pawn.col + horizontal_high_moves); i++) {
-            current_moves.push_back(Position{i, pawn.row});
+            current_moves.push_back({pawn, Position{i, pawn.row}});
         }
 
         int horizontal_low_moves = BitUtils::get_low_moves(target_row, pawn.col);
         for (int i = (pawn.col-1); i >= (pawn.col- horizontal_low_moves); i--) {
-            current_moves.push_back(Position{i, pawn.row});
+            current_moves.push_back({pawn, Position{i, pawn.row}});
         }
 
         int vertical_high_moves = BitUtils::get_high_moves(target_col, pawn.row);
         for (int i = (pawn.row+1); i <= (pawn.row + vertical_high_moves); i++) {
-            current_moves.push_back(Position{pawn.col, i});
+            current_moves.push_back({pawn, Position{pawn.col, i}});
         }
 
         int vertical_low_moves = BitUtils::get_low_moves(target_col, pawn.row);
         for (int i = (pawn.row-1); i >= (pawn.row - vertical_low_moves); i--) {
-            current_moves.push_back(Position{pawn.col, i});
+            current_moves.push_back({pawn, Position{pawn.col, i}});
         }
-
-        // Shuffle the moves
-        std::shuffle(std::begin(current_moves), std::end(current_moves), rng);
-
-        moves_map[pawn] = std::move(current_moves);
     }
 
-    return moves_map;
+    return current_moves;
 }

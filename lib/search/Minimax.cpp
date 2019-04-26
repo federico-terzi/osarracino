@@ -53,45 +53,41 @@ int Minimax::minimax(int depth, int max_depth, const Evaluator<WhiteEvalType> &w
     if (maximizingPlayer) {
         int best = MIN;
 
-        for (auto &pawnMoves : moves) {
-            for (auto &dest : pawnMoves.second) {
-                auto board{Board::from_board(value, pawnMoves.first, dest)};
+        for (auto &move : moves) {
+            auto board{Board::from_board(value, move.from, move.to)};
 
-                int val = minimax(depth + 1, max_depth, whiteEval, blackEval, moveGenerator,
-                                  false, board, alpha, beta, leading_white);
+            int val = minimax(depth + 1, max_depth, whiteEval, blackEval, moveGenerator,
+                              false, board, alpha, beta, leading_white);
 
-                best = std::max(best, val);
-                alpha = std::max(alpha, best);
+            best = std::max(best, val);
+            alpha = std::max(alpha, best);
 
-                if (depth == 0 && best == val) {
-                    from = pawnMoves.first;
-                    to = dest;
-                }
-
-                // Alpha Beta Pruning
-                if (beta <= alpha)
-                    break;
+            if (depth == 0 && best == val) {
+                from = move.from;
+                to = move.to;
             }
+
+            // Alpha Beta Pruning
+            if (beta <= alpha)
+                break;
         }
 
         return best;
     } else {
         int best = MAX;
 
-        for (auto &pawnMoves : moves) {
-            for (auto &dest : pawnMoves.second) {
-                auto board{Board::from_board(value, pawnMoves.first, dest)};
+        for (auto &move : moves) {
+            auto board{Board::from_board(value, move.from, move.to)};
 
-                int val = minimax(depth + 1, max_depth, whiteEval, blackEval, moveGenerator,
-                                  true, board, alpha, beta, leading_white);
+            int val = minimax(depth + 1, max_depth, whiteEval, blackEval, moveGenerator,
+                              true, board, alpha, beta, leading_white);
 
-                best = std::min(best, val);
-                beta = std::min(beta, best);
+            best = std::min(best, val);
+            beta = std::min(beta, best);
 
-                // Alpha Beta Pruning
-                if (beta <= alpha)
-                    break;
-            }
+            // Alpha Beta Pruning
+            if (beta <= alpha)
+                break;
         }
 
         return best;
@@ -111,7 +107,7 @@ std::string Minimax::best_move(Board &b) {
 
     int best_score = 0;
     int final_depth = 0;
-    for (int depth = 1; depth <= 5; depth++) {
+    for (int depth = 1; depth <= 3; depth++) {
          best_score = minimax(0, depth, whiteEval, blackEval, moveGenerator, true, b, MIN, MAX, b.is_white);
          final_depth = depth;
          if (best_score > 100000) {

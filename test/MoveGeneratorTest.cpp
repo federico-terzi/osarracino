@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 #include <model/Board.h>
 #include <movegenerator/ThetaMoveGenerator.h>
+#include <movegenerator/MoveGenerator.h>
 #include <evaluator/BlackEvaluator.h>
 #include <movegenerator/ArnoldMoveGenerator.h>
 
@@ -24,7 +25,7 @@ TYPED_TEST(MoveGeneratorTest, Test_Not_Same_Position) {
     MoveGeneratorType generator;
     auto result = generator.generate(b);
     Position test_pos = Position{4,6};
-    auto dests = result[test_pos];
+    auto dests = moves::all_from_position(result, test_pos);
     for(const Position &pos : dests) {
         EXPECT_FALSE(pos == test_pos) << pos;
     }
@@ -38,7 +39,7 @@ TYPED_TEST(MoveGeneratorTest, Test_Board_Edge) {
     MoveGeneratorType generator;
     auto result = generator.generate(b);
     Position test = {0, 2};
-    EXPECT_EQ(result[test].size(), 10);
+    EXPECT_EQ(moves::all_from_position(result, test).size(), 10);
 
 }
 
@@ -53,9 +54,9 @@ TYPED_TEST(MoveGeneratorTest, Test_Generation_Start_For_Whites) {
     Position test_6 = Position{5,4};
     Position test_king = Position{4, 4};
 
-    EXPECT_EQ(result[test_6].size(), 6);
-    EXPECT_EQ(result[test_8].size(), 8);
-    EXPECT_EQ(result[test_king].size(), 0);
+    EXPECT_EQ(moves::all_from_position(result, test_6).size(), 6);
+    EXPECT_EQ(moves::all_from_position(result, test_8).size(), 8);
+    EXPECT_EQ(moves::all_from_position(result, test_king).size(), 0);
 }
 
 TYPED_TEST(MoveGeneratorTest, Test_Black_out_Returning_in_Citadel) {
@@ -67,7 +68,7 @@ TYPED_TEST(MoveGeneratorTest, Test_Black_out_Returning_in_Citadel) {
     auto result = generator.generate(b);
     Position test = Position {8, 2};
 
-    EXPECT_EQ(result[test].size(), 0);
+    EXPECT_EQ(moves::all_from_position(result, test).size(), 0);
 }
 
 TYPED_TEST(MoveGeneratorTest, Test_King_can_move) {
@@ -79,7 +80,7 @@ TYPED_TEST(MoveGeneratorTest, Test_King_can_move) {
     auto result = generator.generate(b);
     Position king = Position {2, 2};
 
-    EXPECT_EQ(result[king].size(), 14);
+    EXPECT_EQ(moves::all_from_position(result, king).size(), 14);
 }
 
 TYPED_TEST(MoveGeneratorTest, Test_King_can_move_2) {
@@ -91,7 +92,7 @@ TYPED_TEST(MoveGeneratorTest, Test_King_can_move_2) {
     auto result = generator.generate(b);
     Position king = Position {2, 2};
 
-    EXPECT_EQ(result[king].size(), 2);
+    EXPECT_EQ(moves::all_from_position(result, king).size(), 2);
 }
 
 TYPED_TEST(MoveGeneratorTest, Test_King_can_move_3) {
@@ -103,7 +104,7 @@ TYPED_TEST(MoveGeneratorTest, Test_King_can_move_3) {
     auto result = generator.generate(b);
     Position king = Position {2, 2};
 
-    EXPECT_EQ(result[king].size(), 0);
+    EXPECT_EQ(moves::all_from_position(result, king).size(), 0);
 }
 
 TYPED_TEST(MoveGeneratorTest, Test_King_can_move_4) {
@@ -115,7 +116,7 @@ TYPED_TEST(MoveGeneratorTest, Test_King_can_move_4) {
     auto result = generator.generate(b);
     Position king = Position {2, 4};
 
-    EXPECT_EQ(result[king].size(), 4);
+    EXPECT_EQ(moves::all_from_position(result, king).size(), 4);
 }
 
 TYPED_TEST(MoveGeneratorTest, Test_King_can_move_5) {
@@ -127,7 +128,7 @@ TYPED_TEST(MoveGeneratorTest, Test_King_can_move_5) {
     auto result = generator.generate(b);
     Position king = Position {2, 4};
 
-    EXPECT_EQ(result[king].size(), 0);
+    EXPECT_EQ(moves::all_from_position(result, king).size(), 0);
 }
 
 TYPED_TEST(MoveGeneratorTest, Test_black_can_exit_citadel) {
@@ -137,7 +138,7 @@ TYPED_TEST(MoveGeneratorTest, Test_black_can_exit_citadel) {
     auto result = generator.generate(b);
     Position test = Position {0, 3};
 
-    EXPECT_EQ(result[test].size(), 10);
+    EXPECT_EQ(moves::all_from_position(result, test).size(), 10);
 }
 
 TYPED_TEST(MoveGeneratorTest, Test_central_black_cant_exit_citadel) {
@@ -148,7 +149,7 @@ TYPED_TEST(MoveGeneratorTest, Test_central_black_cant_exit_citadel) {
     auto result = generator.generate(b);
     Position test = Position {0, 4};
 
-    EXPECT_EQ(result[test].size(), 0);
+    EXPECT_EQ(moves::all_from_position(result, test).size(), 0);
 }
 
 TYPED_TEST(MoveGeneratorTest, Test_central_black_can_exit_citadel) {
@@ -159,7 +160,7 @@ TYPED_TEST(MoveGeneratorTest, Test_central_black_can_exit_citadel) {
     auto result = generator.generate(b);
     Position test = Position {0, 4};
 
-    EXPECT_EQ(result[test].size(), 11);
+    EXPECT_EQ(moves::all_from_position(result, test).size(), 11);
 }
 
 TYPED_TEST(MoveGeneratorTest, Test_black_can_move_in_citadel) {
@@ -170,7 +171,7 @@ TYPED_TEST(MoveGeneratorTest, Test_black_can_move_in_citadel) {
     auto result = generator.generate(b);
     Position test = Position {1, 4};
 
-    EXPECT_EQ(result[test].size(), 11);
+    EXPECT_EQ(moves::all_from_position(result, test).size(), 11);
 }
 
 TYPED_TEST(MoveGeneratorTest, Test_black_cant_enter_back_in_citadel) {
@@ -181,5 +182,5 @@ TYPED_TEST(MoveGeneratorTest, Test_black_cant_enter_back_in_citadel) {
     auto result = generator.generate(b);
     Position test = Position {0, 7};
 
-    EXPECT_EQ(result[test].size(), 5);
+    EXPECT_EQ(moves::all_from_position(result, test).size(), 5);
 }
