@@ -5,8 +5,12 @@
 #ifndef OSARRACINO_PLAYERPROFILE_H
 #define OSARRACINO_PLAYERPROFILE_H
 
-class PlayerProfile {
+#include <model/Board.h>
+#include <string>
 
+class PlayerProfile {
+public:
+    virtual std::string calculate_move(const Board &b) = 0;
 };
 
 #endif //OSARRACINO_PLAYERPROFILE_H

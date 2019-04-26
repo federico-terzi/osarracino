@@ -24,6 +24,12 @@ void Board::load_board(const std::string &json_board) {
     //std::cout << root << std::endl;
     int y = 0;
     is_white = root["turn"] == "WHITE";
+
+    if (root["turn"] == "BLACKWIN" || root["turn"] == "WHITEWIN") {
+        std::cout << "The match has concluded.";
+        exit(0);
+    }
+
     for (auto &row : root["board"]) {
         int x = 0;
         for (auto &column: row) {
