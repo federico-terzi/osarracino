@@ -41,6 +41,12 @@ std::vector<Move> ArnoldMoveGenerator::generate(const Board &b) const {
 
     std::vector<Position> to_be_moved;
 
+    std::vector<Move> current_moves;
+
+    if (b.is_white_win() || b.is_black_win()) {
+        return current_moves;
+    }
+
     Pawn target_pawn = b.is_white ? Pawn::KingOrWhite : Pawn::Black;
 
     // Populate the bit matrix
@@ -65,7 +71,6 @@ std::vector<Move> ArnoldMoveGenerator::generate(const Board &b) const {
         }
     }
 
-    std::vector<Move> current_moves;
     current_moves.reserve(30);
 
     for (auto &pawn : to_be_moved) {

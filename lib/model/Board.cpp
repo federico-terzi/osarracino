@@ -222,9 +222,10 @@ Board Board::from_path(const std::string &path) {
 }
 
 bool Board::is_black_win() const {
-    // TODO: tests
-
-    // TODO: optimize
+    // Make sure the last move is a black pawn
+    if ((board[last_move.col][last_move.row] & Black) == 0) {
+        return false;
+    }
 
     // Check if the last move is surrounding the king
     if ((last_move.col == king_pos.col &&

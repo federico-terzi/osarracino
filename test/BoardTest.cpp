@@ -60,3 +60,21 @@ TEST_F(BoardTest, test_board_eaten_pawn_citadel) {
     b2.last_move = {2,3};
     EXPECT_EQ(Board::from_board(b1, {8,3}, {2,3}), b2);
 }
+
+TEST_F(BoardTest, test_board_is_black_win_1) {
+    auto b1 = Board::from_path("boards/test_board_is_black_win_1.tbbf");
+    b1.last_move = {4,3};
+    EXPECT_TRUE(b1.is_black_win());
+}
+
+TEST_F(BoardTest, test_board_is_black_win_2) {
+    auto b1 = Board::from_path("boards/test_board_is_black_win_2.tbbf");
+    b1.last_move = {4,3};
+    EXPECT_TRUE(b1.is_black_win());
+}
+
+TEST_F(BoardTest, test_board_is_black_win_3) {
+    auto b1 = Board::from_path("boards/test_board_is_black_win_3.tbbf");
+    b1.last_move = {5,2};
+    EXPECT_FALSE(b1.is_black_win());
+}
