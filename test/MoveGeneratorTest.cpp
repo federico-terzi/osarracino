@@ -7,6 +7,7 @@
 #include <movegenerator/MoveGenerator.h>
 #include <evaluator/BlackEvaluator.h>
 #include <movegenerator/ArnoldMoveGenerator.h>
+#include <movegenerator/HeisenbergMoveGenerator.h>
 
 template <typename T>
 class MoveGeneratorTest : public ::testing::Test {
@@ -14,7 +15,7 @@ public:
     using MoveGeneratorType = T;
 };
 
-typedef ::testing::Types<ArnoldMoveGenerator, ThetaMoveGenerator> MoveGeneratorTypes;
+typedef ::testing::Types<ArnoldMoveGenerator, ThetaMoveGenerator, HeisenbergMoveGenerator> MoveGeneratorTypes;
 TYPED_TEST_CASE(MoveGeneratorTest, MoveGeneratorTypes);
 
 TYPED_TEST(MoveGeneratorTest, Test_Not_Same_Position) {

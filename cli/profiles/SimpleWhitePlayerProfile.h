@@ -7,6 +7,9 @@
 
 
 #include <search/RamboSearchEngine.h>
+#include <evaluator/TorettoWhiteEvaluator.h>
+#include <movegenerator/ArnoldMoveGenerator.h>
+#include <movegenerator/HeisenbergMoveGenerator.h>
 #include "PlayerProfile.h"
 
 class SimpleWhitePlayerProfile : public PlayerProfile {
@@ -15,6 +18,9 @@ public:
 
 private:
     RamboSearchEngine engine;
+    TorettoWhiteEvaluator eval;
+    //ArnoldMoveGenerator move_generator;
+    HeisenbergMoveGenerator move_generator;
 };
 
 
