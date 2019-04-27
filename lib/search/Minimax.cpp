@@ -10,6 +10,7 @@
 #include <movegenerator/ThetaMoveGenerator.h>
 #include <movegenerator/ArnoldMoveGenerator.h>
 #include <tuple>
+#include <numeric>
 
 // Returns optimal value for
 // current player(Initially called
@@ -17,10 +18,10 @@
 const int MAX = 10000000;
 const int MIN = -MAX;
 
-const int MAX_DEPTH = 4;
+const int MAX_DEPTH = 5;
 
-int depth = 0;
 int moves = 0;
+Line main_line;
 
 template<typename WhiteEvalType, typename BlackEvalType, typename MoveGeneratorType>
 int Minimax::minimax(int depth, int max_depth,
@@ -28,7 +29,7 @@ int Minimax::minimax(int depth, int max_depth,
                      const Evaluator<BlackEvalType> &blackEval,
                      const MoveGenerator<MoveGeneratorType> &moveGenerator,
                      bool maximizingPlayer,
-                     Board game_state, int alpha, int beta, bool leading_white,
+                     Board &game_state, int alpha, int beta, bool leading_white,
                      Line &pline) {
     moves++;
 
@@ -37,44 +38,89 @@ int Minimax::minimax(int depth, int max_depth,
     // oppure siamo in una board che indica la terminazione del gioco
     // allora ritorna.
     if (depth == 0 || depth >= max_depth || game_state.is_black_win() || game_state.is_white_win()) {
+        pline.counter = 0;
         return leading_white ? whiteEval.evaluate(game_state) : blackEval.evaluate(game_state);
     }
+    Line line;
 
     int evaluation;
+
     if (maximizingPlayer) { // Stiamo massimizzando
 
         //Generiamo tutte le mosse possibili
         auto all_possible_moves = moveGenerator.generate(game_state);
-
         //Evaluation = - infinito
         evaluation = -MAX;
-        for (auto const &move : all_possible_moves) {
+
+        if (main_line.counter > depth) {
+            auto it = std::find(all_possible_moves.begin(), all_possible_moves.end(), main_line.move[depth]);
+            if (it != all_possible_moves.end()) {
+                auto temp = all_possible_moves.at(0);
+                all_possible_moves[0] = main_line.move[depth];
+                (*it) = temp;
+            }
+        }
+
+
+
+        for (const auto &move : all_possible_moves) {
+            auto new_game_state = Board::from_board(game_state, move.first,
+                                                    move.second);
             evaluation = std::max(evaluation, minimax(depth + 1, max_depth, whiteEval, blackEval,
                                                       moveGenerator, false,
-                                                      Board::from_board(game_state, move.first,
-                                                                        move.second), // new State
-                                                      alpha, beta, leading_white, pline));
+                                                      new_game_state, // new State
+                                                      alpha, beta, leading_white, line));
+
             if (evaluation >= beta) {
                 return evaluation;
             }
+
             alpha = std::max(alpha, evaluation);
+            if (alpha == evaluation) {
+                pline.move[0] = move;
+                pline.counter = 1;
+                for (int i = 0; i < line.counter; i++) {
+                    pline.move[pline.counter] = line.move[i];
+                    pline.counter++;
+                }
+            }
         }
         return evaluation;
 
     } else { // Stiamo minimizzando
         auto all_possible_moves = moveGenerator.generate(game_state);
+
         evaluation = MAX;
+
+        if (main_line.counter > depth) {
+            auto it = std::find(all_possible_moves.begin(), all_possible_moves.end(), main_line.move[depth]);
+            if (it != all_possible_moves.end()) {
+                auto temp = all_possible_moves.at(0);
+                all_possible_moves[0] = main_line.move[depth];
+                (*it) = temp;
+            }
+        }
+
         for (auto const &move : all_possible_moves) {
+            auto new_game_state = Board::from_board(game_state, move.first,
+                                                    move.second);
             evaluation = std::min(evaluation, minimax(depth + 1, max_depth, whiteEval, blackEval,
                                                       moveGenerator, true,
-                                                      Board::from_board(game_state, move.first,
-                                                                        move.second), // new State
-                                                      alpha, beta, leading_white, pline));
-
+                                                      new_game_state, // new State
+                                                      alpha, beta, leading_white, line));
             if (evaluation <= alpha) {
                 return evaluation;
             }
+
             beta = std::min(beta, evaluation);
+            if (beta == evaluation) {
+                pline.move[0] = move;
+                pline.counter = 1;
+                for (int i = 0; i < line.counter; i++) {
+                    pline.move[pline.counter] = line.move[i];
+                    pline.counter++;
+                }
+            }
         }
         return evaluation;
 
@@ -97,8 +143,8 @@ std::string Minimax::best_move(Board &b) {
 
 
     std::tuple<int, Position, Position> best_score;
-    Line main_line;
-    best_score = make_decision(0, whiteEval, blackEval, moveGenerator, b, main_line);
+    Line actual_line;
+    best_score = make_decision(0, whiteEval, blackEval, moveGenerator, b, actual_line);
 
     // Print statistics
 
@@ -108,8 +154,6 @@ std::string Minimax::best_move(Board &b) {
     std::cout << "Explored " << moves << " moves in " << elapsed << " seconds " << std::endl;
     std::cout << "Best score: " << std::get<0>(best_score) << std::endl;
     std::cout << "Speed: " << speed << " moves/second." << std::endl;
-    std::cout << "Reached depth: " << depth << std::endl;
-
 
     std::string color = b.is_white ? "WHITE" : "BLACK";
 
@@ -119,8 +163,9 @@ std::string Minimax::best_move(Board &b) {
 
 template<typename WhiteEvalType, typename BlackEvalType, typename MoveGeneratorType>
 std::tuple<int, Position, Position> Minimax::make_decision(int depth, const Evaluator<WhiteEvalType> &whiteEval,
-                                                           const Evaluator<BlackEvalType> &blackEval, const MoveGenerator<MoveGeneratorType> &moveGenerator,
-                                                           Board game_state, Line &pline) {
+                                                           const Evaluator<BlackEvalType> &blackEval,
+                                                           const MoveGenerator<MoveGeneratorType> &moveGenerator,
+                                                           Board &game_state, Line &pline) {
 
     Line line;
     //Init the result
@@ -129,38 +174,62 @@ std::tuple<int, Position, Position> Minimax::make_decision(int depth, const Eval
 
     //Generate moves
     auto all_possible_moves = moveGenerator.generate(game_state);
-    std::vector<std::tuple<int, Position, Position>> cache_moves;
 
     int max_depth = 1;
-    do {
-        //For each move
-        for (const auto &move : all_possible_moves) {
-            int state_evaluation = minimax(depth + 1, max_depth, whiteEval, blackEval, moveGenerator, false,
-                                           Board::from_board(game_state, move.first, move.second),
-                                           -MAX, MAX,
+    int state_evaluation;
 
+    do {
+        //std::vector<int> cache_moves;
+        //For each move
+        if (main_line.counter > depth) {
+            auto it = std::find(all_possible_moves.begin(), all_possible_moves.end(), main_line.move[depth]);
+            if (it != all_possible_moves.end()) {
+                auto temp = all_possible_moves.at(0);
+                all_possible_moves[0] = main_line.move[depth];
+                (*it) = temp;
+            }
+        }
+
+        for (const auto &move : all_possible_moves) {
+            auto new_game_state = Board::from_board(game_state, move.first, move.second);
+            state_evaluation = minimax(depth + 1, max_depth, whiteEval, blackEval, moveGenerator, false,
+                                           new_game_state,
+                                           -MAX, MAX,
                                            game_state.is_white, line);
-            cache_moves.emplace_back(state_evaluation, move.first, move.second);
+
+            // cache_moves.push_back(state_evaluation);
             //Value is better so update it
             if (state_evaluation > std::get<0>(result)) {
                 std::get<0>(result) = state_evaluation;
                 std::get<1>(result) = move.first;
                 std::get<2>(result) = move.second;
+                pline.move[0] = move;
+                pline.counter = 1;
             }
         }
-        max_depth++;
-        /*
-        std::sort(cache_moves.begin(), cache_moves.end(), [](const auto &e1, const auto &e2) {
-            return std::get<0>(e1) > std::get<0>(e2);
-        });
-        all_possible_moves.clear();
-        for (const auto &element : cache_moves) {
-            all_possible_moves.emplace_back(std::get<1>(element), std::get<2>(element));
+        for (int i = 0; i < line.counter; i++) {
+            pline.move[pline.counter] = line.move[i];
+            pline.counter++;
+        }
 
-        }*/
+        // We have a winning move[move_index]
+        if (std::get<0>(result) > 9999) {
+            break;
+        }
+        //indexes = sort_moves(cache_moves);
+
+        std::cout << "Indexes for iteration " << max_depth << std::endl;
+        max_depth++;
+
+        main_line = pline;
+
+        for (int i = 0; i < main_line.counter && i < 5; i++) {
+            std::cout << "FROM: " << main_line.move[i].first.to_move() << " TO: " << main_line.move[i].second.to_move() << std::endl;
+        }
 
     }while(max_depth <= MAX_DEPTH);
 
     return result;
 }
+
 

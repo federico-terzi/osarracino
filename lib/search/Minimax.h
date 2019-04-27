@@ -11,7 +11,7 @@
 #include <vector>
 
 struct Line {
-    std::array<std::pair<Position, Position>, 10> move;
+    std::array<std::pair<Position,Position>, 5> move;
     int counter = 0;
 };
 
@@ -22,7 +22,8 @@ public:
     static std::tuple<int, Position, Position> make_decision(int depth,
                                                              const Evaluator<WhiteEvalType> &whiteEval,
                                                              const Evaluator<BlackEvalType> &blackEval,
-                                                             const MoveGenerator<MoveGeneratorType> &moveGenerator,Board game_state,
+                                                             const MoveGenerator<MoveGeneratorType> &moveGenerator,
+                                                             Board &game_state,
                                                              Line &pline);
 
     template <typename WhiteEvalType, typename BlackEvalType, typename MoveGeneratorType>
@@ -31,7 +32,7 @@ public:
                        const Evaluator<BlackEvalType> &blackEval,
                        const MoveGenerator<MoveGeneratorType> &moveGenerator,
                        bool maximizingPlayer,
-                       Board game_state, int alpha, int beta, bool leading_white,
+                       Board &game_state, int alpha, int beta, bool leading_white,
                        Line &pline);
 
     static std::string best_move(Board &b);
