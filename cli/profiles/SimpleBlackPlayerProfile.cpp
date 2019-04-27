@@ -7,8 +7,5 @@
 #include "SimpleBlackPlayerProfile.h"
 
 std::string SimpleBlackPlayerProfile::calculate_move(const Board &b) {
-    BlackEvaluator eval;
-    ArnoldMoveGenerator move_generator;
-
     return engine.make_decision(b, eval, move_generator);
 }
