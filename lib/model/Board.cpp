@@ -11,6 +11,8 @@
 #include <sstream>
 #include <cctype>
 #include <fstream>
+#include <stdio.h>
+#include <string.h>
 
 // Input: Json String that represents the board
 // This method initializes all the data structures based on the json string.
@@ -48,6 +50,57 @@ void Board::load_board(const std::string &json_board) {
             x++;
         }
         y++;
+    }
+
+    // Populate bitmask
+    memset(white_cols, 0, sizeof(white_cols));
+    memset(white_rows, 0, sizeof(white_rows));
+    memset(black_cols, 0, sizeof(black_cols));
+    memset(black_rows, 0, sizeof(black_rows));
+    memset(obstacle_cols, 0, sizeof(obstacle_cols));
+    memset(obstacle_rows, 0, sizeof(obstacle_rows));
+    white_count = 0;
+    black_count = 0;
+    free_winpoints = 0;
+
+    for (int x = 0; x < 9; x++) {
+        for (int y = 0; y < 9; y++) {
+            if ((board[x][y] & (White | King)) != 0) {
+                white_cols[x] |= 1 << y;
+                white_count++;
+            }
+            if ((board[x][y] & Black) != 0) {
+                black_cols[x] |= 1 << y;
+                black_count++;
+            }
+            if ((board[x][y] & (Pawn::White | Pawn::Black | Pawn::King)) != 0) {
+                obstacle_cols[x] |= 1 << y;
+            }else if ((board[x][y] & Pawn::WinPoint) != 0) {
+                free_winpoints++;
+            }
+        }
+    }
+
+    for (int y = 0; y < 9; y++) {
+        for (int x = 0; x < 9; x++) {
+            if ((board[x][y] & (White | King)) != 0) {
+                white_rows[y] |= 1 << x;
+            }
+            if ((board[x][y] & Black) != 0) {
+                black_rows[y] |= 1 << x;
+            }
+            if ((board[x][y] & (Pawn::White | Pawn::Black | Pawn::King)) != 0) {
+                obstacle_rows[y] |= 1 << x;
+            }
+        }
+    }
+
+    // Add throne and citadels
+    for (int i = 0; i<DIM; i++) {
+        obstacle_cols[i] |= citadels_mask[i];
+        obstacle_rows[i] |= citadels_mask[i];
+        obstacle_cols[i] |= throne_mask[i];
+        obstacle_rows[i] |= throne_mask[i];
     }
 
 }
@@ -135,29 +188,29 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
 
     // Save the pawn
     Pawn pawn = b.board[from.col][from.row] & SelectPawn;
-
-    // Clear the previous
-    b.board[from.col][from.row] &= ClearPawn;
-
-    b.board[to.col][to.row] |= pawn;
-
-    b.is_white = !b.is_white;
-
-    b.last_move = to;
-
-    // TODO: improve performance
-    // Eat the pawn
-
     Pawn enemy_pawn = Black;
     if (pawn == Black) {
         enemy_pawn = KingOrWhite;
     }
+
+    // Move the pawn
+    b.board[from.col][from.row] &= ClearPawn;
+    b.board[to.col][to.row] |= pawn;
+    b.move_pawn(from, to);
+
+
+    b.is_white = !b.is_white;
+    b.last_move = to;
+
+    // Eat the pawn
 
     // Left eat
     if (to.col > 1) {
         if ((b.board[to.col - 1][to.row] & enemy_pawn) != 0 &&
             (b.board[to.col - 2][to.row] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
             b.board[to.col - 1][to.row] &= ClearPawn;
+
+            b.delete_pawn(to.col -1, to.row);
         }
     }
     // Right eat
@@ -165,6 +218,8 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
         if ((b.board[to.col + 1][to.row] & enemy_pawn) != 0 &&
             (b.board[to.col + 2][to.row] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
             b.board[to.col + 1][to.row] &= ClearPawn;
+
+            b.delete_pawn(to.col +1, to.row);
         }
     }
     // Up eat
@@ -172,6 +227,8 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
         if ((b.board[to.col][to.row - 1] & enemy_pawn) != 0 &&
             (b.board[to.col][to.row - 2] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
             b.board[to.col][to.row - 1] &= ClearPawn;
+
+            b.delete_pawn(to.col, to.row - 1 );
         }
     }
     // Down eat
@@ -179,11 +236,10 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
         if ((b.board[to.col][to.row + 1] & enemy_pawn) != 0 &&
             (b.board[to.col][to.row + 2] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
             b.board[to.col][to.row + 1] &= ClearPawn;
+
+            b.delete_pawn(to.col, to.row + 1);
         }
     }
-
-    // TODO: mangia pedine
-    // TODO: tests
 
     return b;
 }

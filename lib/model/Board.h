@@ -9,6 +9,8 @@
 #include <map>
 #include <vector>
 #include <bitset>
+#include <util/BitUtils.h>
+
 #include "Position.h"
 
 const int DIM = 9;
@@ -63,6 +65,30 @@ const bool adiacent_throne[9][9] = {
         {0, 0, 0, 0, 0, 0, 0, 0, 0},
 };
 
+const uint16_t citadels_mask[9] = {
+        0b0000000'000111000,
+        0b0000000'000010000,
+        0b0000000'000000000,
+        0b0000000'100000001,
+        0b0000000'110000011,
+        0b0000000'100000001,
+        0b0000000'000000000,
+        0b0000000'000010000,
+        0b0000000'000111000,
+};
+
+const uint16_t throne_mask[9] = {
+        0b0000000'000000000,
+        0b0000000'000000000,
+        0b0000000'000000000,
+        0b0000000'000000000,
+        0b0000000'000010000,
+        0b0000000'000000000,
+        0b0000000'000000000,
+        0b0000000'000000000,
+        0b0000000'000000000,
+};
+
 class Board {
 public:
     /*CONSTRUCTORS*/
@@ -73,7 +99,17 @@ public:
     static Board from_json(const std::string &json);
     static Board from_path(const std::string &path);
 
-    /*ATTRIBUTES*/
+    uint16_t white_cols[9];
+    uint16_t white_rows[9];
+    uint16_t black_cols[9];
+    uint16_t black_rows[9];
+
+    uint16_t obstacle_cols[9];
+    uint16_t obstacle_rows[9];
+
+    uint8_t white_count;
+    uint8_t black_count;
+    uint8_t free_winpoints;
 
     // Main data structure to represent the board
     Pawn board[DIM][DIM];
@@ -81,6 +117,65 @@ public:
     bool is_white;
     Position king_pos;
     Position last_move;
+
+    inline bool has_black(int col, int row) const {
+        return BitUtils::is_bit_set(black_cols[col], row);
+    }
+
+    inline bool has_white(int col, int row) const {
+        return BitUtils::is_bit_set(white_cols[col], row);
+    }
+
+    inline bool has_citadel(int col, int row) const {
+        return BitUtils::is_bit_set(citadels_mask[col], row);
+    }
+
+    inline bool is_king_in_throne() const {
+        return king_pos.col == 4 && king_pos.row == 4;
+    }
+
+    inline bool has_black_or_citadel(int col, int row) const {
+        return BitUtils::is_bit_set(black_cols[col] | citadels_mask[col], row);
+    }
+
+    inline bool has_black_or_wall(int col, int row) const {
+        return BitUtils::is_bit_set(black_cols[col] | citadels_mask[col] | throne_mask[col], row);
+    }
+
+    inline void move_pawn(Position from, Position to) {
+        // Delete the pawn from the original position
+        delete_pawn(from.col, from.row);
+
+        // Set the target position
+        if (has_black(from.col, from.row)) {
+            BitUtils::set_bit(black_cols[to.col], to.row);
+            BitUtils::set_bit(black_rows[to.row], to.col);
+        }else{
+            BitUtils::set_bit(white_cols[to.col], to.row);
+            BitUtils::set_bit(white_rows[to.row], to.col);
+        }
+
+        // Update the obstacle masks
+        BitUtils::set_bit(obstacle_cols[to.col], to.row);
+        BitUtils::set_bit(obstacle_rows[to.row], to.col);
+    }
+
+    inline void delete_pawn(int col, int row) {
+        BitUtils::unset_bit(black_cols[col], row);
+        BitUtils::unset_bit(white_cols[col], row);
+        BitUtils::unset_bit(black_rows[row], col);
+        BitUtils::unset_bit(white_rows[row], col);
+
+        // Delete the pawn from the obstacles considering also citadels and throne
+
+        BitUtils::unset_bit(obstacle_cols[col], row);
+        obstacle_cols[col] |= citadels_mask[col];
+        obstacle_cols[col] |= throne_mask[col];
+
+        BitUtils::unset_bit(obstacle_rows[row], col);
+        obstacle_rows[row] |= citadels_mask[row];
+        obstacle_rows[row] |= throne_mask[row];
+    }
 
     void load_board(const std::string &json_board);
 

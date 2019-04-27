@@ -19,6 +19,8 @@ const int position_weight[9][9] = {
 };
 
 int TorettoWhiteEvaluator::evaluate(const Board &b) const {
+    // TODO: check if obstacle rows/cols must not include king
+
     // Check if the board is a winning board
     if (b.is_white_win()) {
         return WHITE_EVALUATOR_SEARCH_WIN_MULTIPLIER;
@@ -26,65 +28,21 @@ int TorettoWhiteEvaluator::evaluate(const Board &b) const {
         return WHITE_EVALUATOR_SEARCH_LOSE_MULTIPLIER;
     }
 
-
-    // Convert the board matrix to an array of columns and rows
-    uint16_t cols[9] = {56, 16, 0, 257, 403, 257, 0, 16, 56};
-    uint16_t rows[9] = {56, 16, 0, 257, 403, 257, 0, 16, 56};
-
-    uint16_t black_cols[9] = {56, 16, 0, 257, 403, 257, 0, 16, 56};
-    uint16_t black_rows[9] = {56, 16, 0, 257, 403, 257, 0, 16, 56};
-
-    int white_count = 0;
-    int black_count = 0;
-    int free_winpoint = 0;
-
-    // Populate the bit matrix
-
-    for (int x = 0; x < 9; x++) {
-        for (int y = 0; y < 9; y++) {
-            if ((b.board[x][y] & (Pawn::White | Pawn::Black)) != 0) {
-                cols[x] |= 1 << y;
-
-                if ((b.board[x][y] & Pawn::White) != 0) {
-                    white_count++;
-                } else {
-                    black_count++;
-
-                    black_cols[x] |= 1 << y;
-                }
-            } else if ((b.board[x][y] & Pawn::WinPoint) != 0) {
-                free_winpoint++;
-            }
-        }
-    }
-
-    for (int y = 0; y < 9; y++) {
-        for (int x = 0; x < 9; x++) {
-            if ((b.board[x][y] & (Pawn::White | Pawn::Black)) != 0) {
-                rows[y] |= 1 << x;
-
-                if (b.board[x][y] & (Pawn::Black) != 0) {
-                    black_rows[y] |= 1 << x;
-                }
-            }
-        }
-    }
-
     // Calculate the best next move
-    int horizontal_score = perform_search(cols, rows, WHITE_EVALUATOR_MAX_DEPTH, b.king_pos.col, b.king_pos.row, true);
-    int vertical_score = perform_search(cols, rows, WHITE_EVALUATOR_MAX_DEPTH, b.king_pos.col, b.king_pos.row, false);
+    int horizontal_score = perform_search(b.obstacle_cols, b.obstacle_rows, WHITE_EVALUATOR_MAX_DEPTH, b.king_pos.col, b.king_pos.row, true);
+    int vertical_score = perform_search(b.obstacle_cols, b.obstacle_rows, WHITE_EVALUATOR_MAX_DEPTH, b.king_pos.col, b.king_pos.row, false);
 
     int score = std::max(horizontal_score, vertical_score);
 
     // Consider also the number of free win points, the number
     // of white pawns and the number of black pawns.
-    score += free_winpoint * WHITE_EVALUATOR_FREE_WINPOINT_MULTIPLIER +
-             white_count * WHITE_EVALUATOR_WHITE_PAWN_MULTIPLIER +
-             black_count * WHITE_EVALUATOR_BLACK_PAWN_MULTIPLIER;
+    score += b.free_winpoints * WHITE_EVALUATOR_FREE_WINPOINT_MULTIPLIER +
+             b.white_count * WHITE_EVALUATOR_WHITE_PAWN_MULTIPLIER +
+             b.black_count * WHITE_EVALUATOR_BLACK_PAWN_MULTIPLIER;
 
 
     // Consider the amount of cells that surround the king
-    score += calculate_surrounded_penality(black_cols, black_rows, b.king_pos.col, b.king_pos.row);
+    score += calculate_surrounded_penality(b.black_cols, b.black_rows, b.king_pos.col, b.king_pos.row);
 
     // Consider the position weight
     score += position_weight[b.king_pos.col][b.king_pos.row];

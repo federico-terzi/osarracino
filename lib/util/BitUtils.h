@@ -6,6 +6,7 @@
 #define OSARRACINO_BITUTILS_H
 
 #include <cstdint>
+#include <immintrin.h>
 
 const uint16_t low_mask[9] = {
         0b00000000'00000000,
@@ -60,6 +61,32 @@ namespace BitUtils {
         }else{
             return (row & 0b0000'0010) != 0;
         }
+    }
+
+    /*
+     * Check if the bit at the index position, is set in the mask.
+     */
+    inline bool is_bit_set(uint16_t mask, int index) {  // TODO: test
+#ifdef __BMI__
+        return _bextr_u32(mask, index, 1);
+#else
+        #pragma message "WARNING: BMI instruction set not supported, falling back to the default implementation."
+        return mask & (1<<index);
+#endif
+    }
+
+    /*
+     * Set the bit to 0 at specified index position of the given mask
+     */
+    inline void unset_bit(uint16_t &mask, int index) {
+        mask = mask & ~(1UL << index);
+    }
+
+    /*
+     * Set the bit to 1 at specified index position of the given mask
+     */
+    inline void set_bit(uint16_t &mask, int index) {
+        mask = mask | (1UL << index);
     }
 };
 
