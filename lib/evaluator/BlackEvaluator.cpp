@@ -15,7 +15,7 @@
 
 
 bool BlackEvaluator::is_king_in_throne(const Board &b) const{
-    return b.board[b.king_pos.col][b.king_pos.row] == Pawn::FullThrone;
+    return b.king_pos.col == 4 && b.king_pos.row == 4;
 }
 
 Direction BlackEvaluator::is_king_near_throne(const Board &b) const {
