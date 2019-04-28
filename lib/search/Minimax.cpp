@@ -21,6 +21,7 @@ const int MIN = -MAX;
 const int MAX_DEPTH = 5;
 
 int moves = 0;
+int hits;
 
 template<typename WhiteEvalType, typename BlackEvalType, typename MoveGeneratorType>
 int Minimax::minimax(int depth, int max_depth,
@@ -36,6 +37,7 @@ int Minimax::minimax(int depth, int max_depth,
     // oppure siamo in una board che indica la terminazione del gioco
     // allora ritorna.
     if (table.has_entry(game_state) && table.get_entry(game_state).depth >= depth) {
+        hits++;
         auto myEntry = table.get_entry(game_state);
         switch (myEntry.flag) {
             case Flag::HASH_EXACT:
@@ -73,6 +75,7 @@ int Minimax::minimax(int depth, int max_depth,
                                                     move.second);
             if (table.has_entry(new_game_state)) {
                 evaluation = table.get_entry(new_game_state).score;
+                hits++;
             } else {
                 evaluation = std::max(evaluation, minimax(depth + 1, max_depth, whiteEval, blackEval,
                                                           moveGenerator, false,
@@ -116,6 +119,7 @@ int Minimax::minimax(int depth, int max_depth,
 
             if (table.has_entry(new_game_state)) {
                 evaluation = table.get_entry(new_game_state).score;
+                hits++;
             } else {
                 evaluation = std::min(evaluation, minimax(depth + 1, max_depth, whiteEval, blackEval,
                                                           moveGenerator, true,
@@ -162,6 +166,7 @@ std::string Minimax::best_move(Board &b) {
     const clock_t begin_time = clock();
 
     moves = 0;
+    hits = 0;
     // Incremental deepening
 
     auto best_score = make_decision(0, whiteEval, blackEval, moveGenerator, b, table);
@@ -174,6 +179,7 @@ std::string Minimax::best_move(Board &b) {
     std::cout << "Explored " << moves << " moves in " << elapsed << " seconds " << std::endl;
     std::cout << "Best score: " << std::get<0>(best_score) << std::endl;
     std::cout << "Speed: " << speed << " moves/second." << std::endl;
+    std::cout << "Table hits:" << hits << std::endl;
 
     std::string color = b.is_white ? "WHITE" : "BLACK";
 
