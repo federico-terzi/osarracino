@@ -196,3 +196,23 @@ TYPED_TEST(MoveGeneratorTest, Test_king_can_move_6) {
 
     EXPECT_EQ(moves::all_from_position(result, test).size(), 6);
 }
+
+TYPED_TEST(MoveGeneratorTest, test_only_one_color_can_move) {
+    // Not surrounded anymore
+    using MoveGeneratorType  = typename TestFixture::MoveGeneratorType ;
+    auto b {Board::from_path("boards/test_only_one_color_can_move.tbbf")};
+    MoveGeneratorType generator;
+    auto result = generator.generate(b);
+
+    EXPECT_EQ(result.size(), 23);
+}
+
+TYPED_TEST(MoveGeneratorTest, test_only_one_color_can_move_2) {
+    // Not surrounded anymore
+    using MoveGeneratorType  = typename TestFixture::MoveGeneratorType ;
+    auto b {Board::from_path("boards/test_only_one_color_can_move_2.tbbf")};
+    MoveGeneratorType generator;
+    auto result = generator.generate(b);
+
+    EXPECT_EQ(result.size(), 6);
+}

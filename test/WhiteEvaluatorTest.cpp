@@ -47,3 +47,10 @@ TEST_F(WhiteEvaluatorTest, test_white_evaluator_surrounded_is_worse) {
     TorettoWhiteEvaluator eval;
     EXPECT_LT(eval.evaluate(surrounded), eval.evaluate(not_surrounded));
 }
+
+TEST_F(WhiteEvaluatorTest, test_white_evaluator_black_win) {
+    auto surrounded {Board::from_path("boards/test_white_evaluator_black_win.tbbf")};
+    surrounded.last_move = {4,3};
+    TorettoWhiteEvaluator eval;
+    EXPECT_LT(eval.evaluate(surrounded), -100000);
+}

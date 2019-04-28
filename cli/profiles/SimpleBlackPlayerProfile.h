@@ -19,10 +19,10 @@ public:
 
 private:
     RamboSearchEngine engine;
-    BlackEvaluator eval;
-    //ReverseTorettoBlackEvaluator eval;
-    ArnoldMoveGenerator move_generator;
-    //HeisenbergMoveGenerator move_generator;
+    //BlackEvaluator eval;
+    ReverseTorettoBlackEvaluator eval;
+    //ArnoldMoveGenerator move_generator;
+    HeisenbergMoveGenerator move_generator;
 };
 
 

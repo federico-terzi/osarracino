@@ -8,19 +8,39 @@
 #include <limits>
 #include <algorithm>
 #include <functional>
+#include <vector>
+#include <string.h>
 #include "SearchEngine.h"
 #include <evaluator/Evaluator.h>
 
-const int RAMBO_MAX_ORDERING_DEPTH = 3;
+const int RAMBO_MAX_DEPTH = 20;
+
+struct MoveTrace {
+    Move move;
+    bool maximizing;
+    int score;
+    int depth;
+    bool valid = false;
+
+    friend std::ostream &operator<<(std::ostream &s, const MoveTrace &trace) {
+        s << "TRACE: maximizing: " << trace.maximizing << " with score: " << trace.score
+        << " at depth " << trace.depth << " for move: " << trace.move;
+        return s;
+    };
+};
 
 struct MoveConfiguration {
     Move move;
     Board board;
     int score;
+    int depth;
+    std::array<MoveTrace, RAMBO_MAX_DEPTH> move_traces;
 };
 
 class RamboSearchEngine : public SearchEngine<RamboSearchEngine> {
 public:
+    std::array<MoveTrace, RAMBO_MAX_DEPTH> move_traces;
+
     template<typename EvalType, typename MoveGeneratorType>
     int minimax(int depth, const Evaluator<EvalType> &eval,
                 const MoveGenerator<MoveGeneratorType> &move_generator,
@@ -40,6 +60,7 @@ public:
             for (const auto &move : moves) {
                 auto new_board{Board::from_board(board, move.from, move.to)};
                 value = std::max(value, minimax(depth - 1, eval, move_generator, false, new_board, alpha, beta));
+                move_traces[depth-1] = {move, maximizing_player, value, depth-1, true};
                 if (value >= beta) {
                     return value;
                 }
@@ -53,7 +74,7 @@ public:
             for (const auto &move : moves) {
                 auto new_board{Board::from_board(board, move.from, move.to)};
                 value = std::min(value, minimax(depth - 1, eval, move_generator, true, new_board, alpha, beta));
-
+                move_traces[depth-1] = {move, maximizing_player, value, depth-1, true};
                 if (value <= alpha) {
                     return value;
                 }
@@ -128,8 +149,6 @@ public:
     Move __make_decision_internal(const Board &b,
                                   const Evaluator<EvalType> &eval,
                                   const MoveGenerator<MoveGeneratorType> &move_generator) {
-        int best_score = std::numeric_limits<int>::min();
-        Move best_move;
 
         auto moves{move_generator.generate(b)};
 
@@ -153,17 +172,22 @@ public:
                 return s1.score > s2.score;
             });
 
+            // Reset move traces array.
+            move_traces = std::array<MoveTrace, RAMBO_MAX_DEPTH>();
+
             for (auto &state: future_states) {
                 int value = minimax(current_depth_limit, eval, move_generator, false, state.board,
                                     std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
+                move_traces[current_depth_limit] = {state.move, true, value, current_depth_limit, true};
 
-                if (value > best_score) {
-                    best_move = state.move;
-                    best_score = value;
+                if (timer.is_timed_out()) {
+                    break;
                 }
 
                 // Update future score based on the minmax search
                 state.score = value;
+                state.depth = current_depth_limit;
+                state.move_traces = move_traces;
 
                 if (value > 100000) {
                     std::cout << "Stopping evaluation with winning move: " << state.move << " at depth: "
@@ -174,15 +198,32 @@ public:
             }
 
             current_depth_limit++;
-        } while (current_depth_limit <= 8 && !force_exit && !timer.is_timed_out());
+        } while (current_depth_limit <= RAMBO_MAX_DEPTH && !force_exit && !timer.is_timed_out());
 
         if (timer.is_timed_out()) {
             std::cout << "TIMED OUT" << std::endl;
         }
-        std::cout << "Best score: " << best_score << std::endl;
-        std::cout << "Reached depth: " << current_depth_limit << std::endl;
 
-        return best_move;
+        std::sort(future_states.begin(), future_states.end(), [](const auto &s1, const auto &s2) {
+            return s1.score > s2.score;
+        });
+
+        auto best_state = future_states[0];
+
+        std::cout << "Best score: " << best_state.score << std::endl;
+        std::cout << "Reached depth: " << current_depth_limit-1 << std::endl;
+
+        // Print the best possible moves
+        for (auto &state: future_states) {
+            std::cout << state.move << " with score: " << state.score << " at depth: " << state.depth <<std::endl;
+        }
+
+        std::cout<< "TRACE" << std::endl;
+        for (int i = 0; best_state.move_traces[i].valid; i++) {
+            std::cout << best_state.move_traces[i] << std::endl;
+        }
+
+        return best_state.move;
     }
 };
 

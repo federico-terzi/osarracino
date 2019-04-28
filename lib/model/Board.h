@@ -143,9 +143,6 @@ public:
     }
 
     inline void move_pawn(Position from, Position to) {
-        // Delete the pawn from the original position
-        delete_pawn(from.col, from.row);
-
         // Set the target position
         if (has_black(from.col, from.row)) {
             BitUtils::set_bit(black_cols[to.col], to.row);
@@ -155,12 +152,35 @@ public:
             BitUtils::set_bit(white_rows[to.row], to.col);
         }
 
+        // Delete the pawn from the original position
+        delete_pawn(from.col, from.row);
+
         // Update the obstacle masks
         BitUtils::set_bit(obstacle_cols[to.col], to.row);
         BitUtils::set_bit(obstacle_rows[to.row], to.col);
+
+        // Adjust statistics
+        if (has_black(to.col, to.row)) {
+            black_count++;
+        } else if (has_white(to.col, to.row)) {
+            white_count++;
+        }
+        if (winpoints[to.col][to.row]) {
+            free_winpoints--;
+        }
     }
 
     inline void delete_pawn(int col, int row) {
+        // Adjust statistics
+        if (has_black(col, row)) {
+            black_count--;
+        } else if (has_white(col, row)) {
+            white_count--;
+        }
+        if (winpoints[col][row]) {
+            free_winpoints++;
+        }
+
         BitUtils::unset_bit(black_cols[col], row);
         BitUtils::unset_bit(white_cols[col], row);
         BitUtils::unset_bit(black_rows[row], col);
@@ -181,7 +201,7 @@ public:
 
     friend std::ostream& operator<<(std::ostream &s, const Board &board){
         std::string turn = (board.is_white) ? "WHITE" : "BLACK";
-        s << "BOARD - Turn: " << turn << std::endl;
+        s << "BOARD - Turn: " << turn << " last move: " << board.last_move << " king pos: " << board.king_pos << std::endl;
         s << "╔═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╗" << std::endl;
         for (int y = 0; y < DIM; y++) {
             for (int x = 0; x < DIM; x++) {

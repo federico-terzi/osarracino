@@ -102,8 +102,8 @@ TorettoWhiteEvaluator::perform_search(const uint16_t *cols, const uint16_t *rows
 int TorettoWhiteEvaluator::calculate_surrounded_penality(const uint16_t *cols, const uint16_t *rows, int king_col,
                                                          int king_row) const {
 
-    int horizontal_surroundings = BitUtils::get_surrounded(rows[king_row], king_col);
-    int vertical_surroundings = BitUtils::get_surrounded(cols[king_col], king_row);
+    int horizontal_surroundings = BitUtils::get_surrounded(rows[king_row] | citadels_mask[king_row], king_col);
+    int vertical_surroundings = BitUtils::get_surrounded(cols[king_col] | citadels_mask[king_col], king_row);
 
     return horizontal_surroundings * WHITE_EVALUATOR_BLACK_SURROUNDED_MULTIPLIER +
            vertical_surroundings * WHITE_EVALUATOR_BLACK_SURROUNDED_MULTIPLIER;

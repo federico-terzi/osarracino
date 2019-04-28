@@ -78,3 +78,9 @@ TEST_F(BoardTest, test_board_is_black_win_3) {
     b1.last_move = {5,2};
     EXPECT_FALSE(b1.is_black_win());
 }
+
+TEST_F(BoardTest, test_board_is_black_win_4) {
+    auto b1 = Board::from_path("boards/test_board_is_black_win_4.tbbf");
+    b1.last_move = {4,3};
+    EXPECT_TRUE(b1.is_black_win());
+}
