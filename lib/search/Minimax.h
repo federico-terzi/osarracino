@@ -10,11 +10,6 @@
 #include "movegenerator/MoveGenerator.h"
 #include <vector>
 
-struct Line {
-    std::array<std::pair<Position,Position>, 5> move;
-    int counter = 0;
-};
-
 
 class Minimax {
 public:
@@ -23,8 +18,7 @@ public:
                                                              const Evaluator<WhiteEvalType> &whiteEval,
                                                              const Evaluator<BlackEvalType> &blackEval,
                                                              const MoveGenerator<MoveGeneratorType> &moveGenerator,
-                                                             Board &game_state,
-                                                             Line &pline);
+                                                             Board game_state);
 
     template <typename WhiteEvalType, typename BlackEvalType, typename MoveGeneratorType>
     static int minimax(int depth, int max_depth,
@@ -32,8 +26,7 @@ public:
                        const Evaluator<BlackEvalType> &blackEval,
                        const MoveGenerator<MoveGeneratorType> &moveGenerator,
                        bool maximizingPlayer,
-                       Board &game_state, int alpha, int beta, bool leading_white,
-                       Line &pline);
+                       Board game_state, int alpha, int beta, bool leading_white);
 
     static std::string best_move(Board &b);
 };
