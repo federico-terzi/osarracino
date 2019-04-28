@@ -10,6 +10,7 @@
 #include <evaluator/BlackEvaluator.h>
 #include <movegenerator/ArnoldMoveGenerator.h>
 #include <movegenerator/HeisenbergMoveGenerator.h>
+#include <evaluator/ReverseTorettoBlackEvaluator.h>
 #include "PlayerProfile.h"
 
 class SimpleBlackPlayerProfile : public PlayerProfile {
@@ -19,6 +20,7 @@ public:
 private:
     RamboSearchEngine engine;
     BlackEvaluator eval;
+    //ReverseTorettoBlackEvaluator eval;
     ArnoldMoveGenerator move_generator;
     //HeisenbergMoveGenerator move_generator;
 };
