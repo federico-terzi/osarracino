@@ -17,11 +17,11 @@ const std::array<int, 4> win_rows_cols = {1, 2, 6, 7};
 
 class BlackEvaluator : public Evaluator<BlackEvaluator>{
 public:
-    BlackEvaluator();
     std::unordered_map<Position, Direction, pos_hash> near_throne;
     std::unordered_map<Direction, std::function<bool(const Board&)>> near_checks;
     std::function<bool(const Board&, const Position&)> is_moved_near;
 
+    BlackEvaluator();
     int evaluate(const Board &b) const;
     int black_block_king(const Board &b) const;
     int pawn_differences(const Board &b) const;

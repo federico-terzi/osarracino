@@ -7,8 +7,8 @@
 #include <util/BoardUtils.h>
 
 
-std::unordered_map<Position, std::vector<Position>, pos_hash> ThetaMoveGenerator::generate(const Board &b) const {
-    std::unordered_map<Position, std::vector<Position>, pos_hash> moves_map;
+std::vector<std::pair<Position,Position>> ThetaMoveGenerator::generate(const Board &b) const {
+    std::vector<std::pair<Position,Position>> positions;
 
     auto to_be_moved_empty = BoardUtils::Get_empty_and_to_move(b);
 
@@ -43,27 +43,25 @@ std::unordered_map<Position, std::vector<Position>, pos_hash> ThetaMoveGenerator
         up = vertical.substr(0, pawn.row);
         down = vertical.substr(pawn.row);
 
-        std::vector<Position> positions;
         //Left
         for (int i = left.length() - 1; i >= 0 && left[i] != '0'; i--) {
-            positions.push_back(Position{i, pawn.row});
+            positions.emplace_back(pawn, Position{i, pawn.row});
         }
         //Right
         for (int i = 1; i < right.length() && right[i] != '0'; i++) {
-            positions.push_back(Position{pawn.col+i, pawn.row});
+            positions.emplace_back(pawn, Position{pawn.col+i, pawn.row});
         }
         //Up
         for (int i = up.length() - 1; i >= 0 && up[i] != '0'; i--) {
-            positions.push_back(Position{pawn.col, i});
+            positions.emplace_back(pawn, Position{pawn.col, i});
         }
         //Down
         for (int i = 1; i < down.length() && down[i] != '0'; i++) {
-            positions.push_back(Position{pawn.col, pawn.row+i});
+            positions.emplace_back(pawn, Position{pawn.col, pawn.row+i});
         }
-        moves_map[pawn] = positions;
     }
 
-    return moves_map;
+    return positions;
 }
 
 ThetaMoveGenerator::ThetaMoveGenerator() {

@@ -24,9 +24,15 @@ void Board::load_board(const std::string &json_board) {
     //std::cout << root << std::endl;
     int y = 0;
     is_white = root["turn"] == "WHITE";
-    for(auto &row : root["board"]) {
+
+    if (root["turn"] == "BLACKWIN" || root["turn"] == "WHITEWIN") {
+        std::cout << "The match has concluded.";
+        exit(0);
+    }
+
+    for (auto &row : root["board"]) {
         int x = 0;
-        for(auto &column: row) {
+        for (auto &column: row) {
             if (column == "WHITE") {
                 board[x][y] |= Pawn::White;
             } else if (column == "BLACK") {
@@ -48,14 +54,14 @@ void Board::load_board(const std::string &json_board) {
 
 // This constructor initializes the board citadels, is needed because the server doesn't tell us which cells are citadels
 Board::Board() {
-    for (int x = 0; x<9; x++) {
-        for (int y = 0; y<9; y++) {
+    for (int x = 0; x < 9; x++) {
+        for (int y = 0; y < 9; y++) {
             board[x][y] = Pawn::Empty;
         }
     }
 
-    for(int i = 0; i < DIM; i++) {
-        for (int j = 0; j< DIM; j++) {
+    for (int i = 0; i < DIM; i++) {
+        for (int j = 0; j < DIM; j++) {
             board[i][j] = Pawn::Empty;
         }
     }
@@ -149,30 +155,30 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
 
     // Left eat
     if (to.col > 1) {
-        if ((b.board[to.col-1][to.row] & enemy_pawn) != 0 &&
-            (b.board[to.col-2][to.row] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
-            b.board[to.col-1][to.row] &= ClearPawn;
+        if ((b.board[to.col - 1][to.row] & enemy_pawn) != 0 &&
+            (b.board[to.col - 2][to.row] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
+            b.board[to.col - 1][to.row] &= ClearPawn;
         }
     }
     // Right eat
     if (to.col < 7) {
-        if ((b.board[to.col+1][to.row] & enemy_pawn) != 0 &&
-            (b.board[to.col+2][to.row] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
-            b.board[to.col+1][to.row] &= ClearPawn;
+        if ((b.board[to.col + 1][to.row] & enemy_pawn) != 0 &&
+            (b.board[to.col + 2][to.row] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
+            b.board[to.col + 1][to.row] &= ClearPawn;
         }
     }
     // Up eat
     if (to.row > 1) {
-        if ((b.board[to.col][to.row-1] & enemy_pawn) != 0 &&
-            (b.board[to.col][to.row-2] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
-            b.board[to.col][to.row-1] &= ClearPawn;
+        if ((b.board[to.col][to.row - 1] & enemy_pawn) != 0 &&
+            (b.board[to.col][to.row - 2] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
+            b.board[to.col][to.row - 1] &= ClearPawn;
         }
     }
     // Down eat
     if (to.row < 7) {
-        if ((b.board[to.col][to.row+1] & enemy_pawn) != 0 &&
-            (b.board[to.col][to.row+2] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
-            b.board[to.col][to.row+1] &= ClearPawn;
+        if ((b.board[to.col][to.row + 1] & enemy_pawn) != 0 &&
+            (b.board[to.col][to.row + 2] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
+            b.board[to.col][to.row + 1] &= ClearPawn;
         }
     }
 
@@ -189,8 +195,8 @@ Board Board::from_json(const std::string &json) {
 }
 
 bool board_equal(const Pawn b1[DIM][DIM], const Pawn b2[DIM][DIM]) {
-    for (int x = 0; x<9; x++) {
-        for (int y = 0; y<9; y++) {
+    for (int x = 0; x < 9; x++) {
+        for (int y = 0; y < 9; y++) {
             if (b1[x][y] != b2[x][y]) {
                 return false;
             }
