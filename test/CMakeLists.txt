@@ -7,7 +7,7 @@ add_executable(osarracino_tests_run MainTestAll.cpp
         BitUtilsTest.cpp
         BoardTest.cpp
         MoveGeneratorTest.cpp BlackEvaluatorTest.cpp
-        WhiteEvaluatorTest.cpp ToBeMovedEmptyTest.cpp)
+        WhiteEvaluatorTest.cpp ToBeMovedEmptyTest.cpp SearchEngineTest.cpp)
 
 target_link_libraries(osarracino_tests_run libosarracino)
 target_link_libraries(osarracino_tests_run ${GTEST_LIBRARIES} pthread)

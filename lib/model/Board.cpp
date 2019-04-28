@@ -204,11 +204,17 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
 
     // Eat the pawn
 
+    // TODO: fix the pawn eating case when the king is in the throne or adiacent throne
+
     // Left eat
     if (to.col > 1) {
         if ((b.board[to.col - 1][to.row] & enemy_pawn) != 0 &&
             (b.board[to.col - 2][to.row] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
             b.board[to.col - 1][to.row] &= ClearPawn;
+
+            if (b.king_pos == Position{to.col-1, to.row}) {
+                b.king_pos.col = KING_LOST;
+            }
 
             b.delete_pawn(to.col -1, to.row);
         }
@@ -219,6 +225,10 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
             (b.board[to.col + 2][to.row] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
             b.board[to.col + 1][to.row] &= ClearPawn;
 
+            if (b.king_pos == Position{to.col+1, to.row}) {
+                b.king_pos.col = KING_LOST;
+            }
+
             b.delete_pawn(to.col +1, to.row);
         }
     }
@@ -228,6 +238,10 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
             (b.board[to.col][to.row - 2] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
             b.board[to.col][to.row - 1] &= ClearPawn;
 
+            if (b.king_pos == Position{to.col, to.row-1}) {
+                b.king_pos.col = KING_LOST;
+            }
+
             b.delete_pawn(to.col, to.row - 1 );
         }
     }
@@ -236,6 +250,10 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
         if ((b.board[to.col][to.row + 1] & enemy_pawn) != 0 &&
             (b.board[to.col][to.row + 2] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
             b.board[to.col][to.row + 1] &= ClearPawn;
+
+            if (b.king_pos == Position{to.col, to.row + 1}) {
+                b.king_pos.col = KING_LOST;
+            }
 
             b.delete_pawn(to.col, to.row + 1);
         }

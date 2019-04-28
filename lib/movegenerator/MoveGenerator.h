@@ -18,6 +18,15 @@ struct Move {
         s << move.from.to_move() << "->" << move.to.to_move();
         return s;
     };
+
+    bool operator==(const Move &rhs) const {
+        return from == rhs.from &&
+               to == rhs.to;
+    }
+
+    bool operator!=(const Move &rhs) const {
+        return !(rhs == *this);
+    }
 };
 
 template <typename T>

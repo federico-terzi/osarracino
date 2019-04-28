@@ -19,8 +19,8 @@ public:
 private:
     RamboSearchEngine engine;
     TorettoWhiteEvaluator eval;
-    ArnoldMoveGenerator move_generator;
-    //HeisenbergMoveGenerator move_generator;
+    //ArnoldMoveGenerator move_generator;
+    HeisenbergMoveGenerator move_generator;
 };
 
 

@@ -89,6 +89,8 @@ const uint16_t throne_mask[9] = {
         0b0000000'000000000,
 };
 
+const int KING_LOST = -100;
+
 class Board {
 public:
     /*CONSTRUCTORS*/
@@ -227,67 +229,12 @@ public:
     bool operator!=(const Board &rhs) const;
 
     /**
-     * Check if the current board is a winning board for the black pawns
+     * Check if the current board is a winning board for the black pawns.
+     * When a black pawn eats the king, the column of the king is negative.
      * @return true if winning for blacks, false otherwise.
      */
     inline bool is_black_win() const {
-        // Make sure the last move is a black pawn
-        if ((board[last_move.col][last_move.row] & Black) == 0) {
-            return false;
-        }
-
-        // Check if the last move is surrounding the king
-        if ((last_move.col == king_pos.col &&
-             (last_move.row == king_pos.row - 1 || last_move.row == king_pos.row + 1)
-            ) ||
-            (last_move.row == king_pos.row &&
-             (last_move.col == king_pos.col - 1 || last_move.col == king_pos.col + 1)
-            )) {
-
-            // Check the cases based on the king position
-            if (king_pos.col == 4 && king_pos.row == 4) {  // King in throne
-                return (board[4][3] & Black) != 0 &&
-                       (board[5][4] & Black) != 0 &&
-                       (board[4][5] & Black) != 0 &&
-                       (board[3][4] & Black) != 0;
-            } else if (adiacent_throne[king_pos.col][king_pos.row]) {  // King adiacent throne
-                return (board[king_pos.col + 1][king_pos.row] & (Black | EmptyThrone)) != 0 &&
-                       (board[king_pos.col - 1][king_pos.row] & (Black | EmptyThrone)) != 0 &&
-                       (board[king_pos.col][king_pos.row + 1] & (Black | EmptyThrone)) != 0 &&
-                       (board[king_pos.col][king_pos.row - 1] & (Black | EmptyThrone)) != 0;
-            } else {  // Everywhere else
-                // Left eat
-                if (last_move.col > 1) {
-                    if ((board[last_move.col - 1][last_move.row] & King) != 0 &&
-                        (board[last_move.col - 2][last_move.row] & (Black | EmptyCitadel | EmptyThrone)) != 0) {
-                        return true;
-                    }
-                }
-                // Right eat
-                if (last_move.col < 7) {
-                    if ((board[last_move.col + 1][last_move.row] & King) != 0 &&
-                        (board[last_move.col + 2][last_move.row] & (Black | EmptyCitadel | EmptyThrone)) != 0) {
-                        return true;
-                    }
-                }
-                // Up eat
-                if (last_move.row > 1) {
-                    if ((board[last_move.col][last_move.row - 1] & King) != 0 &&
-                        (board[last_move.col][last_move.row - 2] & (Black | EmptyCitadel | EmptyThrone)) != 0) {
-                        return true;
-                    }
-                }
-                // Down eat
-                if (last_move.row < 7) {
-                    if ((board[last_move.col][last_move.row + 1] & King) != 0 &&
-                        (board[last_move.col][last_move.row + 2] & (Black | EmptyCitadel | EmptyThrone)) != 0) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
+        return king_pos.col < 0;
     }
 
     /**
@@ -295,8 +242,12 @@ public:
      * @return true if winning for whites, false otherwise.
      */
     inline bool is_white_win() const{
-        // Check if the king is in a win point
-        return winpoints[king_pos.col][king_pos.row];
+        if (king_pos.col >= 0) {
+            // Check if the king is in a win point
+            return winpoints[king_pos.col][king_pos.row];
+        }
+
+        return false;
     }
 
 };
