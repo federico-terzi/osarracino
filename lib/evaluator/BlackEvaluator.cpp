@@ -46,7 +46,7 @@ bool BlackEvaluator::near_throne_win_condition(const Board &b) const {
 
 bool BlackEvaluator::simple_win_condition(const Board &b) const {
     //Se il re non è sul trono o adiacente
-    return (!is_king_in_throne(b)) && (!is_king_in_throne(b)) &&
+    return ((!is_king_in_throne(b)) && (!is_king_in_throne(b))) &&
 
            (((b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::Black
               || b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::BlackWinPoint
