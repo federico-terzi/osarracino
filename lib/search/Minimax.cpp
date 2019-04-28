@@ -18,7 +18,7 @@
 const int MAX = 10000000;
 const int MIN = -MAX;
 
-const int MAX_DEPTH = 5;
+const int MAX_DEPTH = 15;
 
 int moves = 0;
 int hits;
@@ -73,15 +73,11 @@ int Minimax::minimax(int depth, int max_depth,
         for (const auto &move : all_possible_moves) {
             auto new_game_state = Board::from_board(game_state, move.first,
                                                     move.second);
-            if (table.has_entry(new_game_state)) {
-                evaluation = table.get_entry(new_game_state).score;
-                hits++;
-            } else {
-                evaluation = std::max(evaluation, minimax(depth + 1, max_depth, whiteEval, blackEval,
-                                                          moveGenerator, false,
-                                                          new_game_state, // new State
-                                                          alpha, beta, leading_white, table));
-            }
+
+            evaluation = std::max(evaluation, minimax(depth + 1, max_depth, whiteEval, blackEval,
+                                                      moveGenerator, false,
+                                                      new_game_state, // new State
+                                                      alpha, beta, leading_white, table));
 
             BoardEvaluation entry;
             entry.score = evaluation;
@@ -117,15 +113,10 @@ int Minimax::minimax(int depth, int max_depth,
             auto new_game_state = Board::from_board(game_state, move.first,
                                                     move.second);
 
-            if (table.has_entry(new_game_state)) {
-                evaluation = table.get_entry(new_game_state).score;
-                hits++;
-            } else {
-                evaluation = std::min(evaluation, minimax(depth + 1, max_depth, whiteEval, blackEval,
-                                                          moveGenerator, true,
-                                                          new_game_state, // new State
-                                                          alpha, beta, leading_white, table));
-            }
+            evaluation = std::min(evaluation, minimax(depth + 1, max_depth, whiteEval, blackEval,
+                                                      moveGenerator, true,
+                                                      new_game_state, // new State
+                                                      alpha, beta, leading_white, table));
 
             BoardEvaluation entry;
             entry.score = evaluation;
