@@ -5,7 +5,7 @@
 #ifndef OSARRACINO_DTRANSPOSITIONTABLE_H
 #define OSARRACINO_DTRANSPOSITIONTABLE_H
 
-#define DIMENSION 25 * 1000000
+#define DIMENSION 25 * 10000000000
 
 #include <unordered_map>
 #include "ZobristHash.h"

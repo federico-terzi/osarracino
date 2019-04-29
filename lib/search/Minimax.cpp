@@ -18,7 +18,7 @@
 const int MAX = 10000000;
 const int MIN = -MAX;
 
-const int MAX_DEPTH = 15;
+const int MAX_DEPTH = 4;
 
 int moves = 0;
 int hits;
@@ -56,6 +56,7 @@ int Minimax::minimax(int depth, int max_depth,
     }
 
     if (depth == 0 || depth >= max_depth || game_state.is_black_win() || game_state.is_white_win()) {
+        if (game_state.is_white)
         return leading_white ? whiteEval.evaluate(game_state) : blackEval.evaluate(game_state);
     }
 

@@ -34,7 +34,12 @@ bool DTranspositionTable::has_entry(const Board &b) {
     auto hash_value = zobrist_hash.hash(b);
     int index = hash_value % DIMENSION;
 
-    return transposition_table.find(index) != transposition_table.end();
+    auto element = transposition_table.find(index);
+    if ( element == transposition_table.end()) {
+        return false;
+    } else {
+        return element->second.zobrist_key == hash_value;
+    }
 }
 
 void DTranspositionTable::add_entry(BoardEvaluation &eval, Board &b) {
