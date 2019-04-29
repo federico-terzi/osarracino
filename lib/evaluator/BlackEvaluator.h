@@ -27,6 +27,9 @@ public:
     int pawn_differences(const Board &b) const;
     bool simple_win_condition(const Board &b) const;
     bool throne_win_condition(const Board &b) const;
+    int geometry_points(const Board &b) const;
+    int get_empty_row(const Board &b) const;
+    int get_empty_col(const Board &b) const;
     bool near_throne_win_condition(const Board &b) const;
     bool is_king_in_throne(const Board &b) const;
     Direction is_king_near_throne(const Board &b) const;
@@ -34,11 +37,9 @@ public:
 
     static const int BLANK_WG = 0;
     static const int CYAN_WG = 1;
-    static const int PURPLE_WG = 2;
-    static const int ALL_COLS_COVERED = 0;
-    static const int ALL_ROWS_COVERED = 0;
-    static const int KINGS_OPP = 0;
-    static const int EZPZ = 5000;
+    static const int PURPLE_WG = 1;
+    static const int EZPZ = 20000;
+    static const int PREVENT_CHECKMATE = -100;
 
     int color_matrix[9][9] = {
             {BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG},
@@ -49,6 +50,55 @@ public:
             {BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG},
             {BLANK_WG, PURPLE_WG, BLANK_WG, CYAN_WG, BLANK_WG, CYAN_WG, BLANK_WG, PURPLE_WG, BLANK_WG},
             {BLANK_WG, BLANK_WG, PURPLE_WG, BLANK_WG, CYAN_WG, BLANK_WG, PURPLE_WG},
+            {BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG},
+
+    };
+
+    int top_right_color_matrix[9][9] = {
+            {BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG},
+            {BLANK_WG, BLANK_WG, PURPLE_WG*2, BLANK_WG, CYAN_WG, BLANK_WG, PURPLE_WG},
+            {BLANK_WG, PURPLE_WG*2, BLANK_WG, CYAN_WG*2, BLANK_WG, CYAN_WG, BLANK_WG, PURPLE_WG, BLANK_WG },
+            {BLANK_WG, BLANK_WG, CYAN_WG*2, BLANK_WG, BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG},
+            {BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG},
+            {BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG},
+            {BLANK_WG, PURPLE_WG, BLANK_WG, CYAN_WG, BLANK_WG, CYAN_WG, BLANK_WG, PURPLE_WG, BLANK_WG},
+            {BLANK_WG, BLANK_WG, PURPLE_WG, BLANK_WG, CYAN_WG, BLANK_WG, PURPLE_WG},
+            {BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG},
+
+    };
+    int top_left_color_matrix[9][9] = {
+            {BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG},
+            {BLANK_WG, BLANK_WG, PURPLE_WG, BLANK_WG, 2*CYAN_WG, BLANK_WG, 2*PURPLE_WG},
+            {BLANK_WG, PURPLE_WG, BLANK_WG, CYAN_WG, BLANK_WG, CYAN_WG, BLANK_WG, 2*PURPLE_WG, BLANK_WG },
+            {BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG, BLANK_WG, 2*CYAN_WG, BLANK_WG, BLANK_WG},
+            {BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG},
+            {BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG},
+            {BLANK_WG, PURPLE_WG, BLANK_WG, CYAN_WG, BLANK_WG, CYAN_WG, BLANK_WG, PURPLE_WG, BLANK_WG},
+            {BLANK_WG, BLANK_WG, PURPLE_WG, BLANK_WG, CYAN_WG, BLANK_WG, PURPLE_WG},
+            {BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG},
+
+    };
+    int bottom_right_color_matrix[9][9] = {
+            {BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG},
+            {BLANK_WG, BLANK_WG, PURPLE_WG, BLANK_WG, CYAN_WG, BLANK_WG, PURPLE_WG},
+            {BLANK_WG, PURPLE_WG, BLANK_WG, CYAN_WG, BLANK_WG, CYAN_WG, BLANK_WG, PURPLE_WG, BLANK_WG },
+            {BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG},
+            {BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG},
+            {BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG, BLANK_WG, CYAN_WG*2, BLANK_WG, BLANK_WG},
+            {BLANK_WG, PURPLE_WG, BLANK_WG, CYAN_WG, BLANK_WG, CYAN_WG*2, BLANK_WG, PURPLE_WG*2, BLANK_WG},
+            {BLANK_WG, BLANK_WG, PURPLE_WG, BLANK_WG, CYAN_WG*2, BLANK_WG, PURPLE_WG*2},
+            {BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG},
+
+    };
+    int bottom_left_color_matrix[9][9] = {
+            {BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG},
+            {BLANK_WG, BLANK_WG, PURPLE_WG, BLANK_WG, CYAN_WG, BLANK_WG, PURPLE_WG},
+            {BLANK_WG, PURPLE_WG, BLANK_WG, CYAN_WG, BLANK_WG, CYAN_WG, BLANK_WG, PURPLE_WG, BLANK_WG },
+            {BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG},
+            {BLANK_WG, CYAN_WG*2, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG},
+            {BLANK_WG, BLANK_WG, CYAN_WG*2, BLANK_WG, BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG},
+            {BLANK_WG, PURPLE_WG*2, BLANK_WG, CYAN_WG*2, BLANK_WG, CYAN_WG, BLANK_WG, PURPLE_WG, BLANK_WG},
+            {BLANK_WG, BLANK_WG, PURPLE_WG*2, BLANK_WG, CYAN_WG, BLANK_WG, PURPLE_WG},
             {BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG},
 
     };
