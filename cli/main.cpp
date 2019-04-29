@@ -8,7 +8,6 @@
 #include "profiles/SimpleBlackPlayerProfile.h"
 #include <map>
 #include <locale>
-#include <search/Minimax.h>
 #include <search/RamboSearchEngine.h>
 
 const int PLAYER_COLOR = 1;

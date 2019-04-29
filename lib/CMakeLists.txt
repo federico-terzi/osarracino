@@ -7,14 +7,18 @@ add_library(libosarracino STATIC
         model/Board.cpp model/Board.h
         network/Connector.cpp network/Connector.h
         evaluator/Evaluator.h
-        search/Minimax.cpp search/Minimax.h
         model/Position.cpp model/Position.h
         evaluator/TorettoWhiteEvaluator.cpp evaluator/TorettoWhiteEvaluator.h
         evaluator/BlackEvaluator.cpp evaluator/BlackEvaluator.h
         movegenerator/MoveGenerator.h
         movegenerator/ThetaMoveGenerator.cpp movegenerator/ThetaMoveGenerator.h
-        util/BitUtils.h util/BoardUtils.cpp util/BoardUtils.h movegenerator/ArnoldMoveGenerator.cpp movegenerator/ArnoldMoveGenerator.h search/SearchEngine.h search/RamboSearchEngine.h util/Timer.h movegenerator/HeisenbergMoveGenerator.cpp movegenerator/HeisenbergMoveGenerator.h evaluator/ReverseTorettoBlackEvaluator.cpp evaluator/ReverseTorettoBlackEvaluator.h)
-        util/BitUtils.h util/BoardUtils.cpp util/BoardUtils.h movegenerator/ArnoldMoveGenerator.cpp movegenerator/ArnoldMoveGenerator.h model/ZobristHash.cpp model/ZobristHash.h model/DTranspositionTable.cpp model/DTranspositionTable.h)
+        util/BitUtils.h util/BoardUtils.cpp util/BoardUtils.h
+        movegenerator/ArnoldMoveGenerator.cpp movegenerator/ArnoldMoveGenerator.h
+        search/SearchEngine.h search/RamboSearchEngine.h util/Timer.h
+        movegenerator/HeisenbergMoveGenerator.cpp movegenerator/HeisenbergMoveGenerator.h
+        evaluator/ReverseTorettoBlackEvaluator.cpp evaluator/ReverseTorettoBlackEvaluator.h
+        model/ZobristHash.cpp model/ZobristHash.h
+        model/DTranspositionTable.cpp model/DTranspositionTable.h search/CollisionSearchEngine.h)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")

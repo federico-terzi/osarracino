@@ -5,7 +5,6 @@
 #include <gtest/gtest.h>
 #include <model/Board.h>
 #include <evaluator/BlackEvaluator.h>
-#include <search/Minimax.h>
 
 class BlackEvaluatorTest  : public ::testing::Test {
 protected:
