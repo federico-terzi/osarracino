@@ -128,10 +128,14 @@ int BlackEvaluator::evaluate(const Board &b) const {
     } else {
 
         return -EZPZ * get_direction_of_move_check(b).size() +
-        (block_the_king * block_weight) +
-        pawn_differences(b) +
-        geometry_points(b) +
-        (get_empty_row(b) + get_empty_col(b)) * PREVENT_CHECKMATE;
+               (block_the_king * block_weight) +
+               pawn_differences(b) +
+               geometry_points(b)+
+               PREVENT_CHECKMATE *
+               (get_empty_col_left(b)+
+                get_empty_col_right(b)+
+                get_empty_row_down(b)+
+                get_empty_row_up(b));
     }
 
 }
@@ -171,24 +175,90 @@ int BlackEvaluator::geometry_points(const Board &b) const {
 // Da considerare colonna 2 colonna 6
 // Da considerare riga 2 riga 6
 
-//TODO Cover the one that the king can go to!!!!!
 
-int BlackEvaluator::get_empty_row(const Board &b) const {
-   //Vedere se il king può arrivare a riga 1,2,6,7!
+int BlackEvaluator::get_empty_row_down(const Board &b) const {
+    //Vedere se il king può arrivare a riga 1,2,6,7!
+    int row_counter = 0;
+    for (int i = b.king_pos.row+1; i < 7 ; i++) { //UPSIDE
+        if(b.board[b.king_pos.col][i] == Pawn::Empty) {
+            row_counter = i;
+        }
+    }
+
+    if (row_counter != 6) {
+        return 0;
+    }
+
+    for(int i = 0; i < 9; i++) {
+        if (b.board[i][6] != Pawn::Empty) {
+            return 0;
+        }
+    }
+    return 1;
 }
 
-int BlackEvaluator::get_empty_col(const Board &b) const {
-    //Vedere se il king può arrivare a colonna 1,2,6,7!
-    bool isEmpty2 = true;
-    bool isEmpty6 = true;
-    for (int i = 0; i < 9 && isEmpty2; i++) {
-        isEmpty2 = isEmpty2 && b.board[i][2] == Pawn::Empty;
+int BlackEvaluator::get_empty_row_up(const Board &b) const {
+    int row_counter = b.king_pos.row;
+    for (int i = b.king_pos.row-1; i > 1; i--) { //DOWNSIDE
+        if(b.board[b.king_pos.col][i] == Pawn::Empty) {
+            row_counter = i;
+        }
     }
-    for (int i = 0; i < 9 && isEmpty6; i++) {
-        isEmpty6 = isEmpty6 && b.board[i][6] == Pawn::Empty;
+    if (row_counter != 2) {
+        return 0;
     }
-    return isEmpty2 || isEmpty6 ? 1 : 0;
+
+    for(int i = 0; i < 9; i++) {
+        if (b.board[i][2] != Pawn::Empty) {
+            return 0;
+        }
+    }
+
+    return 1;
 }
+
+int BlackEvaluator::get_empty_col_right(const Board &b) const {
+    int col_counter = b.king_pos.col;
+    for (int i = b.king_pos.col+1; i < 7; i++) { //TO THE RIGHT
+        if(b.board[i][b.king_pos.row] == Pawn::Empty) {
+            col_counter = i;
+        }
+    }
+
+    if (col_counter != 6) {
+
+        return 0;
+    }
+
+    for(int i = 0; i < 9; i++) {
+        if (b.board[6][i] != Pawn::Empty) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+
+int BlackEvaluator::get_empty_col_left(const Board &b) const {
+    int col_counter = b.king_pos.col;
+    for (int i = b.king_pos.col-1; i > 1 ; i--) { //TO THE LEFT
+        if(b.board[i][b.king_pos.row] == Pawn::Empty) {
+            col_counter = i;
+        }
+    }
+
+    if (col_counter != 1) {
+        return 0;
+    }
+
+    for(int i = 0; i < 9; i++) {
+        if (b.board[2][i] != Pawn::Empty) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
 
 BlackEvaluator::BlackEvaluator() {
     geometry_calculator = [](const Board &b, const uint8_t (&matrix)[9][9]) ->int {

@@ -23,16 +23,18 @@ public:
     int black_block_king(const Board &b) const;
     int pawn_differences(const Board &b) const;
     int geometry_points(const Board &b) const;
-    int get_empty_row(const Board &b) const;
-    int get_empty_col(const Board &b) const;
+    int get_empty_row_down(const Board &b) const;
+    int get_empty_row_up(const Board &b) const;
+    int get_empty_col_right(const Board &b) const;
+    int get_empty_col_left(const Board &b) const;
     std::vector<Direction> get_direction_of_move_check(const Board &b)const;
     std::function<int(const Board &b, const uint8_t (&matrix)[9][9])> geometry_calculator;
 
     static const uint8_t BLANK_WG = 0;
     static const uint8_t CYAN_WG = 1;
-    static const uint8_t PURPLE_WG = 1;
+    static const uint8_t PURPLE_WG = 0;
     static const int EZPZ = 20000;
-    static const int PREVENT_CHECKMATE = -100;
+    static const int PREVENT_CHECKMATE = -1000;
 
     uint8_t color_matrix[9][9] = {
             {BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG},
@@ -98,22 +100,22 @@ public:
 
     uint8_t top_right_color_matrix[9][9] = {
             {BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG},
-            {BLANK_WG, BLANK_WG, PURPLE_WG*2, BLANK_WG, CYAN_WG, BLANK_WG, PURPLE_WG},
-            {BLANK_WG, PURPLE_WG*2, BLANK_WG, CYAN_WG*2, BLANK_WG, CYAN_WG, BLANK_WG, PURPLE_WG, BLANK_WG },
-            {BLANK_WG, BLANK_WG, CYAN_WG*2, BLANK_WG, BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG},
-            {BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG},
-            {BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG},
-            {BLANK_WG, PURPLE_WG, BLANK_WG, CYAN_WG, BLANK_WG, CYAN_WG, BLANK_WG, PURPLE_WG, BLANK_WG},
-            {BLANK_WG, BLANK_WG, PURPLE_WG, BLANK_WG, CYAN_WG, BLANK_WG, PURPLE_WG},
+            {BLANK_WG, BLANK_WG, PURPLE_WG, BLANK_WG, CYAN_WG*2, BLANK_WG, PURPLE_WG},
+            {BLANK_WG, PURPLE_WG, BLANK_WG, CYAN_WG, BLANK_WG, 2*CYAN_WG, BLANK_WG, PURPLE_WG, BLANK_WG },
+            {BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG, BLANK_WG, 2*CYAN_WG, BLANK_WG, BLANK_WG},
+            {BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, 2*CYAN_WG, BLANK_WG},
+            {BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG, BLANK_WG, 2*CYAN_WG, BLANK_WG, BLANK_WG},
+            {BLANK_WG, PURPLE_WG, BLANK_WG, CYAN_WG, BLANK_WG, 2*CYAN_WG, BLANK_WG, PURPLE_WG, BLANK_WG},
+            {BLANK_WG, BLANK_WG, PURPLE_WG, BLANK_WG, 2*CYAN_WG, BLANK_WG, PURPLE_WG},
             {BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG},
 
     };
     uint8_t top_left_color_matrix[9][9] = {
             {BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG},
-            {BLANK_WG, BLANK_WG, PURPLE_WG, BLANK_WG, 2*CYAN_WG, BLANK_WG, 2*PURPLE_WG},
-            {BLANK_WG, PURPLE_WG, BLANK_WG, CYAN_WG, BLANK_WG, CYAN_WG, BLANK_WG, 2*PURPLE_WG, BLANK_WG },
-            {BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG, BLANK_WG, 2*CYAN_WG, BLANK_WG, BLANK_WG},
-            {BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG},
+            {BLANK_WG, BLANK_WG, PURPLE_WG, BLANK_WG, CYAN_WG*2, BLANK_WG, PURPLE_WG},
+            {BLANK_WG, PURPLE_WG, BLANK_WG, CYAN_WG*2, BLANK_WG, CYAN_WG, BLANK_WG, PURPLE_WG, BLANK_WG },
+            {BLANK_WG, BLANK_WG, CYAN_WG*2, BLANK_WG, BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG},
+            {BLANK_WG, CYAN_WG*2, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG},
             {BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG},
             {BLANK_WG, PURPLE_WG, BLANK_WG, CYAN_WG, BLANK_WG, CYAN_WG, BLANK_WG, PURPLE_WG, BLANK_WG},
             {BLANK_WG, BLANK_WG, PURPLE_WG, BLANK_WG, CYAN_WG, BLANK_WG, PURPLE_WG},
@@ -140,7 +142,7 @@ public:
             {BLANK_WG, CYAN_WG*2, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG},
             {BLANK_WG, BLANK_WG, CYAN_WG*2, BLANK_WG, BLANK_WG, BLANK_WG, CYAN_WG, BLANK_WG, BLANK_WG},
             {BLANK_WG, PURPLE_WG*2, BLANK_WG, CYAN_WG*2, BLANK_WG, CYAN_WG, BLANK_WG, PURPLE_WG, BLANK_WG},
-            {BLANK_WG, BLANK_WG, PURPLE_WG*2, BLANK_WG, CYAN_WG, BLANK_WG, PURPLE_WG},
+            {BLANK_WG, BLANK_WG, PURPLE_WG*2, BLANK_WG, CYAN_WG*2, BLANK_WG, PURPLE_WG},
             {BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG, BLANK_WG},
 
     };
