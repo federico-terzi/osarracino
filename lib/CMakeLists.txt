@@ -14,6 +14,11 @@ add_library(libosarracino STATIC
         movegenerator/MoveGenerator.h
         movegenerator/ThetaMoveGenerator.cpp movegenerator/ThetaMoveGenerator.h
         util/BitUtils.h util/BoardUtils.cpp util/BoardUtils.h movegenerator/ArnoldMoveGenerator.cpp movegenerator/ArnoldMoveGenerator.h search/SearchEngine.h search/RamboSearchEngine.h util/Timer.h movegenerator/HeisenbergMoveGenerator.cpp movegenerator/HeisenbergMoveGenerator.h evaluator/ReverseTorettoBlackEvaluator.cpp evaluator/ReverseTorettoBlackEvaluator.h)
+        util/BitUtils.h util/BoardUtils.cpp util/BoardUtils.h movegenerator/ArnoldMoveGenerator.cpp movegenerator/ArnoldMoveGenerator.h model/ZobristHash.cpp model/ZobristHash.h model/DTranspositionTable.cpp model/DTranspositionTable.h)
+
+set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native")
 
 target_link_libraries(libosarracino ${JSONCPP_LIBRARIES})
 

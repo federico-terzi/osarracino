@@ -9,201 +9,221 @@
 #include <evaluator/BlackEvaluator.h>
 #include <movegenerator/ThetaMoveGenerator.h>
 #include <movegenerator/ArnoldMoveGenerator.h>
+#include <tuple>
+#include <model/DTranspositionTable.h>
 
 // Returns optimal value for
 // current player(Initially called
 // for root and maximizer)
-const int MAX = 1000000;
+const int MAX = 10000000;
 const int MIN = -MAX;
 
-Position from;
-Position to;
-int move_count = 0;
-bool heuristic_used = false;
+const int MAX_DEPTH = 5;
 
-struct MoveConfiguration {
-    Move move;
-    Board board;
-    int score;
-};
+int moves = 0;
+int hits;
 
 template<typename WhiteEvalType, typename BlackEvalType, typename MoveGeneratorType>
-int Minimax::minimax(int depth, int max_depth, const Evaluator<WhiteEvalType> &whiteEval,
+int Minimax::minimax(int depth, int max_depth,
+                     const Evaluator<WhiteEvalType> &whiteEval,
                      const Evaluator<BlackEvalType> &blackEval,
-                     const MoveGenerator<MoveGeneratorType> &moveGenerator, bool maximizingPlayer, const Board& value,
-                     int alpha, int beta, bool leading_white, int shallow_score) {
-    move_count++;
+                     const MoveGenerator<MoveGeneratorType> &moveGenerator,
+                     bool maximizingPlayer,
+                     Board game_state, int alpha, int beta, bool leading_white, DTranspositionTable &table) {
+    moves++;
 
-    // Terminating condition. i.e
-    // leaf node is reached
-    // TODO: pass only the correct valuator to the minmax
-    if (depth == max_depth) {
-        heuristic_used = true;
-        return shallow_score;
-    }
-
-    if (value.is_black_win()) {
-        if (leading_white) {
-            return -200000;
-        }else{
-            return 200000;
-        }
-    }else if (value.is_white_win()) {
-        if (leading_white) {
-            return 200000;
-        }else{
-            return -200000;
-        }
-    }
-
-    // Generate moves and future configuration
-    auto moves {moveGenerator.generate(value)};
-    std::vector<MoveConfiguration> future_states;
-    for (const auto& move : moves) {
-        auto board {Board::from_board(value, move.from, move.to)};
-
-        // TODO: change passing only one evaluator to minmax
-        int score;
-        if (leading_white) {
-            score = whiteEval.evaluate(board);
-        } else {
-            score = blackEval.evaluate(board);
+    // Se siamo alla radice
+    // oppure siamo arrivati alle foglie
+    // oppure siamo in una board che indica la terminazione del gioco
+    // allora ritorna.
+    if (table.has_entry(game_state) && table.get_entry(game_state).depth >= depth) {
+        hits++;
+        auto myEntry = table.get_entry(game_state);
+        switch (myEntry.flag) {
+            case Flag::HASH_EXACT:
+                return myEntry.score;
+            case Flag::LOWERBOUND:
+                alpha = std::max(alpha, myEntry.score);
+                break;
+            case Flag::UPPERBOUND:
+                beta = std::min(beta, myEntry.score);
+                break;
         }
 
-        future_states.push_back({move, board, score});
+        if (alpha >= beta) {
+            return myEntry.score;
+        }
     }
 
-    /*Populate boards*/
+    if (depth == 0 || depth >= max_depth || game_state.is_black_win() || game_state.is_white_win()) {
+        if (game_state.is_white)
+        return leading_white ? whiteEval.evaluate(game_state) : blackEval.evaluate(game_state);
+    }
 
-    if (maximizingPlayer) {
-        int best = MIN;
+    int evaluation;
 
-        // Order the moves
-        std::sort(future_states.begin(), future_states.end(), [](const auto &s1, const auto &s2) {
-            return s1.score > s2.score;
-        });
+    if (maximizingPlayer) { // Stiamo massimizzando
+
+        //Generiamo tutte le mosse possibili
+        auto all_possible_moves = moveGenerator.generate(game_state);
+        //Evaluation = - infinito
+        evaluation = -MAX;
 
 
-        for (auto &state : future_states) {
-            // TODO: use the cached score instead of calling if needed
-            int val = minimax(depth + 1, max_depth, whiteEval, blackEval, moveGenerator,
-                              false, state.board, alpha, beta, leading_white, state.score);
 
-            best = std::max(best, val);
-            alpha = std::max(alpha, best);
+        for (const auto &move : all_possible_moves) {
+            auto new_game_state = Board::from_board(game_state, move.first,
+                                                    move.second);
 
-            if (depth == 0 && best == val) {
-                from = state.move.from;
-                to = state.move.to;
+            evaluation = std::max(evaluation, minimax(depth + 1, max_depth, whiteEval, blackEval,
+                                                      moveGenerator, false,
+                                                      new_game_state, // new State
+                                                      alpha, beta, leading_white, table));
+
+            BoardEvaluation entry;
+            entry.score = evaluation;
+            if (evaluation <= alpha) {
+                entry.flag = Flag::UPPERBOUND;
+            } else if (evaluation >= beta) {
+                entry.flag = Flag::LOWERBOUND;
+            } else {
+                entry.flag = Flag::HASH_EXACT;
+            }
+            entry.depth = depth;
+            table.add_entry(entry, game_state);
+
+
+            if (evaluation >= beta) {
+                return evaluation;
             }
 
-            // Alpha Beta Pruning
-            if (beta <= alpha)
-                break;
+
+            if (alpha < evaluation) {
+                alpha = evaluation;
+            }
         }
+        return evaluation;
 
-        return best;
-    } else {
-        int best = MAX;
+    } else { // Stiamo minimizzando
+        auto all_possible_moves = moveGenerator.generate(game_state);
 
-        // Order the moves
-        std::sort(future_states.begin(), future_states.end(), [](const auto &s1, const auto &s2) {
-            return s1.score < s2.score;
-        });
+        evaluation = MAX;
 
-        for (auto &state : future_states) {
-            int val = minimax(depth + 1, max_depth, whiteEval, blackEval, moveGenerator,
-                              true, state.board, alpha, beta, leading_white, state.score);
 
-            best = std::min(best, val);
-            beta = std::min(beta, best);
+        for (auto const &move : all_possible_moves) {
+            auto new_game_state = Board::from_board(game_state, move.first,
+                                                    move.second);
 
-            // Alpha Beta Pruning
-            if (beta <= alpha)
-                break;
+            evaluation = std::min(evaluation, minimax(depth + 1, max_depth, whiteEval, blackEval,
+                                                      moveGenerator, true,
+                                                      new_game_state, // new State
+                                                      alpha, beta, leading_white, table));
+
+            BoardEvaluation entry;
+            entry.score = evaluation;
+            if (evaluation <= alpha) {
+                entry.flag = Flag::UPPERBOUND;
+            } else if (evaluation >= beta) {
+                entry.flag = Flag::LOWERBOUND;
+            } else {
+                entry.flag = Flag::HASH_EXACT;
+            }
+            entry.depth = depth;
+            table.add_entry(entry, game_state);
+
+
+            if (evaluation <= alpha) {
+                return evaluation;
+            }
+
+            if (beta > evaluation) {
+                beta = evaluation;
+            }
         }
+        return evaluation;
 
-        return best;
-    }
+    } //ENDIF MAXIMIZING PLAYER
+
+
+
 }
 
 std::string Minimax::best_move(Board &b) {
     TorettoWhiteEvaluator whiteEval;
     BlackEvaluator blackEval;
     ArnoldMoveGenerator moveGenerator;
+    DTranspositionTable table;
     //ThetaMoveGenerator moveGenerator;
 
     const clock_t begin_time = clock();
 
-    heuristic_used = false;
-
-    move_count = 0;
+    moves = 0;
+    hits = 0;
     // Incremental deepening
 
-    int best_score = 0;
-    int max_depth = 1;
-    Position best_from;
-    Position best_to;
-
-    do {
-        auto moves {moveGenerator.generate(b)};
-        std::vector<MoveConfiguration> future_states;
-        for (const auto& move : moves) {
-            auto board {Board::from_board(b, move.from, move.to)};
-
-            // TODO: change passing only one evaluator to minmax
-            int score;
-            if (b.is_white) {
-                score = whiteEval.evaluate(board);
-            } else {
-                score = blackEval.evaluate(board);
-            }
-
-            future_states.push_back({move, board, score});
-        }
-
-        std::sort(future_states.begin(), future_states.end(), [](const auto &s1, const auto &s2) {
-            return s1.score > s2.score;
-        });
-
-        for (auto &state : future_states) {
-            // TODO: use the cached score instead of calling if needed
-            int val = minimax(0, max_depth, whiteEval, blackEval, moveGenerator,
-                              false, state.board, MIN, MAX, b.is_white, state.score);
-
-            if (val > best_score) {
-                best_from = state.move.from;
-                best_to = state.move.to;
-                best_score = val;
-            }
-
-            // Update score
-            state.score = val;
-        }
-
-        std::sort(future_states.begin(), future_states.end(), [](const auto &s1, const auto &s2) {
-            return s1.score > s2.score;
-        });
-
-        if (future_states[0].board.is_white_win() || future_states[0].board.is_black_win()) {
-            break;
-        }
-
-        max_depth++;
-    }while(max_depth <= 4 || heuristic_used);
+    auto best_score = make_decision(0, whiteEval, blackEval, moveGenerator, b, table);
 
     // Print statistics
 
     float elapsed = (clock() - begin_time) / float(CLOCKS_PER_SEC);
-    float speed = float(move_count) / elapsed;
+    float speed = float(moves) / elapsed;
     std::cout << "Evaluation completed. Results: " << std::endl;
-    std::cout << "Explored " << move_count << " moves in " << elapsed << " seconds " << std::endl;
-    std::cout << "Best score: " << best_score << std::endl;
+    std::cout << "Explored " << moves << " moves in " << elapsed << " seconds " << std::endl;
+    std::cout << "Best score: " << std::get<0>(best_score) << std::endl;
     std::cout << "Speed: " << speed << " moves/second." << std::endl;
-    //std::cout << "Reached depth: " << final_depth << std::endl;
+    std::cout << "Table hits:" << hits << std::endl;
 
     std::string color = b.is_white ? "WHITE" : "BLACK";
 
     return std::string(
-            "{\"from\":\"" + best_from.to_move() + "\",\"to\":\"" + best_to.to_move() + "\",\"turn\":\"" + color + "\"}");
+            "{\"from\":\"" + std::get<1>(best_score).to_move() + "\",\"to\":\"" + std::get<2>(best_score).to_move() + "\",\"turn\":\"" + color + "\"}");
 }
+
+template<typename WhiteEvalType, typename BlackEvalType, typename MoveGeneratorType>
+std::tuple<int, Position, Position> Minimax::make_decision(int depth, const Evaluator<WhiteEvalType> &whiteEval,
+                                                           const Evaluator<BlackEvalType> &blackEval,
+                                                           const MoveGenerator<MoveGeneratorType> &moveGenerator,
+                                                           Board game_state, DTranspositionTable &table) {
+    //Init the result
+    std::tuple<int, Position, Position> result;
+    std::get<0>(result) = -MAX;
+
+    //Generate moves
+    auto all_possible_moves = moveGenerator.generate(game_state);
+
+    int max_depth = 1;
+    int state_evaluation;
+
+    do {
+        //std::vector<int> cache_moves;
+        //For each move
+
+        for (const auto &move : all_possible_moves) {
+            auto new_game_state = Board::from_board(game_state, move.first, move.second);
+            state_evaluation = minimax(depth + 1, max_depth, whiteEval, blackEval, moveGenerator, false,
+                                       new_game_state,
+                                       -MAX, MAX,
+                                       game_state.is_white, table);
+
+            // cache_moves.push_back(state_evaluation);
+            //Value is better so update it
+            if (state_evaluation > std::get<0>(result)) {
+                std::get<0>(result) = state_evaluation;
+                std::get<1>(result) = move.first;
+                std::get<2>(result) = move.second;
+            }
+        }
+
+        // We have a winning move[move_index]
+        if (std::get<0>(result) > 9999) {
+            break;
+        }
+        //indexes = sort_moves(cache_moves);
+        max_depth++;
+
+    }while(max_depth <= MAX_DEPTH);
+
+    return result;
+}
+
+
