@@ -173,8 +173,10 @@ std::vector<Direction> BlackEvaluator::get_direction_of_move_check(const Board &
 
 
 // TODO: Block the king based on the turns
-// TODO: Add coverage for the rows and columns for every quarter using the color matrix
 // TODO: Coverage based on white moves.
+
+// TODO: Color matrix based on king quarter
+// La color matrix ora si baserà sulla presenza nel quadrante del re!
 
 
 BlackEvaluator::BlackEvaluator() {
@@ -226,7 +228,6 @@ int BlackEvaluator::evaluate(const Board &b) const {
         if (is_king_in_throne(b)) {
            win_move = block_the_king == 4;
         } else if (is_king_near_throne(b)) {
-
             win_move = block_the_king == 3;
         } else {
             win_move = simple_win_condition(b);
@@ -249,13 +250,52 @@ int BlackEvaluator::evaluate(const Board &b) const {
 
 int BlackEvaluator::geometry_points(const Board &b) const {
     int result {0};
-    for (int i = 0; i < 9; i++) {
-        for (int j = 0; j < 9; j++) {
-            if (b.board[i][j] == Pawn::Black) {
-                result += color_matrix[i][j];
+    if(b.king_pos.row < 4 && b.king_pos.col < 4) {
+        //TOP LEFT
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (b.board[i][j] == Pawn::Black) {
+                    result += top_left_color_matrix[i][j];
+                }
+            }
+        }
+    } else if (b.king_pos.row < 4 && b.king_pos.col > 4) {
+        //TOP RIGHT
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (b.board[i][j] == Pawn::Black) {
+                    result += top_right_color_matrix[i][j];
+                }
+            }
+        }
+    } else if (b.king_pos.row > 4 && b.king_pos.col > 4) {
+        //BOTTOM RIGHT
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (b.board[i][j] == Pawn::Black) {
+                    result += bottom_right_color_matrix[i][j];
+                }
+            }
+        }
+    } else if (b.king_pos.row > 4 && b.king_pos.col < 4) {
+        //BOTTOM LEFT
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (b.board[i][j] == Pawn::Black) {
+                    result += bottom_left_color_matrix[i][j];
+                }
+            }
+        }
+    } else {
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (b.board[i][j] == Pawn::Black) {
+                    result += color_matrix[i][j];
+                }
             }
         }
     }
+
     return result;
 }
 
