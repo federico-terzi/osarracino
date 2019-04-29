@@ -27,10 +27,10 @@ Direction BlackEvaluator::is_king_near_throne(const Board &b) const {
 }
 
 bool BlackEvaluator::throne_win_condition(const Board &b) const {
-        return b.board[b.king_pos.row][b.king_pos.col+1] == Pawn::Black &&      //RIGHT
-               b.board[b.king_pos.row][b.king_pos.col-1] == Pawn::Black &&      //LEFT
-               b.board[b.king_pos.row-1][b.king_pos.col] == Pawn::Black &&      //UP
-               b.board[b.king_pos.row+1][b.king_pos.col] == Pawn::Black;        //DOWN
+        return b.board[b.king_pos.col][b.king_pos.row+1] == Pawn::Black &&      //DOWN
+               b.board[b.king_pos.col][b.king_pos.row-1] == Pawn::Black &&      //UP
+               b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::Black &&      //LEFT
+               b.board[b.king_pos.col+1][b.king_pos.row] == Pawn::Black;        //RIGHT
 
 }
 
@@ -219,14 +219,15 @@ BlackEvaluator::BlackEvaluator() {
 
 int BlackEvaluator::evaluate(const Board &b) const {
     bool win_move = false;
-
+    int block_weight = 1;
     int block_the_king = black_block_king(b);
 
     if (is_moved_near(b, b.king_pos)) { //Check if blacks can win can win
         if (is_king_in_throne(b)) {
-            win_move = throne_win_condition(b);
+           win_move = block_the_king == 4;
         } else if (is_king_near_throne(b)) {
-            win_move = near_throne_win_condition(b);
+
+            win_move = block_the_king == 3;
         } else {
             win_move = simple_win_condition(b);
         }
@@ -235,8 +236,10 @@ int BlackEvaluator::evaluate(const Board &b) const {
     if (win_move) { //We can win
         return EZPZ;
     } else { // We cannot win, so we have to defend, insert here all state calculation
+
+
         return -EZPZ * get_direction_of_move_check(b).size()
-        + block_the_king
+        + block_the_king * block_weight
         + pawn_differences(b)
         + geometry_points(b)
         + get_empty_row(b) * PREVENT_CHECKMATE
