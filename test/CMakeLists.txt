@@ -9,7 +9,7 @@ add_executable(osarracino_tests_run MainTestAll.cpp
         MoveGeneratorTest.cpp BlackEvaluatorTest.cpp
         WhiteEvaluatorTest.cpp ToBeMovedEmptyTest.cpp
         SearchEngineTest.cpp
-        boards/ZobristHashTest.cpp)
+        ZobristHashTest.cpp)
 
 target_link_libraries(osarracino_tests_run libosarracino)
 target_link_libraries(osarracino_tests_run ${GTEST_LIBRARIES} pthread)
