@@ -120,6 +120,7 @@ std::vector<Direction> BlackEvaluator::get_direction_of_move_check(const Board &
 // La color matrix ora si baserà sulla presenza nel quadrante del re!
 
 int BlackEvaluator::evaluate(const Board &b) const {
+    //Block the king must be relational in time
     int block_weight = 1;
     int block_the_king = black_block_king(b);
 
@@ -129,7 +130,7 @@ int BlackEvaluator::evaluate(const Board &b) const {
 
         return -EZPZ * get_direction_of_move_check(b).size() +
                (block_the_king * block_weight) +
-               pawn_differences(b) +
+                2*pawn_differences(b) +
                geometry_points(b)+
                PREVENT_CHECKMATE *
                (get_empty_col_left(b)+
