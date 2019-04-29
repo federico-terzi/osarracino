@@ -5,7 +5,7 @@
 #ifndef OSARRACINO_DTRANSPOSITIONTABLE_H
 #define OSARRACINO_DTRANSPOSITIONTABLE_H
 
-#define DIMENSION 25 * 10000000000
+#define DIMENSION 0xFFFF
 
 #include <unordered_map>
 #include "ZobristHash.h"
@@ -29,6 +29,7 @@ struct BoardEvaluation {
 class DTranspositionTable {
     ZobristHash zobrist_hash;
     std::unordered_map<int, BoardEvaluation> transposition_table;
+    uint64_t hash;
 public:
     void add_entry(const Board &b, int score,const std::pair<Position, Position> &best_move, Flag flag, int depth);
     void add_entry(BoardEvaluation &eval, Board &b);

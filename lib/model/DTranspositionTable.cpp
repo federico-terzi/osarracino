@@ -13,7 +13,7 @@ void DTranspositionTable::add_entry(const Board &b, int score, const std::pair<P
 
     //Now we use always replace as replacement schema.
     auto hash_value = zobrist_hash.hash(b);
-    int index = hash_value % DIMENSION;
+    int index = hash_value & DIMENSION;
 
     if (transposition_table.find(index) != transposition_table.end()) {
         transposition_table[index] = {score, best_move, flag, hash_value, depth};
@@ -26,13 +26,13 @@ void DTranspositionTable::add_entry(const Board &b, int score, const std::pair<P
 }
 
 BoardEvaluation DTranspositionTable::get_entry(const Board &b) const {
-    auto hash_value = zobrist_hash.hash(b);
-    return transposition_table.at(hash_value % DIMENSION);
+    return transposition_table.at(hash & DIMENSION);
 }
 
 bool DTranspositionTable::has_entry(const Board &b) {
     auto hash_value = zobrist_hash.hash(b);
-    int index = hash_value % DIMENSION;
+    int index = hash_value & DIMENSION;
+    hash = hash_value;
 
     auto element = transposition_table.find(index);
     if ( element == transposition_table.end()) {
@@ -44,6 +44,6 @@ bool DTranspositionTable::has_entry(const Board &b) {
 
 void DTranspositionTable::add_entry(BoardEvaluation &eval, Board &b) {
     eval.zobrist_key = zobrist_hash.hash(b);
-    transposition_table[eval.zobrist_key % DIMENSION] = eval;
+    transposition_table[eval.zobrist_key & DIMENSION] = eval;
 
 }

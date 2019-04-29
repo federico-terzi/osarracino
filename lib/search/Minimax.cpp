@@ -18,7 +18,7 @@
 const int MAX = 10000000;
 const int MIN = -MAX;
 
-const int MAX_DEPTH = 4;
+const int MAX_DEPTH = 5;
 
 int moves = 0;
 int hits;
