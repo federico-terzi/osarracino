@@ -22,11 +22,11 @@ const int ZAWARUDO_DEPTH_LIMIT = 20;
 class ZaWarudoSearchEngine : public SearchEngine<ZaWarudoSearchEngine> {
 public:
     std::array<MoveTrace, RAMBO_MAX_DEPTH> move_traces;
-    std::unordered_map<int, std::vector<Move>> killer_moves;
+    std::array<std::vector<Move>, 10> killer_moves;
 
     ZaWarudoSearchEngine() {
         for (int i = 0; i < ZAWARUDO_DEPTH_LIMIT; i++) {
-            killer_moves.emplace(i, std::vector<Move>());
+            killer_moves[i] = std::vector<Move>();
         }
     }
 
