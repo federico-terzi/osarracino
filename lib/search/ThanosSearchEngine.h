@@ -21,10 +21,10 @@ struct ThanosMoveConfiguration {
 
 class ThanosSearchEngine : public SearchEngine<ThanosSearchEngine> {
 public:
-    int worker_count = 8; // TODO: check that is not zero
+    int worker_count = 6; // TODO: check that is not zero
 
     template<typename EvalType, typename MoveGeneratorType>
-    int minimax(int &worker_move_count, int depth, const Evaluator<EvalType> &eval,
+    int minimax(long &worker_move_count, int depth, const Evaluator<EvalType> &eval,
                 const MoveGenerator<MoveGeneratorType> &move_generator,
                 bool maximizing_player,
                 const Board &board, int alpha, int beta) {
@@ -69,14 +69,9 @@ public:
     }
 
     template<typename EvalType, typename MoveGeneratorType>
-    void search_worker(std::vector<ThanosMoveConfiguration> &future_states) {
-
-    }
-
-    template<typename EvalType, typename MoveGeneratorType>
     void search_worker_init(std::vector<ThanosMoveConfiguration> &future_states,
                             ThanosMoveConfiguration &best_move,
-                            int &worker_move_count,
+                            long &worker_move_count,
                             int current_depth_limit,
                             const Evaluator<EvalType> &eval,
                             const MoveGenerator<MoveGeneratorType> &move_generator) {
@@ -138,7 +133,7 @@ public:
         int current_depth_limit = 0;
         bool force_exit = false;
 
-        std::vector<int> worker_move_counts(worker_count);
+        std::vector<long> worker_move_counts(worker_count);
         std::vector<ThanosMoveConfiguration> results(worker_count);
 
         do {

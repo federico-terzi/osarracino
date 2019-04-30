@@ -47,7 +47,7 @@ public:
     }
 
     Timer timer = Timer(56);
-    int move_count = 0;
+    long move_count = 0;
 };
 
 #endif //OSARRACINO_SEARCHENGINE_H
