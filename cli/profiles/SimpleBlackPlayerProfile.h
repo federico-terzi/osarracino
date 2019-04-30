@@ -12,6 +12,7 @@
 #include <movegenerator/HeisenbergMoveGenerator.h>
 #include <evaluator/ReverseTorettoBlackEvaluator.h>
 #include <search/CollisionSearchEngine.h>
+#include <search/ZaWarudoSearchEngine.h>
 #include "PlayerProfile.h"
 
 class SimpleBlackPlayerProfile : public PlayerProfile {
@@ -20,7 +21,7 @@ public:
 
 private:
     //RamboSearchEngine engine;
-    CollisionSearchEngine engine;
+    ZaWarudoSearchEngine engine;
     BlackEvaluator eval;
     //ReverseTorettoBlackEvaluator eval;
     //ArnoldMoveGenerator move_generator;
