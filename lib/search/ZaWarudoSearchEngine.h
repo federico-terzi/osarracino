@@ -24,12 +24,6 @@ public:
     std::array<MoveTrace, RAMBO_MAX_DEPTH> move_traces;
     std::array<std::vector<Move>, 10> killer_moves;
 
-    ZaWarudoSearchEngine() {
-        for (int i = 0; i < ZAWARUDO_DEPTH_LIMIT; i++) {
-            killer_moves[i] = std::vector<Move>();
-        }
-    }
-
     template<typename EvalType, typename MoveGeneratorType>
     int minimax(int depth, const Evaluator<EvalType> &eval,
                 const MoveGenerator<MoveGeneratorType> &move_generator,
@@ -61,7 +55,7 @@ public:
 
                 if (value >= beta) {
                     //Add killer_move
-                    killer_moves[depth].push_back({move.from, move.to});
+                    killer_moves[depth].push_back(move);
                     return value;
                 }
                 alpha = std::max(alpha, value);
@@ -81,7 +75,7 @@ public:
 
                 if (value <= alpha) {
                     //Add killer_move
-                    killer_moves[depth].push_back({move.from, move.to});
+                    killer_moves[depth].push_back(move);
                     return value;
                 }
 
@@ -177,7 +171,11 @@ public:
             }
         }
 
-        killer_moves.clear();
+        /*O si modifica l'interfaccia o tocca fare così*/
+        for (auto &vector: killer_moves) {
+            vector.clear();
+        }
+
         return best_state.move;
     }
 };
