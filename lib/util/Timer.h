@@ -6,6 +6,7 @@
 #define OSARRACINO_TIMER_H
 
 #include <ctime>
+#include "time.h"
 
 class Timer {
 public:
@@ -14,21 +15,33 @@ public:
     }
 
     inline void reset() {
-        begin_time = clock();
-        end_time = begin_time + CLOCKS_PER_SEC * __seconds;
+        clock_gettime(CLOCK_MONOTONIC, &begin_time);
+
+        end_time.tv_sec = begin_time.tv_sec + __seconds;
+        end_time.tv_nsec = begin_time.tv_nsec;
     }
 
     inline float elapsed() {
-        return (clock() - begin_time) / float(CLOCKS_PER_SEC);
+        float elapsed;
+
+        timespec now;
+        clock_gettime(CLOCK_MONOTONIC, &now);
+
+        elapsed = (now.tv_sec - begin_time.tv_sec);
+        elapsed += (now.tv_nsec - begin_time.tv_nsec) / 1000000000.0;
+
+        return elapsed;
     }
 
     inline bool is_timed_out() {
-        return end_time < clock();
+        timespec now;
+        clock_gettime(CLOCK_MONOTONIC, &now);
+        return end_time.tv_sec < now.tv_sec;
     }
 private:
     int __seconds;
-    clock_t begin_time;
-    clock_t end_time;
+    timespec begin_time;
+    timespec end_time;
 };
 
 
