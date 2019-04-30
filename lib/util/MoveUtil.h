@@ -11,7 +11,7 @@
 
 class MoveUtil {
 public:
-    static void Order_Move(std::vector<Move> &moves, std::vector<Move> &place_it_first);
+    static std::vector<Move> Order_Move(std::vector<Move> &moves, std::vector<Move> &place_it_first);
 };
 
 
