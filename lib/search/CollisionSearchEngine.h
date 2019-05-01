@@ -14,7 +14,6 @@
 #include <movegenerator/ThetaMoveGenerator.h>
 #include <movegenerator/ArnoldMoveGenerator.h>
 #include <tuple>
-#include <model/DTranspositionTable.h>
 
 // Returns optimal value for
 // current player(Initially called
@@ -32,11 +31,9 @@ public:
     Move __make_decision_internal(const Board &b,
                                   const Evaluator<EvalType> &eval,
                                   const MoveGenerator<MoveGeneratorType> &move_generator) {
-        DTranspositionTable table;
-
         hits = 0;
 
-        auto best_score = __make_decision(0, eval, move_generator, b, table);
+        auto best_score = __make_decision(0, eval, move_generator, b);
 
         std::cout << "Best score: " << std::get<0>(best_score) << std::endl;
         std::cout << "Table hits:" << hits << std::endl;
@@ -47,7 +44,7 @@ public:
     template<typename EvalType, typename MoveGeneratorType>
     std::tuple<int, Position, Position> __make_decision(int depth, const Evaluator<EvalType> &eval,
                                                       const MoveGenerator<MoveGeneratorType> &moveGenerator,
-                                                      Board game_state, DTranspositionTable &table) {
+                                                      Board game_state) {
         //Init the result
         std::tuple<int, Position, Position> result;
         std::get<0>(result) = -MAX;
@@ -67,7 +64,7 @@ public:
                 state_evaluation = minimax(depth + 1, max_depth, eval, moveGenerator, false,
                                            new_game_state,
                                            -MAX, MAX,
-                                           game_state.is_white, table);
+                                           game_state.is_white);
 
                 // cache_moves.push_back(state_evaluation);
                 //Value is better so update it
@@ -95,31 +92,15 @@ public:
                 const Evaluator<EvalType> &eval,
                 const MoveGenerator<MoveGeneratorType> &moveGenerator,
                 bool maximizingPlayer,
-                Board game_state, int alpha, int beta, bool leading_white, DTranspositionTable &table) {
+                Board game_state, int alpha, int beta, bool leading_white) {
         move_count++;
 
         // Se siamo alla radice
         // oppure siamo arrivati alle foglie
         // oppure siamo in una board che indica la terminazione del gioco
         // allora ritorna.
-        if (table.has_entry(game_state) && table.get_entry(game_state).depth >= depth) {
-            hits++;
-            auto myEntry = table.get_entry(game_state);
-            switch (myEntry.flag) {
-                case Flag::HASH_EXACT:
-                    return myEntry.score;
-                case Flag::LOWERBOUND:
-                    alpha = std::max(alpha, myEntry.score);
-                    break;
-                case Flag::UPPERBOUND:
-                    beta = std::min(beta, myEntry.score);
-                    break;
-            }
 
-            if (alpha >= beta) {
-                return myEntry.score;
-            }
-        }
+
 
         if (depth == 0 || depth >= max_depth || game_state.is_black_win() || game_state.is_white_win()) {
             if (game_state.is_white)
@@ -143,20 +124,7 @@ public:
                 evaluation = std::max(evaluation, minimax(depth + 1, max_depth, eval,
                                                           moveGenerator, false,
                                                           new_game_state, // new State
-                                                          alpha, beta, leading_white, table));
-
-                BoardEvaluation entry;
-                entry.score = evaluation;
-                if (evaluation <= alpha) {
-                    entry.flag = Flag::UPPERBOUND;
-                } else if (evaluation >= beta) {
-                    entry.flag = Flag::LOWERBOUND;
-                } else {
-                    entry.flag = Flag::HASH_EXACT;
-                }
-                entry.depth = depth;
-                table.add_entry(entry, game_state);
-
+                                                          alpha, beta, leading_white));
 
                 if (evaluation >= beta) {
                     return evaluation;
@@ -182,19 +150,7 @@ public:
                 evaluation = std::min(evaluation, minimax(depth + 1, max_depth, eval,
                                                           moveGenerator, true,
                                                           new_game_state, // new State
-                                                          alpha, beta, leading_white, table));
-
-                BoardEvaluation entry;
-                entry.score = evaluation;
-                if (evaluation <= alpha) {
-                    entry.flag = Flag::UPPERBOUND;
-                } else if (evaluation >= beta) {
-                    entry.flag = Flag::LOWERBOUND;
-                } else {
-                    entry.flag = Flag::HASH_EXACT;
-                }
-                entry.depth = depth;
-                table.add_entry(entry, game_state);
+                                                          alpha, beta, leading_white));
 
 
                 if (evaluation <= alpha) {

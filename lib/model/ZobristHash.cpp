@@ -53,7 +53,7 @@ uint64_t ZobristHash::hash(const Board &b) const {
 
 
             /*Qua c'è da fare una mappa al post di sto coso*/
-            int j;
+            int j = 0;
             if (b.board[pos.col][pos.row] == Pawn::King) {
                 j = king;
             } else if (b.board[pos.col][pos.row] == Pawn::White) {

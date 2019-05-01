@@ -9,8 +9,8 @@
 #include <string>
 
 struct Position {
-    int col;
-    int row;
+    int8_t col;
+    int8_t row;
 
     bool operator==(const Position &rhs) const;
     bool operator!=(const Position &rhs) const;
