@@ -46,7 +46,7 @@ public:
         move_count = 0;
     }
 
-    Timer timer = Timer(3);
+    Timer timer = Timer(20);
     long move_count = 0;
 };
 

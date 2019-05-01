@@ -73,6 +73,7 @@ public:
                             ThanosMoveConfiguration &best_move,
                             long &worker_move_count,
                             int &early_exit,
+                            float &elapsed,
                             int current_depth_limit,
                             const Evaluator<EvalType> &eval,
                             const MoveGenerator<MoveGeneratorType> &move_generator) {
@@ -103,6 +104,8 @@ public:
         std::sort(future_states.begin(), future_states.end(), [](const auto &s1, const auto &s2) {
             return s1.score > s2.score;
         });
+
+        elapsed = timer.elapsed();
 
         best_move = future_states[0];
     }
@@ -142,22 +145,21 @@ public:
         std::vector<ThanosMoveConfiguration> results(worker_count);
 
         do {
-            std::cout << "Searching depth: " << current_depth_limit << ". Explored " << move_count << " moves in "
-                      << timer.elapsed() << " s" << std::endl;
-
             std::vector<std::thread> threads;
-            std::vector<int> early_exit(worker_count);
+            std::vector<int> worker_early_exit(worker_count);
+            std::vector<float> worker_elapsed(worker_count);
 
             int current_slice = 0;
             for (auto &move_slice: slices) {
-                early_exit[current_slice] = false;
+                worker_early_exit[current_slice] = false;
 
                 std::thread t(&ThanosSearchEngine::search_worker_init<EvalType, MoveGeneratorType>,
                         this,
                         std::ref(move_slice),
                         std::ref(results[current_slice]),
                         std::ref(worker_move_counts[current_slice]),
-                        std::ref(early_exit[current_slice]),
+                        std::ref(worker_early_exit[current_slice]),
+                        std::ref(worker_elapsed[current_slice]),
                         current_depth_limit,
                         std::ref(eval), std::ref(move_generator));
 
@@ -173,7 +175,7 @@ public:
             // Check if any of the threads exited early
             force_exit = false;
             int current_worker = 0;
-            for (auto worker_exit : early_exit) {
+            for (auto worker_exit : worker_early_exit) {
                 if (worker_exit) {
                     std::cout << "Worker "<<current_worker<<" requested early exit" << std::endl;
                     force_exit = true;
@@ -181,6 +183,23 @@ public:
                 }
                 current_worker++;
             }
+
+            // Calculate complessive move count
+            move_count = 0;
+            for (int worker_move_count : worker_move_counts) {
+                move_count += worker_move_count;
+            }
+
+            // Print per/thread statistics
+            for (int i = 0; i<worker_count; ++i) {
+                std::cout << "Worker: " << i << " explored " << worker_move_counts[i] << " moves in "
+                          << worker_elapsed[i] << " seconds with score: " << results[i].score << std::endl;
+            }
+
+            std::cout << "Searched depth: " << (current_depth_limit+1) << ". Explored a total of " << move_count << " moves in "
+                      << timer.elapsed() << " s" << std::endl;
+
+
 
             current_depth_limit++;
         } while (current_depth_limit <= THANOS_MAX_DEPTH && !force_exit && !timer.is_timed_out());
@@ -192,10 +211,6 @@ public:
         std::sort(results.begin(), results.end(), [](const auto &s1, const auto &s2) {
             return s1.score > s2.score;
         });
-
-        for (int worker_move_count : worker_move_counts) {
-            move_count += worker_move_count;
-        }
 
         auto best_state = results[0];
 
