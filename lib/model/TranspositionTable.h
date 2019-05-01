@@ -18,7 +18,7 @@ enum Flags {
 
 struct TTEntry {
     int16_t score;
-    uint64_t key;
+    uint32_t key;
     Move move;
     Flags flag;
     uint8_t depth;
@@ -48,7 +48,7 @@ public:
     }
 
     inline TTEntry * get_first(const Board &b) {
-        return buckets[this->get_key(b) & (size -1)].data;
+        return buckets[(this->get_key(b) & 0xFFFF) & (size -1)].data;
     }
 
 private:

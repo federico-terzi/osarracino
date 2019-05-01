@@ -25,7 +25,7 @@ void TranspositionTable::clear() {
 }
 
 void TranspositionTable::store(const Board &b, const Move &move, uint8_t depth, int score, Flags flag) {
-    uint64_t key = this->get_key(b);
+    uint32_t key = this->get_key(b) & 0xFFFF;
     TTEntry * first = this->get_first(b);
     TTEntry * to_replace = first;
 
@@ -47,7 +47,7 @@ void TranspositionTable::store(const Board &b, const Move &move, uint8_t depth, 
             to_replace = first;
         }
     }
-    // None of the buckets had the same hash, some we replace the one at highest depth
+    // None of the buckets had the same hash, so we replace the one at highest depth
     to_replace->key = key;
     to_replace->move = move;
     to_replace->depth = depth;
@@ -59,7 +59,7 @@ TTEntry *TranspositionTable::get(const Board &b) {
     TTEntry * first = get_first(b);
 
     for (int i = 0; i < BucketSize; i++, first++) {
-        if (first->key == this->get_key(b)) {
+        if (first->key == (this->get_key(b) & 0xFFFF)) {
             return first;
         }
     }
