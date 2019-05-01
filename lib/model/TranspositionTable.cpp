@@ -7,7 +7,12 @@
 #include <cstring>
 
 TranspositionTable::TranspositionTable() {
-    size = SIZE_OF_TABLE;
+    size_t newsize = 1024;
+    while (2ULL* newsize * sizeof(TTBucket) <= SIZE_OF_TABLE ) {
+        newsize *= 2;
+    }
+    size = newsize;
+
     buckets = new TTBucket[size];
 }
 
@@ -19,7 +24,7 @@ void TranspositionTable::clear() {
     memset(buckets, 0, size);
 }
 
-void TranspositionTable::store(const Board &b, const Move &move, uint8_t depth, int score) {
+void TranspositionTable::store(const Board &b, const Move &move, uint8_t depth, int score, Flags flag) {
     uint64_t key = this->get_key(b);
     TTEntry * first = this->get_first(b);
     TTEntry * to_replace = first;
@@ -27,11 +32,12 @@ void TranspositionTable::store(const Board &b, const Move &move, uint8_t depth, 
     for (int i = 0; i < BucketSize; i++, first++){ //For every element in the bucket
         //If the key is not set or the key is the same
         //Place the entry
-        if (!first->key || first->key == key) {
+        if (!(first->key) || first->key == key) {
             //Storing the entry
             first->key = key;
             first->move = move;
             first->depth = depth;
+            first->flag = flag;
             first->score = score;
             return; //Job done, we return
         }
@@ -45,6 +51,7 @@ void TranspositionTable::store(const Board &b, const Move &move, uint8_t depth, 
     to_replace->key = key;
     to_replace->move = move;
     to_replace->depth = depth;
+    to_replace->flag = flag;
     to_replace->score = score;
 }
 

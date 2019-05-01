@@ -21,8 +21,9 @@ public:
 
 private:
     //RamboSearchEngine engine;
-    ZaWarudoSearchEngine engine;
+    //ZaWarudoSearchEngine engine;
     BlackEvaluator eval;
+    CollisionSearchEngine engine;
     //ReverseTorettoBlackEvaluator eval;
     //ArnoldMoveGenerator move_generator;
     HeisenbergMoveGenerator move_generator;

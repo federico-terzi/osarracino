@@ -14,6 +14,7 @@
 #include <movegenerator/ThetaMoveGenerator.h>
 #include <movegenerator/ArnoldMoveGenerator.h>
 #include <tuple>
+#include <model/TranspositionTable.h>
 
 // Returns optimal value for
 // current player(Initially called
@@ -21,11 +22,12 @@
 const int MAX = 10000000;
 const int MIN = -MAX;
 
-const int MAX_DEPTH = 5;
+const int MAX_DEPTH = 7;
 
 class CollisionSearchEngine : public SearchEngine<CollisionSearchEngine> {
 public:
     int hits;
+    TranspositionTable table;
 
     template<typename EvalType, typename MoveGeneratorType>
     Move __make_decision_internal(const Board &b,
@@ -43,8 +45,8 @@ public:
 
     template<typename EvalType, typename MoveGeneratorType>
     std::tuple<int, Position, Position> __make_decision(int depth, const Evaluator<EvalType> &eval,
-                                                      const MoveGenerator<MoveGeneratorType> &moveGenerator,
-                                                      Board game_state) {
+                                                        const MoveGenerator<MoveGeneratorType> &moveGenerator,
+                                                        Board game_state) {
         //Init the result
         std::tuple<int, Position, Position> result;
         std::get<0>(result) = -MAX;
@@ -95,11 +97,27 @@ public:
                 Board game_state, int alpha, int beta, bool leading_white) {
         move_count++;
 
-        // Se siamo alla radice
-        // oppure siamo arrivati alle foglie
-        // oppure siamo in una board che indica la terminazione del gioco
-        // allora ritorna.
+        int alpha_orig = alpha;
 
+        TTEntry * entry = table.get(game_state);
+        if (entry != NULL && entry->depth >= depth) {
+            hits++;
+            switch (entry->flag) {
+                case EXACT:
+                    return entry->score;
+                    break;
+                case UPPERBOUND:
+                    if (alpha < entry->score) {
+                        alpha = entry->score;
+                    }
+                    break;
+                case LOWERBOUND:
+                    if (entry->score < beta) {
+                        beta = entry->score;
+                    }
+                    break;
+            }
+        }
 
 
         if (depth == 0 || depth >= max_depth || game_state.is_black_win() || game_state.is_white_win()) {
@@ -134,6 +152,12 @@ public:
                 if (alpha < evaluation) {
                     alpha = evaluation;
                 }
+
+                if (evaluation <= alpha_orig) {
+                    table.store(game_state, move, depth, evaluation,Flags::UPPERBOUND);
+                } else {
+                    table.store(game_state, move, depth, evaluation,Flags::EXACT);
+                }
             }
             return evaluation;
 
@@ -152,13 +176,18 @@ public:
                                                           new_game_state, // new State
                                                           alpha, beta, leading_white));
 
-
                 if (evaluation <= alpha) {
                     return evaluation;
                 }
 
                 if (beta > evaluation) {
                     beta = evaluation;
+                }
+
+                if (evaluation >= beta) {
+                    table.store(game_state, move, depth, evaluation,Flags::LOWERBOUND);
+                } else {
+                    table.store(game_state, move, depth, evaluation,Flags::EXACT);
                 }
             }
             return evaluation;

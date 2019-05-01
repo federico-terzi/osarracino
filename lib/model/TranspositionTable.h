@@ -10,10 +10,17 @@
 #include <movegenerator/MoveGenerator.h>
 #include "ZobristHash.h"
 
+enum Flags {
+    UPPERBOUND = 0,
+    LOWERBOUND = 1,
+    EXACT = 2
+};
+
 struct TTEntry {
     int16_t score;
     uint64_t key;
     Move move;
+    Flags flag;
     uint8_t depth;
 
 };
@@ -32,7 +39,7 @@ public:
 
     TranspositionTable();
     ~TranspositionTable();
-    void store(const Board &b, const Move &move,uint8_t depth ,int score);
+    void store(const Board &b, const Move &move,uint8_t depth ,int score, Flags flag);
     TTEntry * get(const Board &b);
     void clear();
 
