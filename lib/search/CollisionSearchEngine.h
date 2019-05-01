@@ -22,7 +22,7 @@
 const int MAX = 10000000;
 const int MIN = -MAX;
 
-const int MAX_DEPTH = 7;
+const int MAX_DEPTH = 5;
 
 class CollisionSearchEngine : public SearchEngine<CollisionSearchEngine> {
 public:
@@ -39,6 +39,7 @@ public:
 
         std::cout << "Best score: " << std::get<0>(best_score) << std::endl;
         std::cout << "Table hits:" << hits << std::endl;
+        table.clear();
 
         return Move{std::get<1>(best_score), std::get<2>(best_score)};
     }
