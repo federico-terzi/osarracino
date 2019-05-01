@@ -72,9 +72,14 @@ public:
     void search_worker_init(std::vector<ThanosMoveConfiguration> &future_states,
                             ThanosMoveConfiguration &best_move,
                             long &worker_move_count,
+                            int &early_exit,
                             int current_depth_limit,
                             const Evaluator<EvalType> &eval,
                             const MoveGenerator<MoveGeneratorType> &move_generator) {
+        std::sort(future_states.begin(), future_states.end(), [](const auto &s1, const auto &s2) {
+            return s1.score > s2.score;
+        });
+
         for (auto &state: future_states) {
             int value = minimax(std::ref(worker_move_count), current_depth_limit, eval, move_generator, false, state.board,
                                 std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
@@ -90,6 +95,7 @@ public:
             if (value > 100000) {
                 std::cout << "Stopping evaluation with winning move: " << state.move << " at depth: "
                           << current_depth_limit << std::endl;
+                early_exit = true;
                 break;
             }
         }
@@ -131,8 +137,7 @@ public:
         }
 
         int current_depth_limit = 0;
-        bool force_exit = false;
-
+        bool force_exit;
         std::vector<long> worker_move_counts(worker_count);
         std::vector<ThanosMoveConfiguration> results(worker_count);
 
@@ -141,26 +146,18 @@ public:
                       << timer.elapsed() << " s" << std::endl;
 
             std::vector<std::thread> threads;
+            std::vector<int> early_exit(worker_count);
 
             int current_slice = 0;
             for (auto &move_slice: slices) {
-                /*std::vector<ThanosMoveConfiguration> &future_states,
-                ThanosMoveConfiguration &best_move,
-                int &worker_move_count,
-                int current_depth_limit,
-                const Evaluator<EvalType> &eval,
-                const MoveGenerator<MoveGeneratorType> &move_generator*/
-
-                /*std::thread t(&ThanosSearchEngine::search_worker<EvalType, MoveGeneratorType>,
-                        this,
-                        move_slice
-                        );*/
+                early_exit[current_slice] = false;
 
                 std::thread t(&ThanosSearchEngine::search_worker_init<EvalType, MoveGeneratorType>,
                         this,
                         std::ref(move_slice),
                         std::ref(results[current_slice]),
                         std::ref(worker_move_counts[current_slice]),
+                        std::ref(early_exit[current_slice]),
                         current_depth_limit,
                         std::ref(eval), std::ref(move_generator));
 
@@ -172,8 +169,21 @@ public:
                 t.join();
             }
 
+
+            // Check if any of the threads exited early
+            force_exit = false;
+            int current_worker = 0;
+            for (auto worker_exit : early_exit) {
+                if (worker_exit) {
+                    std::cout << "Worker "<<current_worker<<" requested early exit" << std::endl;
+                    force_exit = true;
+                    break;
+                }
+                current_worker++;
+            }
+
             current_depth_limit++;
-        } while (current_depth_limit <= THANOS_MAX_DEPTH && !timer.is_timed_out());
+        } while (current_depth_limit <= THANOS_MAX_DEPTH && !force_exit && !timer.is_timed_out());
 
         if (timer.is_timed_out()) {
             std::cout << "TIMED OUT" << std::endl;
