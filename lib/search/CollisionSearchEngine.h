@@ -26,19 +26,22 @@ const int MAX_DEPTH = 5;
 
 class CollisionSearchEngine : public SearchEngine<CollisionSearchEngine> {
 public:
-    int hits;
+    int hits_exact, hits_lower, hits_upper;
     TranspositionTable table;
 
     template<typename EvalType, typename MoveGeneratorType>
     Move __make_decision_internal(const Board &b,
                                   const Evaluator<EvalType> &eval,
                                   const MoveGenerator<MoveGeneratorType> &move_generator) {
-        hits = 0;
+        hits_exact = hits_lower = hits_upper = 0;
 
         auto best_score = __make_decision(0, eval, move_generator, b);
 
         std::cout << "Best score: " << std::get<0>(best_score) << std::endl;
-        std::cout << "Table hits:" << hits << std::endl;
+        std::cout << "Table hits exact:" << hits_exact << std::endl;
+        std::cout << "Table hits upperbound:" << hits_upper << std::endl;
+        std::cout << "Table hits lowerbound:" << hits_lower << std::endl;
+
         table.clear();
 
         return Move{std::get<1>(best_score), std::get<2>(best_score)};
@@ -102,18 +105,20 @@ public:
 
         TTEntry * entry = table.get(game_state);
         if (entry != NULL && entry->depth >= depth) {
-            hits++;
             switch (entry->flag) {
                 case EXACT:
+                    hits_exact++;
                     return entry->score;
                     break;
                 case UPPERBOUND:
                     if (alpha < entry->score) {
+                        hits_upper++;
                         alpha = entry->score;
                     }
                     break;
                 case LOWERBOUND:
                     if (entry->score < beta) {
+                        hits_lower++;
                         beta = entry->score;
                     }
                     break;
@@ -156,7 +161,7 @@ public:
 
                 if (evaluation <= alpha_orig) {
                     table.store(game_state, move, depth, evaluation,Flags::UPPERBOUND);
-                } else {
+                } else if (alpha_orig< evaluation && evaluation < beta){
                     table.store(game_state, move, depth, evaluation,Flags::EXACT);
                 }
             }
@@ -187,7 +192,7 @@ public:
 
                 if (evaluation >= beta) {
                     table.store(game_state, move, depth, evaluation,Flags::LOWERBOUND);
-                } else {
+                } else if (alpha_orig < evaluation && evaluation < beta) {
                     table.store(game_state, move, depth, evaluation,Flags::EXACT);
                 }
             }
