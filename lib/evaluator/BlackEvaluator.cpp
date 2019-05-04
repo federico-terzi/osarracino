@@ -113,25 +113,24 @@ std::vector<Direction> BlackEvaluator::get_direction_of_move_check(const Board &
 }
 
 
-// TODO: Block the king based on the turns
-// TODO: Coverage based on white moves.
-
-// TODO: Color matrix based on king quarter
 // La color matrix ora si baserà sulla presenza nel quadrante del re!
 
 int BlackEvaluator::evaluate(const Board &b) const {
     //Block the king must be relational in time
-    int block_weight = 1;
+    int block_weight = 0;
     int block_the_king = black_block_king(b);
 
     if(b.is_black_win()) {
         return EZPZ;
     } else {
-
+        int geometry = geometry_points(b);
+        if (geometry >= 4) {
+            block_the_king = 2;
+        }
         return -EZPZ * get_direction_of_move_check(b).size() +
                (block_the_king * block_weight) +
                 2*pawn_differences(b) +
-               geometry_points(b)+
+               geometry+
                PREVENT_CHECKMATE *
                (get_empty_col_left(b)+
                 get_empty_col_right(b)+
