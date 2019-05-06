@@ -128,5 +128,14 @@ std::vector<Move> HeisenbergMoveGenerator::generate(const Board &b) const {
         current_moves.insert(current_moves.end(), vertical_moves.begin(), vertical_moves.end());
     }
 
+    if (!b.is_white) { // SORT BY KING DISTANCE
+        std::sort(current_moves.begin(), current_moves.end(), [&b](const auto &item1, const auto &item2) {
+           return abs(b.king_pos.col - item1.to.col + b.king_pos.row - item1.to.row) <  abs(b.king_pos.col - item2.to.col + b.king_pos.row - item2.to.row);
+        });
+    } else {
+        std::sort(current_moves.begin(), current_moves.end(), [&b](const auto &item1, const auto &item2)-> bool {
+           return abs(b.king_pos.col - item1.from.col + b.king_pos.row - item1.from.row) <  abs(b.king_pos.col - item2.from.col + b.king_pos.row - item2.from.row);
+        });
+    }
     return current_moves;
 }
