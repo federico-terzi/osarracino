@@ -3,6 +3,7 @@
 //
 
 #include "util/BitUtils.h"
+#include <algorithm>
 #include "HeisenbergMoveGenerator.h"
 
 const bool citadels[9][9] = {
