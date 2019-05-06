@@ -117,7 +117,7 @@ std::vector<Direction> BlackEvaluator::get_direction_of_move_check(const Board &
 
 int BlackEvaluator::evaluate(const Board &b) const {
     //Block the king must be relational in time
-    int block_weight = 0;
+    int block_weight = 1;
     int block_the_king = black_block_king(b);
 
     if(b.is_black_win()) {

@@ -22,7 +22,7 @@
 const int MAX = 10000000;
 const int MIN = -MAX;
 
-const int MAX_DEPTH = 5;
+const int MAX_DEPTH = 20;
 
 class CollisionSearchEngine : public SearchEngine<CollisionSearchEngine> {
 public:
@@ -76,16 +76,21 @@ public:
                     std::get<1>(result) = move.from;
                     std::get<2>(result) = move.to;
                 }
+
+                if (timer.is_timed_out()) {
+                    break;
+                }
             }
 
             // We have a winning move[move_index]
             if (std::get<0>(result) > 9999) {
                 break;
             }
+            std::cout << "End of depth " << max_depth << std::endl;
             //indexes = sort_moves(cache_moves);
             max_depth++;
 
-        } while (max_depth <= MAX_DEPTH);
+        } while (max_depth <= MAX_DEPTH && !timer.is_timed_out());
 
         return result;
     }
@@ -121,7 +126,7 @@ public:
             }
         }
 
-        if (depth == 0 || depth >= max_depth || game_state.is_black_win() || game_state.is_white_win()) {
+        if (timer.is_timed_out() || depth == 0 || depth >= max_depth || game_state.is_black_win() || game_state.is_white_win()) {
             if (game_state.is_white)
                 return eval.evaluate(game_state);
         }
