@@ -5,6 +5,9 @@ Installation instructions
 ```
 sudo apt install -y pkg-config
 sudo apt install libjsoncpp-dev
+
+If there are some errors with jsoncpp do:
+sudo ln -s /usr/lib/x86_64-linux-gnu/your_jsoncpp.so.xx /usr/lib/x86_64-linux-gnu/required_jsoncpp.so.xx
 ```
 
 Install gtest for testing
