@@ -17,14 +17,6 @@ const int RAMBO_MAX_DEPTH = 20;
 
 //#define ENABLE_ADVANCED_TRACING
 
-#ifdef ENABLE_ADVANCED_TRACING
-#pragma message "WARNING: Enabling Advanced Tracing, it may decrease performance."
-constexpr const bool enable_advanced_tracing = true;
-#else
-constexpr const bool enable_advanced_tracing = false;
-#endif
-
-
 struct MoveTrace {
     Move move;
     bool maximizing;
@@ -71,9 +63,9 @@ public:
                 auto new_board{Board::from_board(board, move.from, move.to)};
                 value = std::max(value, minimax(depth - 1, eval, move_generator, false, new_board, alpha, beta));
 
-                if constexpr (enable_advanced_tracing) {
-                    move_traces[depth-1] = {move, maximizing_player, value, depth-1, true};
-                }
+#ifdef ENABLE_ADVANCED_TRACING
+                move_traces[depth-1] = {move, maximizing_player, value, depth-1, true};
+#endif
 
                 if (value >= beta) {
                     return value;
@@ -89,9 +81,9 @@ public:
                 auto new_board{Board::from_board(board, move.from, move.to)};
                 value = std::min(value, minimax(depth - 1, eval, move_generator, true, new_board, alpha, beta));
 
-                if constexpr (enable_advanced_tracing) {
-                    move_traces[depth-1] = {move, maximizing_player, value, depth-1, true};
-                }
+#ifdef ENABLE_ADVANCED_TRACING
+                move_traces[depth-1] = {move, maximizing_player, value, depth-1, true};
+#endif
 
                 if (value <= alpha) {
                     return value;
@@ -131,18 +123,18 @@ public:
                 return s1.score > s2.score;
             });
 
-            if constexpr (enable_advanced_tracing) {
-                // Reset move traces array.
-                move_traces = std::array<MoveTrace, RAMBO_MAX_DEPTH>();
-            }
+#ifdef ENABLE_ADVANCED_TRACING
+            // Reset move traces array.
+            move_traces = std::array<MoveTrace, RAMBO_MAX_DEPTH>();
+#endif
 
             for (auto &state: future_states) {
                 int value = minimax(current_depth_limit, eval, move_generator, false, state.board,
                                     std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 
-                if constexpr (enable_advanced_tracing) {
-                    move_traces[current_depth_limit] = {state.move, true, value, current_depth_limit, true};
-                }
+#ifdef ENABLE_ADVANCED_TRACING
+                move_traces[current_depth_limit] = {state.move, true, value, current_depth_limit, true};
+#endif
 
                 if (timer.is_timed_out()) {
                     break;
@@ -177,7 +169,7 @@ public:
         std::cout << "Best score: " << best_state.score << std::endl;
         std::cout << "Reached depth: " << current_depth_limit-1 << std::endl;
 
-        if constexpr (enable_advanced_tracing) {
+#ifdef ENABLE_ADVANCED_TRACING
             std::cout << "Possible moves: " << std::endl;
             for (auto &state: future_states) {
                 std::cout << state.move << " with score: " << state.score << " at depth: " << state.depth <<std::endl;
@@ -187,7 +179,7 @@ public:
             for (int i = 0; best_state.move_traces[i].valid; i++) {
                 std::cout << best_state.move_traces[i] << std::endl;
             }
-        }
+#endif
 
 
         return best_state.move;
