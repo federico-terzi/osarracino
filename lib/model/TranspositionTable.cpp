@@ -25,7 +25,7 @@ void TranspositionTable::clear() {
 }
 
 void TranspositionTable::store(const Board &b, const Move &move, uint8_t depth, int score, Flags flag) {
-    uint32_t key = this->get_key(b) & 0xFFFF;
+    uint64_t key = this->get_key(b);
     TTEntry * first = this->get_first(b);
     TTEntry * to_replace = first;
 
@@ -59,7 +59,7 @@ TTEntry *TranspositionTable::get(const Board &b) {
     TTEntry * first = get_first(b);
 
     for (int i = 0; i < BucketSize; i++, first++) {
-        if (first->key == (this->get_key(b) & 0xFFFF)) {
+        if (first->key == (this->get_key(b))) {
             return first;
         }
     }
