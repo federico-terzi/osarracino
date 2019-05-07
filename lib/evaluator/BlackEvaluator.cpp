@@ -13,65 +13,6 @@
 #define  THIRD_QUARTER 0,4,4,8
 #define  FOURTH_QUARTER 0,4,0,4
 
-
-bool BlackEvaluator::is_king_in_throne(const Board &b) const{
-    return b.king_pos.col == 4 && b.king_pos.row == 4;
-}
-
-Direction BlackEvaluator::is_king_near_throne(const Board &b) const {
-    auto it = near_throne.find(b.king_pos);
-    if (it != near_throne.end()) {
-        return it->second;
-    }
-    return Direction::None;
-}
-
-bool BlackEvaluator::throne_win_condition(const Board &b) const {
-        return b.board[b.king_pos.col][b.king_pos.row+1] == Pawn::Black &&      //DOWN
-               b.board[b.king_pos.col][b.king_pos.row-1] == Pawn::Black &&      //UP
-               b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::Black &&      //LEFT
-               b.board[b.king_pos.col+1][b.king_pos.row] == Pawn::Black;        //RIGHT
-
-}
-
-bool BlackEvaluator::near_throne_win_condition(const Board &b) const {
-    Direction dir = is_king_near_throne(b);
-    if (dir == Direction::None) {
-        return false;
-    } else {
-        return near_checks.at(dir)(b);
-    }
-
-}
-
-bool BlackEvaluator::simple_win_condition(const Board &b) const {
-    //Se il re non è sul trono o adiacente
-    return ((!is_king_in_throne(b)) && (!is_king_in_throne(b))) &&
-
-           (((b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::Black
-              || b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::BlackWinPoint
-              || b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::FullCitadel
-              || b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::EmptyCitadel)
-             &&
-             (b.board[b.king_pos.col+1][b.king_pos.row] == Pawn::Black
-              || b.board[b.king_pos.col+1][b.king_pos.row] == Pawn::BlackWinPoint
-              || b.board[b.king_pos.col+1][b.king_pos.row] == Pawn::FullCitadel
-              || b.board[b.king_pos.col+1][b.king_pos.row] == Pawn::EmptyCitadel))
-
-            ||
-
-            ((b.board[b.king_pos.col][b.king_pos.row-1] == Pawn::Black
-              || b.board[b.king_pos.col][b.king_pos.row-1] == Pawn::BlackWinPoint
-              || b.board[b.king_pos.col][b.king_pos.row-1] == Pawn::FullCitadel
-              || b.board[b.king_pos.col][b.king_pos.row-1] == Pawn::EmptyCitadel)
-             &&
-             (b.board[b.king_pos.col][b.king_pos.row+1] == Pawn::Black
-              || b.board[b.king_pos.col][b.king_pos.row+1] == Pawn::FullCitadel
-              || b.board[b.king_pos.col][b.king_pos.row+1] == Pawn::BlackWinPoint
-              || b.board[b.king_pos.col][b.king_pos.row+1] == Pawn::EmptyCitadel)));
-
-}
-
 //If the blacks is near the king -> bonus points!
 int BlackEvaluator::black_block_king(const Board &b) const {
     int blocks {0};
@@ -172,159 +113,185 @@ std::vector<Direction> BlackEvaluator::get_direction_of_move_check(const Board &
 }
 
 
-// TODO: Block the king based on the turns
-// TODO: Coverage based on white moves.
-
-// TODO: Color matrix based on king quarter
 // La color matrix ora si baserà sulla presenza nel quadrante del re!
 
-
-BlackEvaluator::BlackEvaluator() {
-    near_throne[Position{5,4}] = Direction::Right;
-    near_throne[Position{3,4}] = Direction::Left;
-    near_throne[Position{4,3}] = Direction::Up;
-    near_throne[Position{4,5}] = Direction::Down;
-
-    near_checks[Direction::Right] = [](const Board &b) -> bool {
-        return (b.board[b.king_pos.col][b.king_pos.row-1] == Pawn::Black &&   //UP
-                b.board[b.king_pos.col][b.king_pos.row+1] == Pawn::Black &&   //DOWN
-                b.board[b.king_pos.col+1][b.king_pos.row] == Pawn::Black      //RIGHT
-        );
-    };
-    near_checks[Direction::Left] = [](const Board &b) -> bool {
-        return (b.board[b.king_pos.col][b.king_pos.row-1] == Pawn::Black &&   //UP
-                b.board[b.king_pos.col][b.king_pos.row+1] == Pawn::Black &&   //DOWN
-                b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::Black      //LEFT
-        );
-    };
-    near_checks[Direction::Up] = [](const Board &b) -> bool {
-        return (b.board[b.king_pos.col][b.king_pos.row-1] == Pawn::Black &&   //UP
-                b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::Black &&   //LEFT
-                b.board[b.king_pos.col+1][b.king_pos.row] == Pawn::Black      //RIGHT
-        );
-    };
-    near_checks[Direction::Down] = [](const Board &b) -> bool {
-        return (b.board[b.king_pos.col-1][b.king_pos.row] == Pawn::Black &&   //LEFT
-                b.board[b.king_pos.col][b.king_pos.row+1] == Pawn::Black &&   //DOWN
-                b.board[b.king_pos.col+1][b.king_pos.row] == Pawn::Black      //RIGHT
-        );
-    };
-
-    is_moved_near = [](const Board &b , const Position &pos) -> bool {
-        return (b.last_move == Position{pos.col+1, pos.row} || //RIGHT
-                b.last_move == Position{pos.col-1, pos.row} || //LEFT
-                b.last_move == Position{pos.col, pos.row-1} || //UP
-                b.last_move == Position{pos.col, pos.row+1}    //DOWN
-        );
-    };
-}
-
 int BlackEvaluator::evaluate(const Board &b) const {
-    bool win_move = false;
+    //Block the king must be relational in time
     int block_weight = 1;
     int block_the_king = black_block_king(b);
 
-    if (is_moved_near(b, b.king_pos)) { //Check if blacks can win can win
-        if (is_king_in_throne(b)) {
-           win_move = block_the_king == 4;
-        } else if (is_king_near_throne(b)) {
-            win_move = block_the_king == 3;
-        } else {
-            win_move = simple_win_condition(b);
-        }
-    }
-
-    if (win_move) { //We can win
+    if(b.is_black_win()) {
         return EZPZ;
-    } else { // We cannot win, so we have to defend, insert here all state calculation
-
-
-        return -EZPZ * get_direction_of_move_check(b).size()
-        + block_the_king * block_weight
-        + pawn_differences(b)
-        + geometry_points(b)
-        + get_empty_row(b) * PREVENT_CHECKMATE
-        + get_empty_col(b) * PREVENT_CHECKMATE;
+    } else {
+        int geometry = geometry_points(b);
+        if (geometry >= 4) {
+            block_the_king = 2;
+        }
+        return -EZPZ * get_direction_of_move_check(b).size() +
+               (block_the_king * block_weight) +
+               2*pawn_differences(b) +
+               geometry+
+               avoid_same_row_or_col(b)+
+               PREVENT_CHECKMATE *
+               (get_empty_col_left(b)+
+                get_empty_col_right(b)+
+                get_empty_row_down(b)+
+                get_empty_row_up(b));
     }
+
 }
 
 int BlackEvaluator::geometry_points(const Board &b) const {
-    int result {0};
-    if(b.king_pos.row < 4 && b.king_pos.col < 4) {
-        //TOP LEFT
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                if (b.board[i][j] == Pawn::Black) {
-                    result += top_left_color_matrix[i][j];
-                }
-            }
-        }
-    } else if (b.king_pos.row < 4 && b.king_pos.col > 4) {
-        //TOP RIGHT
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                if (b.board[i][j] == Pawn::Black) {
-                    result += top_right_color_matrix[i][j];
-                }
-            }
-        }
-    } else if (b.king_pos.row > 4 && b.king_pos.col > 4) {
-        //BOTTOM RIGHT
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                if (b.board[i][j] == Pawn::Black) {
-                    result += bottom_right_color_matrix[i][j];
-                }
-            }
-        }
-    } else if (b.king_pos.row > 4 && b.king_pos.col < 4) {
-        //BOTTOM LEFT
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                if (b.board[i][j] == Pawn::Black) {
-                    result += bottom_left_color_matrix[i][j];
-                }
-            }
-        }
-    } else {
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                if (b.board[i][j] == Pawn::Black) {
-                    result += color_matrix[i][j];
-                }
-            }
-        }
-    }
 
-    return result;
+    if (b.king_pos.row < 4 && b.king_pos.col < 4) { //TOP LEFT
+        return geometry_calculator(b, top_left_color_matrix);
+
+    } else if (b.king_pos.row < 4 && b.king_pos.col > 4) { //TOP RIGHT
+        return geometry_calculator(b, top_right_color_matrix);
+
+    } else if (b.king_pos.row > 4 && b.king_pos.col > 4) { //BOTTOM RIGHT
+        return geometry_calculator(b, bottom_right_color_matrix);
+
+    } else if (b.king_pos.row > 4 && b.king_pos.col < 4) { // BOTTOM LEFT
+        return geometry_calculator(b, bottom_left_color_matrix);
+
+    } else if (b.king_pos.row == 4 && b.king_pos.col < 4) { // LEFT
+        return geometry_calculator(b, left_color_matrix);
+
+    } else if (b.king_pos.row == 4 && b.king_pos.col > 4) { // RIGHT
+        return geometry_calculator(b, right_color_matrix);
+
+    } else if (b.king_pos.row < 4 && b.king_pos.col == 4) { // TOP
+        return geometry_calculator(b, top_color_matrix);
+
+    } else if (b.king_pos.row > 4 && b.king_pos.col == 4) { // DOWN
+        return geometry_calculator(b, bottom_color_matrix);
+
+    } else {
+        return geometry_calculator(b, color_matrix);
+    }
 }
 
 
 // Da considerare colonna 2 colonna 6
 // Da considerare riga 2 riga 6
 
-int BlackEvaluator::get_empty_row(const Board &b) const {
-    bool isEmpty2 = true;
-    bool isEmpty6 = true;
-    for (int i = 0; i < 9 && isEmpty2; i++) {
-        isEmpty2 = isEmpty2 && b.board[2][i] == Pawn::Empty;
+
+int BlackEvaluator::get_empty_row_down(const Board &b) const {
+    //Vedere se il king può arrivare a riga 1,2,6,7!
+    int row_counter = 0;
+    for (int i = b.king_pos.row+1; i < 7 ; i++) { //UPSIDE
+        if(b.board[b.king_pos.col][i] == Pawn::Empty) {
+            row_counter = i;
+        }
     }
-    for (int i = 0; i < 9 && isEmpty6; i++) {
-        isEmpty6 = isEmpty6 && b.board[6][i] == Pawn::Empty;
+
+    if (row_counter != 6) {
+        return 0;
     }
-    return isEmpty2 || isEmpty6 ? 1: 0;
+
+    for(int i = 0; i < 9; i++) {
+        if (b.board[i][6] != Pawn::Empty) {
+            return 0;
+        }
+    }
+    return 1;
 }
 
-int BlackEvaluator::get_empty_col(const Board &b) const {
-    bool isEmpty2 = true;
-    bool isEmpty6 = true;
-    for (int i = 0; i < 9 && isEmpty2; i++) {
-        isEmpty2 = isEmpty2 && b.board[i][2] == Pawn::Empty;
+int BlackEvaluator::get_empty_row_up(const Board &b) const {
+    int row_counter = b.king_pos.row;
+    for (int i = b.king_pos.row-1; i > 1; i--) { //DOWNSIDE
+        if(b.board[b.king_pos.col][i] == Pawn::Empty) {
+            row_counter = i;
+        }
     }
-    for (int i = 0; i < 9 && isEmpty6; i++) {
-        isEmpty6 = isEmpty6 && b.board[i][6] == Pawn::Empty;
+    if (row_counter != 2) {
+        return 0;
     }
-    return isEmpty2 || isEmpty6 ? 1 : 0;
+
+    for(int i = 0; i < 9; i++) {
+        if (b.board[i][2] != Pawn::Empty) {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+int BlackEvaluator::get_empty_col_right(const Board &b) const {
+    int col_counter = b.king_pos.col;
+    for (int i = b.king_pos.col+1; i < 7; i++) { //TO THE RIGHT
+        if(b.board[i][b.king_pos.row] == Pawn::Empty) {
+            col_counter = i;
+        }
+    }
+
+    if (col_counter != 6) {
+
+        return 0;
+    }
+
+    for(int i = 0; i < 9; i++) {
+        if (b.board[6][i] != Pawn::Empty) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+
+int BlackEvaluator::get_empty_col_left(const Board &b) const {
+    int col_counter = b.king_pos.col;
+    for (int i = b.king_pos.col-1; i > 1 ; i--) { //TO THE LEFT
+        if(b.board[i][b.king_pos.row] == Pawn::Empty) {
+            col_counter = i;
+        }
+    }
+
+    if (col_counter != 1) {
+        return 0;
+    }
+
+    for(int i = 0; i < 9; i++) {
+        if (b.board[2][i] != Pawn::Empty) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+
+BlackEvaluator::BlackEvaluator() {
+    geometry_calculator = [](const Board &b, const uint8_t (&matrix)[9][9]) ->int {
+        int result {0};
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (b.board[i][j] == Pawn::Black) {
+                    result += matrix[i][j];
+                }
+            }
+        }
+        return result;
+    };
+
+}
+
+int BlackEvaluator::avoid_same_row_or_col(const Board &b) const {
+    int counter {0};
+    for (int col = 0; col < 9; col++) {
+        for (int row = 0; col < 9; col++) {
+            if (b.board[col][row] == Pawn::Black) {
+                if (col > 0 && col < 8 && row > 0 && row < 8 && !BoardUtils::Is_Near_King(b, col, row)) { //NOT AT THE EDGE
+                    counter-= (b.board[col+1][row] == Pawn::Black) || (b.board[col+1][row] == Pawn::FullCitadel) ? 1: 0;
+                    counter-= (b.board[col-1][row] == Pawn::Black) || (b.board[col-1][row] == Pawn::FullCitadel) ? 1: 0;
+                    counter-= (b.board[col][row+1] == Pawn::Black) || (b.board[col][row+1] == Pawn::FullCitadel) ? 1: 0;
+                    counter-= (b.board[col][row-1] == Pawn::Black) || (b.board[col][row-1] == Pawn::FullCitadel) ? 1: 0;
+                }
+                //TODO: Missing at the edge calculation.
+            }
+        }
+    }
+    return counter;
 }
 
 

@@ -31,3 +31,11 @@ std::pair<std::vector<Position>, std::array<std::bitset<9>,9>> BoardUtils::Get_e
     //Return the pair
     return std::pair<std::vector<Position>, std::array<std::bitset<9>,9>>(to_be_moved, empty);
 }
+
+bool BoardUtils::Is_Near_King(const Board &b, int col, int row) {
+    if (b.king_pos.col == KING_LOST) return false;
+    return b.king_pos.col -1 == col ||
+           b.king_pos.col +1 == col ||
+           b.king_pos.row -1 == row ||
+           b.king_pos.row +1 == row;
+}
