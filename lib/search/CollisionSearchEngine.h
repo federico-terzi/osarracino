@@ -101,6 +101,11 @@ public:
                 Board game_state, int alpha, int beta, bool leading_white) {
         move_count++;
 
+        if (depth == 0 || depth >= max_depth || game_state.is_black_win() || game_state.is_white_win()) {
+            if (game_state.is_white)
+                return eval.evaluate(game_state);
+        }
+
         int alpha_orig = alpha;
 
         TTEntry * entry = table.get(game_state);
@@ -125,11 +130,6 @@ public:
             }
         }
 
-
-        if (depth == 0 || depth >= max_depth || game_state.is_black_win() || game_state.is_white_win()) {
-            if (game_state.is_white)
-                return eval.evaluate(game_state);
-        }
 
         int evaluation;
 
