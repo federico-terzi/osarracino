@@ -7,5 +7,6 @@
 
 
 std::string SimpleWhitePlayerProfile::calculate_move(const Board &b) {
+    engine.table.clear();
     return engine.make_decision(b, eval, move_generator);
 }

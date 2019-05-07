@@ -11,7 +11,6 @@
 #include <movegenerator/ArnoldMoveGenerator.h>
 #include <movegenerator/HeisenbergMoveGenerator.h>
 #include <evaluator/ReverseTorettoBlackEvaluator.h>
-#include <search/CollisionSearchEngine.h>
 #include <search/ZaWarudoSearchEngine.h>
 #include "PlayerProfile.h"
 
@@ -21,9 +20,9 @@ public:
 
 private:
     //RamboSearchEngine engine;
-    //ZaWarudoSearchEngine engine;
+    ZaWarudoSearchEngine engine;
     BlackEvaluator eval;
-    CollisionSearchEngine engine;
+ //   CollisionSearchEngine engine;
     //ReverseTorettoBlackEvaluator eval;
     //ArnoldMoveGenerator move_generator;
     HeisenbergMoveGenerator move_generator;

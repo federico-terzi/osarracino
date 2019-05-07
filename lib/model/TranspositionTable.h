@@ -18,8 +18,8 @@ enum Flags {
 
 struct TTEntry {
     int16_t score;
-    uint64_t key;
-    Move move;
+    uint32_t key;
+    //Move move;
     Flags flag;
     uint8_t depth;
 
@@ -32,14 +32,14 @@ struct TTBucket {
 };
 
 const size_t UNITY = 1 << 20; // 1 MB
-const size_t SIZE_OF_TABLE = 256 * UNITY; //256 * MB;
+const size_t SIZE_OF_TABLE = 512 * UNITY; //256 * MB;
 
 class TranspositionTable {
 public:
 
     TranspositionTable();
     ~TranspositionTable();
-    void store(const Board &b, const Move &move,uint8_t depth ,int score, Flags flag);
+    void store(const Board &b, uint8_t depth ,int score, Flags flag);
     TTEntry * get(const Board &b);
     void clear();
 
@@ -48,7 +48,7 @@ public:
     }
 
     inline TTEntry * get_first(const Board &b) {
-        return buckets[this->get_key(b) & (size -1)].data;
+        return buckets[(this->get_key(b) & 0xFFFF) & (size -1)].data;
     }
 
 private:
