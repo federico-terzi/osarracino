@@ -282,16 +282,16 @@ int BlackEvaluator::avoid_same_row_or_col(const Board &b) const {
         for (int row = 0; col < 9; col++) {
             if (b.board[col][row] == Pawn::Black) {
                 if (col > 0 && col < 8 && row > 0 && row < 8 && !BoardUtils::Is_Near_King(b, col, row)) { //NOT AT THE EDGE
-                    counter+= (b.board[col+1][row] == Pawn::Black) || (b.board[col+1][row] == Pawn::FullCitadel) ? 1: 0;
-                    counter+= (b.board[col-1][row] == Pawn::Black) || (b.board[col-1][row] == Pawn::FullCitadel) ? 1: 0;
-                    counter+= (b.board[col][row+1] == Pawn::Black) || (b.board[col][row+1] == Pawn::FullCitadel) ? 1: 0;
-                    counter+= (b.board[col][row-1] == Pawn::Black) || (b.board[col][row-1] == Pawn::FullCitadel) ? 1: 0;
+                    counter-= (b.board[col+1][row] == Pawn::Black) || (b.board[col+1][row] == Pawn::FullCitadel) ? 1: 0;
+                    counter-= (b.board[col-1][row] == Pawn::Black) || (b.board[col-1][row] == Pawn::FullCitadel) ? 1: 0;
+                    counter-= (b.board[col][row+1] == Pawn::Black) || (b.board[col][row+1] == Pawn::FullCitadel) ? 1: 0;
+                    counter-= (b.board[col][row-1] == Pawn::Black) || (b.board[col][row-1] == Pawn::FullCitadel) ? 1: 0;
                 }
                 //TODO: Missing at the edge calculation.
             }
         }
     }
-    return -counter;
+    return counter;
 }
 
 
