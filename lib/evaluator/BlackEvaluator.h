@@ -27,6 +27,7 @@ public:
     int get_empty_row_up(const Board &b) const;
     int get_empty_col_right(const Board &b) const;
     int get_empty_col_left(const Board &b) const;
+    int avoid_same_row_or_col(const Board &b) const;
     std::vector<Direction> get_direction_of_move_check(const Board &b)const;
     std::function<int(const Board &b, const uint8_t (&matrix)[9][9])> geometry_calculator;
 
