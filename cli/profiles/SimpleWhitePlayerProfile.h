@@ -10,7 +10,7 @@
 #include <evaluator/TorettoWhiteEvaluator.h>
 #include <movegenerator/ArnoldMoveGenerator.h>
 #include <movegenerator/HeisenbergMoveGenerator.h>
-#include <search/ThanosSearchEngine.h>
+#include <search/CarloSearchEngine.h>
 #include "PlayerProfile.h"
 
 class SimpleWhitePlayerProfile : public PlayerProfile {
@@ -19,7 +19,7 @@ public:
 
 private:
     //RamboSearchEngine engine;
-    ThanosSearchEngine engine;
+    CarloSearchEngine engine;
     TorettoWhiteEvaluator eval;
     //ArnoldMoveGenerator move_generator;
     HeisenbergMoveGenerator move_generator;

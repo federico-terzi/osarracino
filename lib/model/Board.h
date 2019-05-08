@@ -105,6 +105,7 @@ public:
     uint16_t white_rows[9];
     uint16_t black_cols[9];
     uint16_t black_rows[9];
+    bool is_captured;
 
     uint16_t obstacle_cols[9];
     uint16_t obstacle_rows[9];

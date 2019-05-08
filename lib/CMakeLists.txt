@@ -18,12 +18,13 @@ add_library(libosarracino STATIC
         movegenerator/HeisenbergMoveGenerator.cpp movegenerator/HeisenbergMoveGenerator.h
         evaluator/ReverseTorettoBlackEvaluator.cpp evaluator/ReverseTorettoBlackEvaluator.h
         model/ZobristHash.cpp model/ZobristHash.h
-        model/DTranspositionTable.cpp model/DTranspositionTable.h search/CollisionSearchEngine.h search/ThanosSearchEngine.h)
+        model/DTranspositionTable.cpp model/DTranspositionTable.h
+        search/CollisionSearchEngine.h search/CarloSearchEngine.h)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native")
 
-target_link_libraries(libosarracino ${JSONCPP_LIBRARIES} pthread)
+target_link_libraries(libosarracino ${JSONCPP_LIBRARIES})
 
 target_include_directories (libosarracino PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

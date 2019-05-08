@@ -173,6 +173,8 @@ Board::Board() {
     // Initialize the fields
     king_pos = {0, 0};
     last_move = {0, 0};
+
+    is_captured = false;
 }
 
 
@@ -185,6 +187,8 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
     if (b.king_pos == from) {
         b.king_pos = to;
     }
+
+    b.is_captured = false;
 
     // Save the pawn
     Pawn pawn = b.board[from.col][from.row] & SelectPawn;
@@ -217,6 +221,7 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
             }
 
             b.delete_pawn(to.col -1, to.row);
+            b.is_captured = true;
         }
     }
     // Right eat
@@ -230,6 +235,7 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
             }
 
             b.delete_pawn(to.col +1, to.row);
+            b.is_captured = true;
         }
     }
     // Up eat
@@ -243,6 +249,7 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
             }
 
             b.delete_pawn(to.col, to.row - 1 );
+            b.is_captured = true;
         }
     }
     // Down eat
@@ -256,6 +263,7 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
             }
 
             b.delete_pawn(to.col, to.row + 1);
+            b.is_captured = true;
         }
     }
 
