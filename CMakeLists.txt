@@ -10,4 +10,4 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native")
 
 add_subdirectory(lib)
 add_subdirectory(cli)
-#add_subdirectory(test)
+add_subdirectory(test)

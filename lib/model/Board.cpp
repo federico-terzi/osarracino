@@ -28,7 +28,7 @@ void Board::load_board(const std::string &json_board) {
     is_white = root["turn"] == "WHITE";
 
     if (root["turn"] == "BLACKWIN" || root["turn"] == "WHITEWIN") {
-        std::cout << "The match has concluded." << std::endl;
+        std::cout << "The match has concluded.";
         exit(0);
     }
 
@@ -173,8 +173,7 @@ Board::Board() {
     // Initialize the fields
     king_pos = {0, 0};
     last_move = {0, 0};
-
-    is_captured = false;
+    is_quiet = true;
 }
 
 
@@ -184,86 +183,123 @@ Board::Board() {
 // This constructor builds the data structures of the new Board instance based on the move
 
 Board Board::from_board(Board b, const Position &from, const Position &to) {
+    // Make sure the king is still alive
+    if (b.king_pos.col < 0) {
+        std::cerr << "ERROR: creating board after dead king!" << std::endl;
+        return b;
+    }
+
+    // Update king position
     if (b.king_pos == from) {
         b.king_pos = to;
     }
 
-    b.is_captured = false;
-
-    // Save the pawn
-    Pawn pawn = b.board[from.col][from.row] & SelectPawn;
-    Pawn enemy_pawn = Black;
-    if (pawn == Black) {
-        enemy_pawn = KingOrWhite;
-    }
-
-    // Move the pawn
-    b.board[from.col][from.row] &= ClearPawn;
-    b.board[to.col][to.row] |= pawn;
-    b.move_pawn(from, to);
-
-
+    // Update board status
     b.is_white = !b.is_white;
     b.last_move = to;
+    b.is_quiet = true;
+
+    // Determine the turn based on the color of the moved pawn
+    bool is_white_moving = false;  // True if the white is moving, false if the black is moving
+    if (b.has_white(from.col, from.row)) {
+        is_white_moving = true;
+    }
+
+    // Move the the pawn
+    b.move_pawn(from, to);
 
     // Eat the pawn
 
-    // TODO: fix the pawn eating case when the king is in the throne or adiacent throne
-
-    // Left eat
-    if (to.col > 1) {
-        if ((b.board[to.col - 1][to.row] & enemy_pawn) != 0 &&
-            (b.board[to.col - 2][to.row] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
-            b.board[to.col - 1][to.row] &= ClearPawn;
-
-            if (b.king_pos == Position{to.col-1, to.row}) {
-                b.king_pos.col = KING_LOST;
-            }
-
-            b.delete_pawn(to.col -1, to.row);
-            b.is_captured = true;
+    if (is_white_moving) {  // White moving
+        // Left eat
+        if (to.col > 1 && b.has_black(to.col - 1, to.row) && b.has_white_or_wall(to.col - 2, to.row)) {
+            b.delete_pawn(to.col - 1, to.row);
+            b.is_quiet = false;
         }
-    }
-    // Right eat
-    if (to.col < 7) {
-        if ((b.board[to.col + 1][to.row] & enemy_pawn) != 0 &&
-            (b.board[to.col + 2][to.row] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
-            b.board[to.col + 1][to.row] &= ClearPawn;
 
-            if (b.king_pos == Position{to.col+1, to.row}) {
-                b.king_pos.col = KING_LOST;
-            }
-
-            b.delete_pawn(to.col +1, to.row);
-            b.is_captured = true;
+        // Right eat
+        if (to.col < 7 && b.has_black(to.col + 1, to.row) && b.has_white_or_wall(to.col + 2, to.row)) {
+            b.delete_pawn(to.col + 1, to.row);
+            b.is_quiet = false;
         }
-    }
-    // Up eat
-    if (to.row > 1) {
-        if ((b.board[to.col][to.row - 1] & enemy_pawn) != 0 &&
-            (b.board[to.col][to.row - 2] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
-            b.board[to.col][to.row - 1] &= ClearPawn;
 
-            if (b.king_pos == Position{to.col, to.row-1}) {
-                b.king_pos.col = KING_LOST;
-            }
-
-            b.delete_pawn(to.col, to.row - 1 );
-            b.is_captured = true;
+        // Up eat
+        if (to.row > 1 && b.has_black(to.col, to.row - 1) && b.has_white_or_wall(to.col, to.row - 2)) {
+            b.delete_pawn(to.col, to.row - 1);
+            b.is_quiet = false;
         }
-    }
-    // Down eat
-    if (to.row < 7) {
-        if ((b.board[to.col][to.row + 1] & enemy_pawn) != 0 &&
-            (b.board[to.col][to.row + 2] & (pawn | EmptyCitadel | EmptyThrone)) != 0) {
-            b.board[to.col][to.row + 1] &= ClearPawn;
 
-            if (b.king_pos == Position{to.col, to.row + 1}) {
-                b.king_pos.col = KING_LOST;
-            }
-
+        // Down eat
+        if (to.row < 7 && b.has_black(to.col, to.row + 1) && b.has_white_or_wall(to.col, to.row + 2)) {
             b.delete_pawn(to.col, to.row + 1);
-            b.is_captured = true;
+            b.is_quiet = false;
+        }
+    }else{  // Black moving
+        // This variable is needed to delay the deletion of the king pawn, in order to verify all the
+        // conditions for a king kill.
+        bool is_king_targeted = false;
+
+        // Left eat
+        if (to.col > 1 && b.has_white(to.col - 1, to.row) && b.has_black_or_wall(to.col - 2, to.row)) {
+            // If the deleted pawn is a king, delay the deletion to verify all the conditions
+            if (b.has_king(to.col - 1, to.row)) {
+                is_king_targeted = true;
+            }else{  // Normal pawn, delete immediately
+                b.delete_pawn(to.col - 1, to.row);
+                b.is_quiet = false;
+            }
+        }
+
+        // Right eat
+        if (to.col < 7 && b.has_white(to.col + 1, to.row) && b.has_black_or_wall(to.col + 2, to.row)) {
+            // If the deleted pawn is a king, delay the deletion to verify all the conditions
+            if (b.has_king(to.col + 1, to.row)) {
+                is_king_targeted = true;
+            }else{  // Normal pawn, delete immediately
+                b.delete_pawn(to.col + 1, to.row);
+                b.is_quiet = false;
+            }
+        }
+
+        // Up eat
+        if (to.row > 1 && b.has_white(to.col, to.row - 1) && b.has_black_or_wall(to.col, to.row - 2)) {
+            // If the deleted pawn is a king, delay the deletion to verify all the conditions
+            if (b.has_king(to.col, to.row - 1)) {
+                is_king_targeted = true;
+            }else{  // Normal pawn, delete immediately
+                b.delete_pawn(to.col, to.row - 1);
+                b.is_quiet = false;
+            }
+        }
+
+        // Down eat
+        if (to.row < 7 && b.has_white(to.col, to.row + 1) && b.has_black_or_wall(to.col, to.row + 2)) {
+            // If the deleted pawn is a king, delay the deletion to verify all the conditions
+            if (b.has_king(to.col, to.row + 1)) {
+                is_king_targeted = true;
+            }else{  // Normal pawn, delete immediately
+                b.delete_pawn(to.col, to.row + 1);
+                b.is_quiet = false;
+            }
+        }
+
+        // If the king was targeted, verify all the conditions
+        if (is_king_targeted) {
+            bool should_king_be_killed = false;
+
+            if (b.is_king_in_throne()) {  // KING IN THRONE
+                should_king_be_killed = b.has_black_surrounded_throne();
+            }else if (adiacent_throne[b.king_pos.col][b.king_pos.row]) { // KING ADIACENT THE THRONE
+                should_king_be_killed = b.is_king_surrounded_by_black_or_throne();
+            }else{ // KING AWAY FROM THRONE, DELETE ALWAYS
+                should_king_be_killed = true;
+            }
+
+            if (should_king_be_killed) {
+                b.delete_pawn(b.king_pos.col, b.king_pos.row);
+                b.king_pos.col = KING_LOST;
+                b.is_quiet = false;
+            }
         }
     }
 
