@@ -28,7 +28,7 @@ void Board::load_board(const std::string &json_board) {
     is_white = root["turn"] == "WHITE";
 
     if (root["turn"] == "BLACKWIN" || root["turn"] == "WHITEWIN") {
-        std::cout << "The match has concluded.";
+        std::cout << "The match has concluded." << std::endl;
         exit(0);
     }
 
