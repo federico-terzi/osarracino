@@ -119,6 +119,7 @@ public:
     bool is_white;
     Position king_pos;
     Position last_move;
+    bool is_quiet;  // True if no pawns where eaten, false otherwise.
 
     inline bool has_black(int col, int row) const {
         return BitUtils::is_bit_set(black_cols[col], row);
@@ -149,7 +150,7 @@ public:
         uint16_t row = (black_rows[king_pos.row] | throne_mask[king_pos.row]);
         int vertical_surrounded = BitUtils::get_surrounded(col, king_pos.row);
         int horizontal_surrounded = BitUtils::get_surrounded(row, king_pos.col);
-        return vertical_surrounded + horizontal_surrounded;
+        return vertical_surrounded + horizontal_surrounded == 4;
     }
 
     inline bool has_black_or_citadel(int col, int row) const {

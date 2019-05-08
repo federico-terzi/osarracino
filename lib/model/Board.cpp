@@ -173,6 +173,7 @@ Board::Board() {
     // Initialize the fields
     king_pos = {0, 0};
     last_move = {0, 0};
+    is_quiet = true;
 }
 
 
@@ -196,6 +197,7 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
     // Update board status
     b.is_white = !b.is_white;
     b.last_move = to;
+    b.is_quiet = true;
 
     // Determine the turn based on the color of the moved pawn
     bool is_white_moving = false;  // True if the white is moving, false if the black is moving
@@ -212,21 +214,25 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
         // Left eat
         if (to.col > 1 && b.has_black(to.col - 1, to.row) && b.has_white_or_wall(to.col - 2, to.row)) {
             b.delete_pawn(to.col - 1, to.row);
+            b.is_quiet = false;
         }
 
         // Right eat
         if (to.col < 7 && b.has_black(to.col + 1, to.row) && b.has_white_or_wall(to.col + 2, to.row)) {
             b.delete_pawn(to.col + 1, to.row);
+            b.is_quiet = false;
         }
 
         // Up eat
         if (to.row > 1 && b.has_black(to.col, to.row - 1) && b.has_white_or_wall(to.col, to.row - 2)) {
             b.delete_pawn(to.col, to.row - 1);
+            b.is_quiet = false;
         }
 
         // Down eat
         if (to.row < 7 && b.has_black(to.col, to.row + 1) && b.has_white_or_wall(to.col, to.row + 2)) {
             b.delete_pawn(to.col, to.row + 1);
+            b.is_quiet = false;
         }
     }else{  // Black moving
         // This variable is needed to delay the deletion of the king pawn, in order to verify all the
@@ -240,6 +246,7 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
                 is_king_targeted = true;
             }else{  // Normal pawn, delete immediately
                 b.delete_pawn(to.col - 1, to.row);
+                b.is_quiet = false;
             }
         }
 
@@ -250,6 +257,7 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
                 is_king_targeted = true;
             }else{  // Normal pawn, delete immediately
                 b.delete_pawn(to.col + 1, to.row);
+                b.is_quiet = false;
             }
         }
 
@@ -260,6 +268,7 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
                 is_king_targeted = true;
             }else{  // Normal pawn, delete immediately
                 b.delete_pawn(to.col, to.row - 1);
+                b.is_quiet = false;
             }
         }
 
@@ -270,6 +279,7 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
                 is_king_targeted = true;
             }else{  // Normal pawn, delete immediately
                 b.delete_pawn(to.col, to.row + 1);
+                b.is_quiet = false;
             }
         }
 
@@ -288,6 +298,7 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
             if (should_king_be_killed) {
                 b.delete_pawn(b.king_pos.col, b.king_pos.row);
                 b.king_pos.col = KING_LOST;
+                b.is_quiet = false;
             }
         }
     }

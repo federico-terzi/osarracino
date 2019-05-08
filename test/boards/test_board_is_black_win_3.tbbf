@@ -28,7 +28,7 @@
             "BLACK",
             "BLACK",
             "KING",
-            "WHITE",
+            "EMPTY",
             "EMPTY",
             "EMPTY",
             "EMPTY"
@@ -39,7 +39,7 @@
             "EMPTY",
             "EMPTY",
             "EMPTY",
-            "EMPTY",
+            "WHITE",
             "EMPTY",
             "EMPTY",
             "BLACK"

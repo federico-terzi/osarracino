@@ -5,8 +5,8 @@
             "EMPTY",
             "EMPTY",
             "EMPTY",
-            "EMPTY",
-            "EMPTY",
+            "BLACK",
+            "BLACK",
             "EMPTY",
             "EMPTY",
             "EMPTY"
@@ -16,9 +16,20 @@
             "EMPTY",
             "EMPTY",
             "EMPTY",
+            "BLACK",
             "EMPTY",
             "EMPTY",
             "EMPTY",
+            "EMPTY"
+        ],
+        [
+            "EMPTY",
+            "EMPTY",
+            "WHITE",
+            "EMPTY",
+            "WHITE",
+            "EMPTY",
+            "WHITE",
             "EMPTY",
             "EMPTY"
         ],
@@ -31,17 +42,50 @@
             "EMPTY",
             "EMPTY",
             "EMPTY",
-            "EMPTY"
+            "BLACK"
         ],
         [
-            "EMPTY",
-            "EMPTY",
+            "BLACK",
+            "BLACK",
+            "WHITE",
             "BLACK",
             "KING",
+            "BLACK",
+            "EMPTY",
+            "EMPTY",
+            "BLACK"
+        ],
+        [
+            "BLACK",
+            "EMPTY",
+            "WHITE",
+            "EMPTY",
+            "BLACK",
+            "EMPTY",
+            "WHITE",
+            "EMPTY",
+            "EMPTY"
+        ],
+        [
+            "EMPTY",
+            "EMPTY",
+            "EMPTY",
+            "EMPTY",
+            "WHITE",
+            "EMPTY",
+            "WHITE",
+            "EMPTY",
+            "EMPTY"
+        ],
+        [
+            "EMPTY",
+            "EMPTY",
+            "EMPTY",
             "EMPTY",
             "BLACK",
             "EMPTY",
             "EMPTY",
+            "EMPTY",
             "EMPTY"
         ],
         [
@@ -49,52 +93,8 @@
             "EMPTY",
             "EMPTY",
             "BLACK",
-            "THRONE",
-            "EMPTY",
-            "EMPTY",
-            "EMPTY",
-            "EMPTY"
-        ],
-        [
-            "EMPTY",
-            "EMPTY",
-            "EMPTY",
-            "EMPTY",
-            "EMPTY",
-            "EMPTY",
-            "EMPTY",
-            "EMPTY",
-            "EMPTY"
-        ],
-        [
-            "EMPTY",
-            "EMPTY",
-            "EMPTY",
-            "EMPTY",
-            "EMPTY",
-            "EMPTY",
-            "EMPTY",
-            "EMPTY",
-            "EMPTY"
-        ],
-        [
-            "EMPTY",
-            "EMPTY",
-            "EMPTY",
-            "EMPTY",
-            "EMPTY",
-            "EMPTY",
-            "EMPTY",
-            "EMPTY",
-            "EMPTY"
-        ],
-        [
-            "EMPTY",
-            "EMPTY",
-            "EMPTY",
-            "EMPTY",
-            "EMPTY",
-            "EMPTY",
+            "BLACK",
+            "BLACK",
             "EMPTY",
             "EMPTY",
             "EMPTY"

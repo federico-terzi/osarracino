@@ -62,25 +62,89 @@ TEST_F(BoardTest, test_board_eaten_pawn_citadel) {
 }
 
 TEST_F(BoardTest, test_board_is_black_win_1) {
-    auto b1 = Board::from_path("boards/test_board_is_black_win_1.tbbf");
-    b1.last_move = {4,3};
+    auto b1 = Board::from_board(Board::from_path("boards/test_board_is_black_win_1.tbbf"), {5,3}, {4,3});
     EXPECT_TRUE(b1.is_black_win());
 }
 
 TEST_F(BoardTest, test_board_is_black_win_2) {
-    auto b1 = Board::from_path("boards/test_board_is_black_win_2.tbbf");
-    b1.last_move = {4,3};
+    auto b1 = Board::from_board(Board::from_path("boards/test_board_is_black_win_2.tbbf"), {0,3}, {4,3});
     EXPECT_TRUE(b1.is_black_win());
 }
 
 TEST_F(BoardTest, test_board_is_black_win_3) {
-    auto b1 = Board::from_path("boards/test_board_is_black_win_3.tbbf");
-    b1.last_move = {5,2};
+    auto b1 = Board::from_board(Board::from_path("boards/test_board_is_black_win_3.tbbf"), {5,3}, {5,2});
     EXPECT_FALSE(b1.is_black_win());
 }
 
 TEST_F(BoardTest, test_board_is_black_win_4) {
-    auto b1 = Board::from_path("boards/test_board_is_black_win_4.tbbf");
-    b1.last_move = {4,3};
+    auto b1 = Board::from_board(Board::from_path("boards/test_board_is_black_win_4.tbbf"), {8,3}, {4,3});
+    EXPECT_TRUE(b1.is_black_win());
+}
+
+TEST_F(BoardTest, test_board_king_surrounded_in_throne) {
+    auto b1 = Board::from_path("boards/test_board_king_surrounded_in_throne.tbbf");
+    EXPECT_TRUE(b1.has_black_surrounded_throne());
+}
+
+TEST_F(BoardTest, test_board_king_surrounded_in_throne_2) {
+    auto b1 = Board::from_path("boards/test_board_king_surrounded_in_throne_2.tbbf");
+    EXPECT_FALSE(b1.has_black_surrounded_throne());
+}
+
+TEST_F(BoardTest, test_board_king_surrounded_by_black_or_throne) {
+    auto b1 = Board::from_path("boards/test_board_king_surrounded_by_black_or_throne.tbbf");
+    EXPECT_TRUE(b1.is_king_surrounded_by_black_or_throne());
+}
+
+TEST_F(BoardTest, test_board_king_surrounded_by_black_or_throne_2) {
+    auto b1 = Board::from_path("boards/test_board_king_surrounded_by_black_or_throne_2.tbbf");
+    EXPECT_FALSE(b1.is_king_surrounded_by_black_or_throne());
+}
+
+
+TEST_F(BoardTest, test_board_king_surrounded_by_black_or_throne_3) {
+    auto b1 = Board::from_path("boards/test_board_king_surrounded_by_black_or_throne_3.tbbf");
+    EXPECT_TRUE(b1.is_king_surrounded_by_black_or_throne());
+}
+
+TEST_F(BoardTest, test_board_king_surrounded_by_black_or_throne_4) {
+    auto b1 = Board::from_path("boards/test_board_king_surrounded_by_black_or_throne_4.tbbf");
+    EXPECT_FALSE(b1.is_king_surrounded_by_black_or_throne());
+}
+
+
+TEST_F(BoardTest, test_board_king_surrounded_by_black_or_throne_5) {
+    auto b1 = Board::from_path("boards/test_board_king_surrounded_by_black_or_throne_5.tbbf");
+    EXPECT_TRUE(b1.is_king_surrounded_by_black_or_throne());
+}
+
+TEST_F(BoardTest, test_board_king_surrounded_by_black_or_throne_6) {
+    auto b1 = Board::from_path("boards/test_board_king_surrounded_by_black_or_throne_6.tbbf");
+    EXPECT_TRUE(b1.is_king_surrounded_by_black_or_throne());
+}
+
+
+TEST_F(BoardTest, test_board_black_win_surround_in_throne) {
+    auto b1 = Board::from_board(Board::from_path("boards/test_board_black_win_surround_in_throne.tbbf"), {3,3}, {4,3});
+    EXPECT_TRUE(b1.is_black_win());
+}
+
+TEST_F(BoardTest, test_board_black_win_surround_in_throne_2) {
+    auto b1 = Board::from_board(Board::from_path("boards/test_board_black_win_surround_in_throne_2.tbbf"), {3,6}, {3,4});
+    EXPECT_TRUE(b1.is_black_win());
+}
+
+TEST_F(BoardTest, test_board_black_win_surround_in_throne_3) {
+    auto b1 = Board::from_board(Board::from_path("boards/test_board_black_win_surround_in_throne_3.tbbf"), {7,4}, {5,4});
+    EXPECT_TRUE(b1.is_black_win());
+}
+
+TEST_F(BoardTest, test_board_black_win_king_adiacent_throne_1) {
+    auto b1 = Board::from_board(Board::from_path("boards/test_board_black_win_king_adiacent_throne_1.tbbf"), {4,3}, {5,3});
+    EXPECT_TRUE(b1.is_black_win());
+}
+
+TEST_F(BoardTest, test_board_black_win_king_adiacent_throne_2) {
+    auto b1 = Board::from_board(Board::from_path("boards/test_board_black_win_king_adiacent_throne_2.tbbf"), {4,7}, {4,6});
     EXPECT_TRUE(b1.is_black_win());
 }
