@@ -30,7 +30,7 @@ public:
 
         if (maximizing_player) { //Maximizing player
             int stand_pat = eval.evaluate(game_state);
-            if (depth == 0) {
+            if (depth == 0 || game_state.is_white_win() || game_state.is_white_win()) {
                 return stand_pat;
             }
             if (stand_pat >= beta) {
@@ -41,22 +41,25 @@ public:
             }
 
             auto moves = move_generator.generate(game_state);
-            for (const auto &move : moves) {
+            int value = std::numeric_limits<int>::min();
 
-                auto new_game_state = Board::from_board(game_state, move.from, move.to);
-                int result = quiescence_search(new_game_state, move_generator, eval, false, alpha, beta, depth-1);
-                if (result > alpha) {
-                    alpha = result;
-                    if (alpha >= beta) {
-                        break;
-                    }
+            for (const auto &move : moves) {
+                auto new_board{Board::from_board(game_state, move.from, move.to)};
+                value = std::max(value, quiescence_search(new_board,move_generator, eval ,false, alpha, beta, depth-1));
+
+
+                if (value >= beta) {
+                    return value;
                 }
+                alpha = std::max(alpha, value);
             }
-            return alpha;
+
+            return value;
+
         } else { //Minimizing player
 
             int stand_pat = eval.evaluate(game_state);
-            if(depth == 0) {
+            if(depth == 0 || game_state.is_white_win() || game_state.is_black_win()) {
                 return stand_pat;
             }
             if(stand_pat <= alpha) {
@@ -67,17 +70,20 @@ public:
             }
             auto moves = move_generator.generate(game_state);
 
-            for(const auto  &move : moves) {
-                auto new_game_state = Board::from_board(game_state, move.from, move.to);
-                int result = quiescence_search(new_game_state,move_generator , eval ,true, alpha, beta, depth-1);
-                if(result < beta) {
-                    beta = result;
-                    if(alpha >= beta) {
-                        break;
-                    }
+            int value = std::numeric_limits<int>::max();
+
+            for (const auto &move : moves) {
+                auto new_board{Board::from_board(game_state, move.from, move.to)};
+                value = std::min(value, quiescence_search(new_board, move_generator, eval, true, alpha, beta, depth-1));
+
+                if (value <= alpha) {
+                    return value;
                 }
+
+                beta = std::min(beta, value);
             }
-            return beta;
+
+            return value;
 
         }
 
@@ -157,7 +163,7 @@ public:
             std::cout << "Searching depth: " << current_depth_limit << ". Explored " << move_count << " moves in "
                       << timer.elapsed() << " s" << std::endl;
 
-            std::cout << "Searched " << quiet_count << " with quiescensce" << std::endl;
+            std::cout << "Searched " << quiet_count << " with quiescence" << std::endl;
             quiet_count = 0;
             // Reorder the moves based on the score
             std::sort(future_states.begin(), future_states.end(), [](const auto &s1, const auto &s2) {
@@ -207,6 +213,5 @@ public:
         return best_state.move;
     }
 };
-
 
 #endif //OSARRACINO_CARLOSEARCHENGINE_H
