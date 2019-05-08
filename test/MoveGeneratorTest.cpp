@@ -15,7 +15,7 @@ public:
     using MoveGeneratorType = T;
 };
 
-typedef ::testing::Types<ArnoldMoveGenerator, ThetaMoveGenerator, HeisenbergMoveGenerator> MoveGeneratorTypes;
+typedef ::testing::Types<ArnoldMoveGenerator, HeisenbergMoveGenerator> MoveGeneratorTypes;
 TYPED_TEST_CASE(MoveGeneratorTest, MoveGeneratorTypes);
 
 TYPED_TEST(MoveGeneratorTest, Test_Not_Same_Position) {

@@ -128,12 +128,28 @@ public:
         return BitUtils::is_bit_set(white_cols[col], row);
     }
 
+    inline bool has_king(int col, int row) const {
+        return king_pos.col == col && king_pos.row == row;
+    }
+
+    inline bool has_white_or_wall(int col, int row) const {
+        return BitUtils::is_bit_set(white_cols[col] | citadels_mask[col] | throne_mask[col], row);
+    }
+
     inline bool has_citadel(int col, int row) const {
         return BitUtils::is_bit_set(citadels_mask[col], row);
     }
 
     inline bool is_king_in_throne() const {
         return king_pos.col == 4 && king_pos.row == 4;
+    }
+
+    inline bool is_king_surrounded_by_black_or_throne() const {
+        uint16_t col = (black_cols[king_pos.col] | throne_mask[king_pos.col]);
+        uint16_t row = (black_rows[king_pos.row] | throne_mask[king_pos.row]);
+        int vertical_surrounded = BitUtils::get_surrounded(col, king_pos.row);
+        int horizontal_surrounded = BitUtils::get_surrounded(row, king_pos.col);
+        return vertical_surrounded + horizontal_surrounded;
     }
 
     inline bool has_black_or_citadel(int col, int row) const {
@@ -144,7 +160,21 @@ public:
         return BitUtils::is_bit_set(black_cols[col] | citadels_mask[col] | throne_mask[col], row);
     }
 
+    inline bool has_black_surrounded_throne() const {
+        return ((black_cols[4] & 0b0000000'000101000) &
+                (black_rows[4] & 0b0000000'000101000))
+                == 0b0000000'000101000;
+    }
+
     inline void move_pawn(Position from, Position to) {
+        // MOVE THE ARRAY
+
+        // Set the pawn
+        Pawn pawn = board[from.col][from.row] & SelectPawn;
+        board[to.col][to.row] |= pawn;
+
+        // MOVE THE BITMASKS
+
         // Set the target position
         if (has_black(from.col, from.row)) {
             BitUtils::set_bit(black_cols[to.col], to.row);
@@ -173,6 +203,12 @@ public:
     }
 
     inline void delete_pawn(int col, int row) {
+        // DELETE FROM ARRAY
+
+        board[col][row] &= ClearPawn;
+
+        // DELETE FROM BITMASK
+
         // Adjust statistics
         if (has_black(col, row)) {
             black_count--;
