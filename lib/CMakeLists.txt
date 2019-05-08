@@ -18,7 +18,8 @@ add_library(libosarracino STATIC
         movegenerator/HeisenbergMoveGenerator.cpp movegenerator/HeisenbergMoveGenerator.h
         evaluator/ReverseTorettoBlackEvaluator.cpp evaluator/ReverseTorettoBlackEvaluator.h
         model/ZobristHash.cpp model/ZobristHash.h
-        model/DTranspositionTable.cpp model/DTranspositionTable.h search/CollisionSearchEngine.h)
+        model/DTranspositionTable.cpp model/DTranspositionTable.h
+        search/CollisionSearchEngine.h search/CarloSearchEngine.h)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")

@@ -1,9 +1,9 @@
 //
-// Created by freddy on 26/04/19.
+// Created by max on 08/05/19.
 //
 
-#ifndef OSARRACINO_RAMBOSEARCHENGINE_H
-#define OSARRACINO_RAMBOSEARCHENGINE_H
+#ifndef OSARRACINO_CARLOSEARCHENGINE_H
+#define OSARRACINO_CARLOSEARCHENGINE_H
 
 #include <limits>
 #include <algorithm>
@@ -17,43 +17,86 @@
 //#define ENABLE_ADVANCED_TRACING
 
 
-const int CARLO_MAX_DEPTH = 10;
 
-struct MoveTrace {
-    Move move;
-    bool maximizing;
-    int score;
-    int depth;
-    bool valid = false;
-
-    friend std::ostream &operator<<(std::ostream &s, const MoveTrace &trace) {
-        s << "TRACE: maximizing: " << trace.maximizing << " with score: " << trace.score
-        << " at depth " << trace.depth << " for move: " << trace.move;
-        return s;
-    };
-};
-
-struct MoveConfiguration {
-    Move move;
-    Board board;
-    int score;
-    int depth;
-    std::array<MoveTrace, CARLO_MAX_DEPTH> move_traces;
-};
-
-class RamboSearchEngine : public SearchEngine<RamboSearchEngine> {
+class CarloSearchEngine : public SearchEngine<CarloSearchEngine> {
 public:
     std::array<MoveTrace, CARLO_MAX_DEPTH> move_traces;
+
+    template<typename EvalType, typename MoveGeneratorType>
+    int quiescence_search(const Board &game_state, const MoveGenerator<MoveGeneratorType> &move_generator,
+                          const Evaluator<EvalType> &eval,
+                          bool maximizing_player, int alpha, int beta, int depth) {
+        quiet_count++;
+
+        if (maximizing_player) { //Maximizing player
+            int stand_pat = eval.evaluate(game_state);
+            if (depth == 0) {
+                return stand_pat;
+            }
+            if (stand_pat >= beta) {
+                return beta;
+            }
+            if (alpha < stand_pat) {
+                alpha = stand_pat;
+            }
+
+            auto moves = move_generator.generate(game_state);
+            for (const auto &move : moves) {
+
+                auto new_game_state = Board::from_board(game_state, move.from, move.to);
+                int result = quiescence_search(new_game_state, move_generator, eval, false, alpha, beta, depth-1);
+                if (result > alpha) {
+                    alpha = result;
+                    if (alpha >= beta) {
+                        break;
+                    }
+                }
+            }
+            return alpha;
+        } else { //Minimizing player
+
+            int stand_pat = eval.evaluate(game_state);
+            if(depth == 0) {
+                return stand_pat;
+            }
+            if(stand_pat <= alpha) {
+                return alpha;
+            }
+            if(beta > stand_pat) {
+                beta = stand_pat;
+            }
+            auto moves = move_generator.generate(game_state);
+
+            for(const auto  &move : moves) {
+                auto new_game_state = Board::from_board(game_state, move.from, move.to);
+                int result = quiescence_search(new_game_state,move_generator , eval ,true, alpha, beta, depth-1);
+                if(result < beta) {
+                    beta = result;
+                    if(alpha >= beta) {
+                        break;
+                    }
+                }
+            }
+            return beta;
+
+        }
+
+    }
 
     template<typename EvalType, typename MoveGeneratorType>
     int minimax(int depth, const Evaluator<EvalType> &eval,
                 const MoveGenerator<MoveGeneratorType> &move_generator,
                 bool maximizing_player,
-                const Board &board, int alpha, int beta) {
+                const Board &board, int alpha, int beta, int quiet_search) {
         move_count++;
 
         if (depth == 0 || timer.is_timed_out() || board.is_black_win() || board.is_white_win()) {
-            return eval.evaluate(board);
+            if (board.is_captured && !timer.is_timed_out() && !board.is_black_win() && !board.is_white_win()) {
+                return quiescence_search(board, move_generator, eval,maximizing_player,alpha, beta, quiet_search);
+            } else {
+                return eval.evaluate(board);
+            }
+
         }
 
         auto moves{move_generator.generate(board)};
@@ -63,7 +106,7 @@ public:
 
             for (const auto &move : moves) {
                 auto new_board{Board::from_board(board, move.from, move.to)};
-                value = std::max(value, minimax(depth - 1, eval, move_generator, false, new_board, alpha, beta));
+                value = std::max(value, minimax(depth - 1, eval, move_generator, false, new_board, alpha, beta, 2));
 
 
                 if (value >= beta) {
@@ -78,7 +121,7 @@ public:
 
             for (const auto &move : moves) {
                 auto new_board{Board::from_board(board, move.from, move.to)};
-                value = std::min(value, minimax(depth - 1, eval, move_generator, true, new_board, alpha, beta));
+                value = std::min(value, minimax(depth - 1, eval, move_generator, true, new_board, alpha, beta, 2));
 
 
                 if (value <= alpha) {
@@ -114,6 +157,8 @@ public:
             std::cout << "Searching depth: " << current_depth_limit << ". Explored " << move_count << " moves in "
                       << timer.elapsed() << " s" << std::endl;
 
+            std::cout << "Searched " << quiet_count << " with quiescensce" << std::endl;
+            quiet_count = 0;
             // Reorder the moves based on the score
             std::sort(future_states.begin(), future_states.end(), [](const auto &s1, const auto &s2) {
                 return s1.score > s2.score;
@@ -122,7 +167,7 @@ public:
 
             for (auto &state: future_states) {
                 int value = minimax(current_depth_limit, eval, move_generator, false, state.board,
-                                    std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
+                                    std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 2);
 
 
                 if (timer.is_timed_out()) {
@@ -164,4 +209,4 @@ public:
 };
 
 
-#endif //OSARRACINO_RAMBOSEARCHENGINE_H
+#endif //OSARRACINO_CARLOSEARCHENGINE_H

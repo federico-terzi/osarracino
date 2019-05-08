@@ -48,6 +48,7 @@ public:
 
     Timer timer = Timer(3);
     int move_count = 0;
+    int quiet_count = 0;
 };
 
 #endif //OSARRACINO_SEARCHENGINE_H
