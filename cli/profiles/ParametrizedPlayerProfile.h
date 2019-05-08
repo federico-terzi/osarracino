@@ -10,8 +10,7 @@
 template <typename SearchEngineType, typename EvalType, typename MoveGeneratorType>
 class ParametrizedPlayerProfile : public PlayerProfile {
 public:
-    std::string calculate_move(const Board &b) override {
-        Timer timer {Timer(get_config().timeout)};
+    std::string calculate_move(const Board &b, const Timer &timer) override {
         engine.set_timer(timer);
         return engine.make_decision(b, eval, move_generator);
     }

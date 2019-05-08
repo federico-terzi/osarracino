@@ -8,14 +8,16 @@
 #include <unistd.h>
 #include "GameManager.h"
 
-GameManager::GameManager(Connector &connector, PlayerProfile *currentProfile, Player player)
-        : connector(connector), current_profile(currentProfile), player(player) {
+GameManager::GameManager(Connector &connector, PlayerProfile *currentProfile, Player player, ConfigSet config)
+        : connector(connector), current_profile(currentProfile), player(player), config(config) {
 }
 
 void GameManager::send_move(const Board &b) {
+    Timer timer {Timer(config.timeout)};
+
     // TODO: https://www.geeksforgeeks.org/wait-system-call-c/
     if (fork() == 0) {  // Child
-        std::string move {current_profile->calculate_move(b)};
+        std::string move {current_profile->calculate_move(b, timer)};
         connector.send_string(move);
         exit(0);
     }else{ // Father

@@ -39,6 +39,18 @@ public:
         return elapsed;
     }
 
+    inline float remaining() {
+        float remaining;
+
+        timespec now;
+        clock_gettime(CLOCK_MONOTONIC, &now);
+
+        remaining = (end_time.tv_sec - now.tv_sec);
+        remaining += (end_time.tv_nsec - now.tv_nsec) / 1000000000.0;
+
+        return remaining;
+    }
+
     inline bool is_timed_out() {
         timespec now;
         clock_gettime(CLOCK_MONOTONIC, &now);

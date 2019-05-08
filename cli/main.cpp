@@ -9,6 +9,7 @@
 #include "util/MemoryManager.h"
 #include "util/ConfigSet.h"
 #include "util/ArgParser.h"
+#include "profiles/ProfileManager.h"
 #include <map>
 #include <locale>
 #include <search/RamboSearchEngine.h>
@@ -26,15 +27,8 @@ int main(int argc, char **argv) {
     config.print();
 
     // Initialize player profile
-    std::unique_ptr<PlayerProfile> profile = nullptr;
-
-    // TODO: let the user change the profile using a command line argument
-    if (config.player == Player::WHITE) {
-        profile = std::make_unique<SimpleWhitePlayerProfile>();
-    }else{
-        profile = std::make_unique<SimpleBlackPlayerProfile>();
-    }
-
+    ProfileManager profile_manager(config);
+    std::unique_ptr<PlayerProfile> profile = profile_manager.get_profile(config.profile);
     profile->set_config(config);
 
     std::cout << "Using profile: " << profile->get_profile_name() << std::endl;
@@ -54,7 +48,7 @@ int main(int argc, char **argv) {
     long after_memory = MemoryManager::get_stack_size();
     std::cout << "Increased STACK size from "<< before_memory << " to " << after_memory << std::endl;
 
-    GameManager game_manager(connector, profile.get(), config.player);
+    GameManager game_manager(connector, profile.get(), config.player, config);
     game_manager.game_loop();
 
 }
