@@ -12,8 +12,9 @@ class Connector {
 private:
     int sd;
     int port;
+    std::string address;
 public:
-    explicit Connector(int port);
+    explicit Connector(const std::string& host, int port);
 
     virtual ~Connector();
 

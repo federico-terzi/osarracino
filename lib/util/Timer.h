@@ -14,11 +14,17 @@ public:
         reset();
     }
 
+    Timer() : Timer(10) {}
+
     inline void reset() {
         clock_gettime(CLOCK_MONOTONIC, &begin_time);
 
         end_time.tv_sec = begin_time.tv_sec + __seconds;
         end_time.tv_nsec = begin_time.tv_nsec;
+    }
+
+    inline void update_start_time() {
+        clock_gettime(CLOCK_MONOTONIC, &begin_time);
     }
 
     inline float elapsed() {

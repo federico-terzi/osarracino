@@ -2,13 +2,26 @@
 // Created by freddy on 23/04/19.
 //
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/wait.h>
+#include <unistd.h>
 #include "GameManager.h"
 
 GameManager::GameManager(Connector &connector, PlayerProfile *currentProfile, Player player)
         : connector(connector), current_profile(currentProfile), player(player) {
+}
 
-    std::cout << "Using profile: " << currentProfile->get_profile_name() << std::endl;
-    currentProfile->print_configuration();
+void GameManager::send_move(const Board &b) {
+    // TODO: https://www.geeksforgeeks.org/wait-system-call-c/
+    if (fork() == 0) {  // Child
+        std::string move {current_profile->calculate_move(b)};
+        connector.send_string(move);
+        exit(0);
+    }else{ // Father
+        wait(NULL);
+        std::cout << "Figlio terminato!" << std::endl;
+    }
 }
 
 void GameManager::game_loop() {
@@ -19,8 +32,7 @@ void GameManager::game_loop() {
         std::cout << b << std::endl;
 
         if (player == Player::WHITE) {
-            std::string move {current_profile->calculate_move(b)};
-            connector.send_string(move);
+            send_move(b);
         }
 
         Board b2;
@@ -28,8 +40,7 @@ void GameManager::game_loop() {
         std::cout << b2 << std::endl;
 
         if (player == Player::BLACK) {
-            std::string move {current_profile->calculate_move(b2)};
-            connector.send_string(move);
+            send_move(b2);
         }
     }
 }

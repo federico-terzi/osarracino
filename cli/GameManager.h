@@ -15,6 +15,7 @@ public:
     explicit GameManager(Connector &connector, PlayerProfile *currentProfile, Player player);
 
     void game_loop();
+    void send_move(const Board& b);
 private:
     Connector &connector;
     PlayerProfile *current_profile;

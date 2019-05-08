@@ -46,11 +46,14 @@ public:
     }
 
     void reset_parameters() {
-        timer.reset();
         move_count = 0;
     }
 
-    Timer timer = Timer(55);
+    void set_timer(const Timer& __timer) {
+        this->timer = __timer;
+    }
+
+    Timer timer;
     int move_count = 0;
     int quiet_count = 0;
 };

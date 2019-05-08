@@ -14,16 +14,14 @@
 #include <netdb.h>
 #include <iostream>
 
-const char* TARGET  {"localhost"};
-
-Connector::Connector(int port) : port(port) {
+Connector::Connector(const std::string &address, int port) : address(address), port(port) {
     struct hostent *host;
     struct sockaddr_in servaddr;
 
     // Inizializzo l'indirizzo del server
     memset((char *)&servaddr, 0, sizeof(struct sockaddr_in));
     servaddr.sin_family = AF_INET;
-    host = gethostbyname(TARGET);
+    host = gethostbyname(address.c_str());
 
     servaddr.sin_addr.s_addr=((struct in_addr *)(host->h_addr))->s_addr;
     servaddr.sin_port = htons(port);
