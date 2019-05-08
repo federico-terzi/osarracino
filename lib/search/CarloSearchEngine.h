@@ -16,7 +16,7 @@
 
 //#define ENABLE_ADVANCED_TRACING
 
-
+const int QUIESCENCE_DEPTH = 2;
 
 class CarloSearchEngine : public SearchEngine<CarloSearchEngine> {
 public:
@@ -106,7 +106,7 @@ public:
 
             for (const auto &move : moves) {
                 auto new_board{Board::from_board(board, move.from, move.to)};
-                value = std::max(value, minimax(depth - 1, eval, move_generator, false, new_board, alpha, beta, 2));
+                value = std::max(value, minimax(depth - 1, eval, move_generator, false, new_board, alpha, beta, QUIESCENCE_DEPTH));
 
 
                 if (value >= beta) {
@@ -121,7 +121,7 @@ public:
 
             for (const auto &move : moves) {
                 auto new_board{Board::from_board(board, move.from, move.to)};
-                value = std::min(value, minimax(depth - 1, eval, move_generator, true, new_board, alpha, beta, 2));
+                value = std::min(value, minimax(depth - 1, eval, move_generator, true, new_board, alpha, beta, QUIESCENCE_DEPTH));
 
 
                 if (value <= alpha) {
