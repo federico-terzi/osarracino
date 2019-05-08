@@ -1,27 +1,94 @@
 //
-// Created by freddy on 30/04/19.
+// Created by freddy on 08/05/19.
 //
 
-#ifndef OSARRACINO_THANOSSEARCHENGINE_H
-#define OSARRACINO_THANOSSEARCHENGINE_H
+#ifndef OSARRACINO_FSMSEARCHENGINE_H
+#define OSARRACINO_FSMSEARCHENGINE_H
 
 #include "SearchEngine.h"
-#include "RamboSearchEngine.h"
 #include <algorithm>
 #include <thread>
 
-const int THANOS_MAX_DEPTH = 10;
+const int FSM_MAX_DEPTH = 10;
+const int FSM_QUIESCENCE_MAX_DEPTH = 2;
 
-struct ThanosMoveConfiguration {
+struct FSMMoveConfiguration {
     Move move;
     Board board;
     int score;
     int depth;
 };
 
-class ThanosSearchEngine : public SearchEngine<ThanosSearchEngine> {
+class FSMSearchEngine : public SearchEngine<FSMSearchEngine> {
 public:
     int worker_count = 8; // TODO: check that is not zero
+
+    template<typename EvalType, typename MoveGeneratorType>
+    int quiescence_search(long &worker_move_count, const Board &game_state, const MoveGenerator<MoveGeneratorType> &move_generator,
+                          const Evaluator<EvalType> &eval,
+                          bool maximizing_player, int alpha, int beta, int depth) {
+        worker_move_count++;
+
+        if (maximizing_player) { //Maximizing player
+            int stand_pat = eval.evaluate(game_state);
+            if (depth == 0 || game_state.is_white_win() || game_state.is_white_win() || timer.is_timed_out()) {
+                return stand_pat;
+            }
+            if (stand_pat >= beta) {
+                return beta;
+            }
+            if (alpha < stand_pat) {
+                alpha = stand_pat;
+            }
+
+            auto moves = move_generator.generate(game_state);
+            int value = std::numeric_limits<int>::min();
+
+            for (const auto &move : moves) {
+                auto new_board{Board::from_board(game_state, move.from, move.to)};
+                value = std::max(value, quiescence_search(worker_move_count, new_board,move_generator, eval ,false, alpha, beta, depth-1));
+
+
+                if (value >= beta) {
+                    return value;
+                }
+                alpha = std::max(alpha, value);
+            }
+
+            return value;
+
+        } else { //Minimizing player
+
+            int stand_pat = eval.evaluate(game_state);
+            if(depth == 0 || game_state.is_white_win() || game_state.is_black_win() || timer.is_timed_out()) {
+                return stand_pat;
+            }
+            if(stand_pat <= alpha) {
+                return alpha;
+            }
+            if(beta > stand_pat) {
+                beta = stand_pat;
+            }
+            auto moves = move_generator.generate(game_state);
+
+            int value = std::numeric_limits<int>::max();
+
+            for (const auto &move : moves) {
+                auto new_board{Board::from_board(game_state, move.from, move.to)};
+                value = std::min(value, quiescence_search(worker_move_count, new_board, move_generator, eval, true, alpha, beta, depth-1));
+
+                if (value <= alpha) {
+                    return value;
+                }
+
+                beta = std::min(beta, value);
+            }
+
+            return value;
+
+        }
+
+    }
 
     template<typename EvalType, typename MoveGeneratorType>
     int minimax(long &worker_move_count, int depth, const Evaluator<EvalType> &eval,
@@ -31,7 +98,12 @@ public:
         worker_move_count++;
 
         if (depth == 0 || timer.is_timed_out() || board.is_black_win() || board.is_white_win()) {
-            return eval.evaluate(board);
+            if (!board.is_quiet && !timer.is_timed_out() && !board.is_black_win() && !board.is_white_win()) {
+                return quiescence_search(worker_move_count, board, move_generator, eval,maximizing_player,alpha, beta, FSM_QUIESCENCE_MAX_DEPTH);
+            } else {
+                return eval.evaluate(board);
+            }
+
         }
 
         auto moves{move_generator.generate(board)};
@@ -69,8 +141,8 @@ public:
     }
 
     template<typename EvalType, typename MoveGeneratorType>
-    void search_worker_init(std::vector<ThanosMoveConfiguration> &future_states,
-                            ThanosMoveConfiguration &best_move,
+    void search_worker_init(std::vector<FSMMoveConfiguration> &future_states,
+                            FSMMoveConfiguration &best_move,
                             long &worker_move_count,
                             int &early_exit,
                             float &elapsed,
@@ -117,7 +189,7 @@ public:
 
         auto moves{move_generator.generate(b)};
 
-        std::vector<ThanosMoveConfiguration> future_states;
+        std::vector<FSMMoveConfiguration> future_states;
         for (const auto &move : moves) {
             auto board{Board::from_board(b, move.from, move.to)};
 
@@ -128,7 +200,7 @@ public:
 
 
         // Make the slices
-        std::vector<std::vector<ThanosMoveConfiguration>> slices(worker_count);
+        std::vector<std::vector<FSMMoveConfiguration>> slices(worker_count);
         int worker_index = 0;
         for (auto &state : future_states) {
             slices[worker_index].push_back(state);
@@ -142,7 +214,7 @@ public:
         int current_depth_limit = 0;
         bool force_exit;
         std::vector<long> worker_move_counts(worker_count);
-        std::vector<ThanosMoveConfiguration> results(worker_count);
+        std::vector<FSMMoveConfiguration> results(worker_count);
 
         do {
             std::vector<std::thread> threads;
@@ -153,15 +225,15 @@ public:
             for (auto &move_slice: slices) {
                 worker_early_exit[current_slice] = false;
 
-                std::thread t(&ThanosSearchEngine::search_worker_init<EvalType, MoveGeneratorType>,
-                        this,
-                        std::ref(move_slice),
-                        std::ref(results[current_slice]),
-                        std::ref(worker_move_counts[current_slice]),
-                        std::ref(worker_early_exit[current_slice]),
-                        std::ref(worker_elapsed[current_slice]),
-                        current_depth_limit,
-                        std::ref(eval), std::ref(move_generator));
+                std::thread t(&FSMSearchEngine::search_worker_init<EvalType, MoveGeneratorType>,
+                              this,
+                              std::ref(move_slice),
+                              std::ref(results[current_slice]),
+                              std::ref(worker_move_counts[current_slice]),
+                              std::ref(worker_early_exit[current_slice]),
+                              std::ref(worker_elapsed[current_slice]),
+                              current_depth_limit,
+                              std::ref(eval), std::ref(move_generator));
 
                 current_slice++;
                 threads.push_back(std::move(t));
@@ -202,7 +274,7 @@ public:
 
 
             current_depth_limit++;
-        } while (current_depth_limit <= THANOS_MAX_DEPTH && !force_exit && !timer.is_timed_out());
+        } while (current_depth_limit <= FSM_MAX_DEPTH && !force_exit && !timer.is_timed_out());
 
         if (timer.is_timed_out()) {
             std::cout << "TIMED OUT" << std::endl;
@@ -222,4 +294,4 @@ public:
     }
 };
 
-#endif //OSARRACINO_THANOSSEARCHENGINE_H
+#endif //OSARRACINO_FSMSEARCHENGINE_H

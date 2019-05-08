@@ -11,6 +11,7 @@
 #include <movegenerator/ArnoldMoveGenerator.h>
 #include <movegenerator/HeisenbergMoveGenerator.h>
 #include <search/CarloSearchEngine.h>
+#include <search/FSMSearchEngine.h>
 #include "PlayerProfile.h"
 
 class SimpleWhitePlayerProfile : public PlayerProfile {
@@ -19,7 +20,8 @@ public:
 
 private:
     //RamboSearchEngine engine;
-    CarloSearchEngine engine;
+    //CarloSearchEngine engine;
+    FSMSearchEngine engine;
     TorettoWhiteEvaluator eval;
     //ArnoldMoveGenerator move_generator;
     HeisenbergMoveGenerator move_generator;

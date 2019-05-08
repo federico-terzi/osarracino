@@ -12,7 +12,8 @@
 #include <movegenerator/HeisenbergMoveGenerator.h>
 #include <evaluator/ReverseTorettoBlackEvaluator.h>
 #include <search/CollisionSearchEngine.h>
-#include <search/CarloSearchEngine.h>
+#include <search/ThanosSearchEngine.h>
+#include <search/FSMSearchEngine.h>
 #include "PlayerProfile.h"
 
 class SimpleBlackPlayerProfile : public PlayerProfile {
@@ -20,7 +21,8 @@ public:
     std::string calculate_move(const Board &b) override;
 
 private:
-    CarloSearchEngine engine;
+    //FSMSearchEngine engine;
+    ThanosSearchEngine engine;
     //RamboSearchEngine engine;
     //CollisionSearchEngine engine;
     BlackEvaluator eval;

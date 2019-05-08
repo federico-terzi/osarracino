@@ -46,7 +46,7 @@ public:
         move_count = 0;
     }
 
-    Timer timer = Timer(10);
+    Timer timer = Timer(5);
     int move_count = 0;
     int quiet_count = 0;
 };
