@@ -189,15 +189,16 @@ Board Board::from_board(Board b, const Position &from, const Position &to) {
         return b;
     }
 
-    // Update king position
-    if (b.king_pos == from) {
-        b.king_pos = to;
-    }
-
     // Update board status
     b.is_white = !b.is_white;
     b.last_move = to;
     b.is_quiet = true;
+
+    // Update king position
+    if (b.king_pos == from) {
+        b.king_pos = to;
+        b.is_quiet = false;
+    }
 
     // Determine the turn based on the color of the moved pawn
     bool is_white_moving = false;  // True if the white is moving, false if the black is moving

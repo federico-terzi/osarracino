@@ -16,6 +16,8 @@
 
 //#define ENABLE_ADVANCED_TRACING
 
+const int CARLO_MAX_DEPTH = 20;
+
 const int QUIESCENCE_DEPTH = 2;
 
 class CarloSearchEngine : public SearchEngine<CarloSearchEngine> {
@@ -30,7 +32,7 @@ public:
 
         if (maximizing_player) { //Maximizing player
             int stand_pat = eval.evaluate(game_state);
-            if (depth == 0 || game_state.is_white_win() || game_state.is_white_win()) {
+            if (depth == 0 || game_state.is_white_win() || game_state.is_white_win() || timer.is_timed_out()) {
                 return stand_pat;
             }
             if (stand_pat >= beta) {
@@ -59,7 +61,7 @@ public:
         } else { //Minimizing player
 
             int stand_pat = eval.evaluate(game_state);
-            if(depth == 0 || game_state.is_white_win() || game_state.is_black_win()) {
+            if(depth == 0 || game_state.is_white_win() || game_state.is_black_win() || timer.is_timed_out()) {
                 return stand_pat;
             }
             if(stand_pat <= alpha) {
@@ -97,7 +99,7 @@ public:
         move_count++;
 
         if (depth == 0 || timer.is_timed_out() || board.is_black_win() || board.is_white_win()) {
-            if (board.is_captured && !timer.is_timed_out() && !board.is_black_win() && !board.is_white_win()) {
+            if (!board.is_quiet && !timer.is_timed_out() && !board.is_black_win() && !board.is_white_win()) {
                 return quiescence_search(board, move_generator, eval,maximizing_player,alpha, beta, quiet_search);
             } else {
                 return eval.evaluate(board);

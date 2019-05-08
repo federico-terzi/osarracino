@@ -122,6 +122,8 @@ int BlackEvaluator::evaluate(const Board &b) const {
 
     if(b.is_black_win()) {
         return EZPZ;
+    } else if (b.is_white_win()) {
+        return -EZPZ;
     } else {
         int geometry = geometry_points(b);
         if (geometry >= 4) {
