@@ -7,6 +7,8 @@
 GameManager::GameManager(Connector &connector, PlayerProfile *currentProfile, Player player)
         : connector(connector), current_profile(currentProfile), player(player) {
 
+    std::cout << "Using profile: " << currentProfile->get_profile_name() << std::endl;
+    currentProfile->print_configuration();
 }
 
 void GameManager::game_loop() {

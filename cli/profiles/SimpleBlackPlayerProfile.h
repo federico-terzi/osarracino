@@ -5,31 +5,19 @@
 #ifndef OSARRACINO_SIMPLEBLACKPLAYERPROFILE_H
 #define OSARRACINO_SIMPLEBLACKPLAYERPROFILE_H
 
-
-#include <search/RamboSearchEngine.h>
 #include <evaluator/BlackEvaluator.h>
-#include <movegenerator/ArnoldMoveGenerator.h>
 #include <movegenerator/HeisenbergMoveGenerator.h>
-#include <evaluator/ReverseTorettoBlackEvaluator.h>
-#include <search/CollisionSearchEngine.h>
-#include <search/ThanosSearchEngine.h>
 #include <search/FSMSearchEngine.h>
-#include "PlayerProfile.h"
+#include "ParametrizedPlayerProfile.h"
 
-class SimpleBlackPlayerProfile : public PlayerProfile {
+class SimpleBlackPlayerProfile : public ParametrizedPlayerProfile<
+        FSMSearchEngine,
+        BlackEvaluator,
+        HeisenbergMoveGenerator>{
 public:
-    std::string calculate_move(const Board &b) override;
-
-private:
-    //FSMSearchEngine engine;
-    ThanosSearchEngine engine;
-    //RamboSearchEngine engine;
-    //CollisionSearchEngine engine;
-    BlackEvaluator eval;
-    //ReverseTorettoBlackEvaluator eval;
-    //ArnoldMoveGenerator move_generator;
-    HeisenbergMoveGenerator move_generator;
+    std::string get_profile_name() override {
+        return "SimpleBlackPlayerProfile";
+    }
 };
-
 
 #endif //OSARRACINO_SIMPLEBLACKPLAYERPROFILE_H

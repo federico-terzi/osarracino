@@ -23,6 +23,10 @@ class ThanosSearchEngine : public SearchEngine<ThanosSearchEngine> {
 public:
     int worker_count = 8; // TODO: check that is not zero
 
+    std::string get_name() const {
+        return "ThanosSearchEngine";
+    }
+
     template<typename EvalType, typename MoveGeneratorType>
     int minimax(long &worker_move_count, int depth, const Evaluator<EvalType> &eval,
                 const MoveGenerator<MoveGeneratorType> &move_generator,

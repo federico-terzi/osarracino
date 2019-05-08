@@ -26,6 +26,10 @@ const int MAX_DEPTH = 20;
 
 class CollisionSearchEngine : public SearchEngine<CollisionSearchEngine> {
 public:
+    std::string get_name() const {
+        return "CollisionSearchEngine";
+    }
+
     int hits;
 
     template<typename EvalType, typename MoveGeneratorType>

@@ -10,6 +10,10 @@
 class ReverseTorettoBlackEvaluator : public Evaluator<ReverseTorettoBlackEvaluator> {
 public:
     int evaluate(const Board &b) const;
+
+    std::string get_name() const {
+        return "ReverseTorettoBlackEvaluator";
+    }
 };
 
 

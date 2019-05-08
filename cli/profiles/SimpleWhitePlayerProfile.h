@@ -5,27 +5,19 @@
 #ifndef OSARRACINO_SIMPLEWHITEPLAYERPROFILE_H
 #define OSARRACINO_SIMPLEWHITEPLAYERPROFILE_H
 
-
-#include <search/RamboSearchEngine.h>
 #include <evaluator/TorettoWhiteEvaluator.h>
-#include <movegenerator/ArnoldMoveGenerator.h>
 #include <movegenerator/HeisenbergMoveGenerator.h>
-#include <search/CarloSearchEngine.h>
 #include <search/FSMSearchEngine.h>
-#include "PlayerProfile.h"
+#include "ParametrizedPlayerProfile.h"
 
-class SimpleWhitePlayerProfile : public PlayerProfile {
+class SimpleWhitePlayerProfile : public ParametrizedPlayerProfile<
+        FSMSearchEngine,
+        TorettoWhiteEvaluator,
+        HeisenbergMoveGenerator>{
 public:
-    std::string calculate_move(const Board &b) override;
-
-private:
-    //RamboSearchEngine engine;
-    //CarloSearchEngine engine;
-    FSMSearchEngine engine;
-    TorettoWhiteEvaluator eval;
-    //ArnoldMoveGenerator move_generator;
-    HeisenbergMoveGenerator move_generator;
+    std::string get_profile_name() override {
+        return "SimpleWhitePlayerProfile";
+    }
 };
-
 
 #endif //OSARRACINO_SIMPLEWHITEPLAYERPROFILE_H

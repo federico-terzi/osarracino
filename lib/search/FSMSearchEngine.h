@@ -21,6 +21,10 @@ struct FSMMoveConfiguration {
 
 class FSMSearchEngine : public SearchEngine<FSMSearchEngine> {
 public:
+    std::string get_name() const {
+        return "FlyingSpaghettiMonsterSearchEngine";
+    }
+
     int worker_count = 8; // TODO: check that is not zero
 
     template<typename EvalType, typename MoveGeneratorType>

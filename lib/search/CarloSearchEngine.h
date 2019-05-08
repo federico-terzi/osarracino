@@ -13,16 +13,41 @@
 #include "SearchEngine.h"
 #include <evaluator/Evaluator.h>
 
-
 //#define ENABLE_ADVANCED_TRACING
 
 const int CARLO_MAX_DEPTH = 20;
 
 const int QUIESCENCE_DEPTH = 2;
 
+struct CarloMoveTrace {
+    Move move;
+    bool maximizing;
+    int score;
+    int depth;
+    bool valid = false;
+
+    friend std::ostream &operator<<(std::ostream &s, const CarloMoveTrace &trace) {
+        s << "TRACE: maximizing: " << trace.maximizing << " with score: " << trace.score
+          << " at depth " << trace.depth << " for move: " << trace.move;
+        return s;
+    };
+};
+
+struct CarloMoveConfiguration {
+    Move move;
+    Board board;
+    int score;
+    int depth;
+    std::array<CarloMoveTrace, CARLO_MAX_DEPTH> move_traces;
+};
+
 class CarloSearchEngine : public SearchEngine<CarloSearchEngine> {
 public:
-    std::array<MoveTrace, CARLO_MAX_DEPTH> move_traces;
+    std::string get_name() const {
+        return "CarloSearchEngine";
+    }
+
+    std::array<CarloMoveTrace, CARLO_MAX_DEPTH> move_traces;
 
     template<typename EvalType, typename MoveGeneratorType>
     int quiescence_search(const Board &game_state, const MoveGenerator<MoveGeneratorType> &move_generator,
@@ -150,7 +175,7 @@ public:
 
         auto moves{move_generator.generate(b)};
 
-        std::vector<MoveConfiguration> future_states;
+        std::vector<CarloMoveConfiguration> future_states;
         for (const auto &move : moves) {
             auto board{Board::from_board(b, move.from, move.to)};
 

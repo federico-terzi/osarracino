@@ -41,6 +41,10 @@ struct MoveConfiguration {
 
 class RamboSearchEngine : public SearchEngine<RamboSearchEngine> {
 public:
+    std::string get_name() const {
+        return "RamboSearchEngine";
+    }
+
     std::array<MoveTrace, RAMBO_MAX_DEPTH> move_traces;
 
     template<typename EvalType, typename MoveGeneratorType>

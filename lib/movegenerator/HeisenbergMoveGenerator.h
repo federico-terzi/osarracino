@@ -14,6 +14,10 @@ public:
 
     HeisenbergMoveGenerator();
 
+    std::string get_name() const {
+        return "HeisenbergMoveGenerator";
+    }
+
 private:
     std::vector<Position> col_to_positions[512][9];
     std::vector<Move> row_to_horizontal_moves[512][9][9];

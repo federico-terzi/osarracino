@@ -17,6 +17,9 @@ const std::array<int, 4> win_rows_cols = {1, 2, 6, 7};
 
 class BlackEvaluator : public Evaluator<BlackEvaluator>{
 public:
+    std::string get_name() const {
+        return "BlackEvaluator";
+    }
 
     BlackEvaluator();
     int evaluate(const Board &b) const;

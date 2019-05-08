@@ -38,6 +38,14 @@ public:
         clock_gettime(CLOCK_MONOTONIC, &now);
         return end_time.tv_sec < now.tv_sec;
     }
+
+    inline timespec get_end_time() {
+        return end_time;
+    }
+
+    inline timespec set_end_time(timespec __end_time) {
+        end_time = __end_time;
+    }
 private:
     int __seconds;
     timespec begin_time;

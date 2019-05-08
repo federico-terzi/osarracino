@@ -6,9 +6,11 @@
 #include "GameManager.h"
 #include "profiles/SimpleWhitePlayerProfile.h"
 #include "profiles/SimpleBlackPlayerProfile.h"
+#include "util/MemoryManager.h"
 #include <map>
 #include <locale>
 #include <search/RamboSearchEngine.h>
+
 
 const int PLAYER_COLOR = 1;
 
@@ -24,6 +26,12 @@ int main(int argc, char **argv) {
     std::cout << "    ♫ ♪ ( BEEELLUU FUNTOOREEEE ) ♫ ♪   " << std::endl << std::endl;
 
     std::cout << "Starting as " << player << std::endl;
+
+    // Increase stack size
+    long before_memory = MemoryManager::get_stack_size();
+    MemoryManager::increase_stack_size();
+    long after_memory = MemoryManager::get_stack_size();
+    std::cout << "Increased STACK size from "<< before_memory << " to " << after_memory << std::endl;
 
     std::cout << "Connecting to server... " << std::flush;
 
