@@ -15,6 +15,12 @@ GameManager::GameManager(Connector &connector, PlayerProfile *currentProfile, Pl
 void GameManager::send_move(const Board &b) {
     Timer timer {Timer(config.timeout)};
 
+    if (!config.fork_enabled) {
+        std::string move {current_profile->calculate_move(b, timer)};
+        connector.send_string(move);
+        return;
+    }
+
     while(!timer.is_timed_out()) {
         if (fork() == 0) {  // Child
             timer.update_start_time();

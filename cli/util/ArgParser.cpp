@@ -34,6 +34,8 @@ void ArgParser::populate_config(ConfigSet &config) {
             config.timeout = parse_int(flag_pair.first, flag_pair.second);
         }else if(flag_pair.first == "p" || flag_pair.first == "profile") {
             config.profile = flag_pair.second;
+        }else if(flag_pair.first == "f" || flag_pair.first == "fork") {
+            config.fork_enabled = flag_pair.second != "off";
         }else if(flag_pair.first == "a" || flag_pair.first == "address") {
             config.host = flag_pair.second;
         }else if(flag_pair.first == "port") {

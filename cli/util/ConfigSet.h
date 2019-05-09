@@ -14,12 +14,16 @@ struct ConfigSet {
     std::string profile = "default";
     std::string host = "localhost";
     int port = -1;
+    bool fork_enabled = true;
 
     void print() {
         std::cout << "Player: "<<player<< std::endl;
         std::cout << "Timeout: "<<timeout << std::endl;
         std::cout << "Host: "<<host<< std::endl;
         std::cout << "Port: "<<port<<std::endl;
+
+        auto sfork = (fork_enabled) ? "true" : "false";
+        std::cout << "Fork Enable: "<< sfork <<std::endl;
     }
 };
 
