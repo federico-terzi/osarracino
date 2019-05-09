@@ -15,14 +15,25 @@ GameManager::GameManager(Connector &connector, PlayerProfile *currentProfile, Pl
 void GameManager::send_move(const Board &b) {
     Timer timer {Timer(config.timeout)};
 
-    // TODO: https://www.geeksforgeeks.org/wait-system-call-c/
-    if (fork() == 0) {  // Child
-        std::string move {current_profile->calculate_move(b, timer)};
-        connector.send_string(move);
-        exit(0);
-    }else{ // Father
-        wait(NULL);
-        std::cout << "Figlio terminato!" << std::endl;
+    while(!timer.is_timed_out()) {
+        if (fork() == 0) {  // Child
+            timer.update_start_time();
+            std::string move {current_profile->calculate_move(b, timer)};
+            connector.send_string(move);
+            exit(0);
+        }else{ // Father
+            int stat;
+            wait(&stat);
+
+            if (WIFEXITED(stat)) {
+                std::cout << "Child process returned correctly" << std::endl;
+                return;
+            }else if (WIFSIGNALED(stat)) {
+                int signal = WTERMSIG(stat);
+                std::cerr << "WARNING: Child process crashed with signal "<< signal << std::endl;
+                std::cout << "Respawning child process..." << std::endl;
+            }
+        }
     }
 }
 
