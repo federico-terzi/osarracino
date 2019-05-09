@@ -25,8 +25,6 @@ public:
         return "FlyingSpaghettiMonsterSearchEngine";
     }
 
-    int worker_count = 8; // TODO: check that is not zero
-
     template<typename EvalType, typename MoveGeneratorType>
     int quiescence_search(long &worker_move_count, const Board &game_state, const MoveGenerator<MoveGeneratorType> &move_generator,
                           const Evaluator<EvalType> &eval,

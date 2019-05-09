@@ -21,8 +21,6 @@ struct ThanosMoveConfiguration {
 
 class ThanosSearchEngine : public SearchEngine<ThanosSearchEngine> {
 public:
-    int worker_count = 8; // TODO: check that is not zero
-
     std::string get_name() const {
         return "ThanosSearchEngine";
     }

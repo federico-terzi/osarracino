@@ -2,6 +2,7 @@
 // Created by freddy on 08/05/19.
 //
 
+#include <thread>
 #include "ArgParser.h"
 
 ArgParser::ArgParser(int argc, char **argv) {
@@ -26,6 +27,12 @@ void ArgParser::populate_config(ConfigSet &config) {
     // Setup the default port
     config.port = config.player.default_port();
 
+    // Setup worker count
+    config.worker_count = std::thread::hardware_concurrency();
+    if (config.worker_count == 0) {
+        config.worker_count = 4;
+    }
+
     // Parse the other parameters
     for (int i = 2; i<args.size(); i+=2) {
         auto flag_pair {parse_flag(i)};
@@ -40,6 +47,8 @@ void ArgParser::populate_config(ConfigSet &config) {
             config.host = flag_pair.second;
         }else if(flag_pair.first == "port") {
             config.port = parse_int(flag_pair.first, flag_pair.second);
+        }else if(flag_pair.first == "j" || flag_pair.first == "workers") {
+            config.worker_count = parse_int(flag_pair.first, flag_pair.second);
         }
     }
 }

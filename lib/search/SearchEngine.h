@@ -53,7 +53,12 @@ public:
         this->timer = __timer;
     }
 
+    void set_worker_count(int count) {
+        worker_count = count;
+    }
+
     Timer timer;
+    int worker_count = 4;
     int move_count = 0;
     int quiet_count = 0;
 };

@@ -12,6 +12,7 @@ class ParametrizedPlayerProfile : public PlayerProfile {
 public:
     std::string calculate_move(const Board &b, const Timer &timer) override {
         engine.set_timer(timer);
+        engine.set_worker_count(get_config().worker_count);
         return engine.make_decision(b, eval, move_generator);
     }
 
