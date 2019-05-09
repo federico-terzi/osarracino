@@ -14,6 +14,10 @@ public:
     int evaluate(const Board &b) const {
         return static_cast<T const&>(*this).evaluate(b);
     }
+
+    std::string get_name() const {
+        return static_cast<T const&>(*this).get_name();
+    }
 };
 
 

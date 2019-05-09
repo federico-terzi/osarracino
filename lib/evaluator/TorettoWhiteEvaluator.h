@@ -20,6 +20,10 @@ class TorettoWhiteEvaluator : public Evaluator<TorettoWhiteEvaluator> {
 public:
     int evaluate(const Board &b) const;
 
+    std::string get_name() const {
+        return "TorettoWhiteEvaluator";
+    }
+
     int perform_search(const uint16_t *cols, const uint16_t *rows, int depth, int king_col, int king_row,
                        bool horizontal) const;
 

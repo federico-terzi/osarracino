@@ -10,6 +10,10 @@
 class ArnoldMoveGenerator  : public MoveGenerator<ArnoldMoveGenerator>{
 public:
     std::vector<Move> generate(const Board &b) const;
+
+    std::string get_name() const {
+        return "ArnoldMoveGenerator";
+    }
 };
 
 

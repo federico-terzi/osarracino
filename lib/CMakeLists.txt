@@ -20,6 +20,7 @@ add_library(libosarracino STATIC
         model/ZobristHash.cpp model/ZobristHash.h
         model/DTranspositionTable.cpp model/DTranspositionTable.h
         search/CollisionSearchEngine.h search/CarloSearchEngine.h
+        search/ThanosSearchEngine.h
         search/FSMSearchEngine.h)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")

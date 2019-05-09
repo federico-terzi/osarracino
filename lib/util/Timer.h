@@ -14,11 +14,17 @@ public:
         reset();
     }
 
+    Timer() : Timer(10) {}
+
     inline void reset() {
         clock_gettime(CLOCK_MONOTONIC, &begin_time);
 
         end_time.tv_sec = begin_time.tv_sec + __seconds;
         end_time.tv_nsec = begin_time.tv_nsec;
+    }
+
+    inline void update_start_time() {
+        clock_gettime(CLOCK_MONOTONIC, &begin_time);
     }
 
     inline float elapsed() {
@@ -33,10 +39,30 @@ public:
         return elapsed;
     }
 
+    inline float remaining() {
+        float remaining;
+
+        timespec now;
+        clock_gettime(CLOCK_MONOTONIC, &now);
+
+        remaining = (end_time.tv_sec - now.tv_sec);
+        remaining += (end_time.tv_nsec - now.tv_nsec) / 1000000000.0;
+
+        return remaining;
+    }
+
     inline bool is_timed_out() {
         timespec now;
         clock_gettime(CLOCK_MONOTONIC, &now);
         return end_time.tv_sec < now.tv_sec;
+    }
+
+    inline timespec get_end_time() {
+        return end_time;
+    }
+
+    inline timespec set_end_time(timespec __end_time) {
+        end_time = __end_time;
     }
 private:
     int __seconds;

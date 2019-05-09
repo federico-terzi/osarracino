@@ -35,6 +35,10 @@ public:
     std::vector<Move> generate(const Board &b) const {
         return static_cast<T const&>(*this).generate(b);
     }
+
+    std::string get_name() const {
+        return static_cast<T const&>(*this).get_name();
+    }
 };
 
 namespace moves {

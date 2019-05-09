@@ -13,6 +13,10 @@
 template<typename T>
 class SearchEngine {
 public:
+    std::string get_name() const {
+        return static_cast<T const&>(*this).get_name();
+    }
+
     template<typename EvalType, typename MoveGeneratorType>
     std::string make_decision(const Board &b, const Evaluator<EvalType> &eval,
                               const MoveGenerator<MoveGeneratorType> &move_generator) {
@@ -42,11 +46,14 @@ public:
     }
 
     void reset_parameters() {
-        timer.reset();
         move_count = 0;
     }
 
-    Timer timer = Timer(5);
+    void set_timer(const Timer& __timer) {
+        this->timer = __timer;
+    }
+
+    Timer timer;
     int move_count = 0;
     int quiet_count = 0;
 };
