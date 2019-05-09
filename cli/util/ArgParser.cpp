@@ -35,6 +35,11 @@ void ArgParser::populate_config(ConfigSet &config) {
 
     // Parse the other parameters
     for (int i = 2; i<args.size(); i+=2) {
+        if (args[i] == "-h" || args[i] == "--help") {
+            print_help();
+            exit(0);
+        }
+
         auto flag_pair {parse_flag(i)};
 
         if (flag_pair.first == "t" || flag_pair.first == "timeout") {
@@ -49,6 +54,9 @@ void ArgParser::populate_config(ConfigSet &config) {
             config.port = parse_int(flag_pair.first, flag_pair.second);
         }else if(flag_pair.first == "j" || flag_pair.first == "workers") {
             config.worker_count = parse_int(flag_pair.first, flag_pair.second);
+        }else{
+            print_help();
+            exit(3);
         }
     }
 }
@@ -58,6 +66,7 @@ std::pair<std::string, std::string> ArgParser::parse_flag(int index) {
 
     if (args.size() <= (index + 1)) {
         std::cerr << "Missing value for flag "<<raw_flag << std::endl;
+        print_help();
         exit(1);
     }
 
@@ -78,4 +87,30 @@ int ArgParser::parse_int(const std::string &flag, const std::string &value) {
         std::cerr << "Flag '" <<flag << "' requires a numeric argument! But '" << value << "' was given. " << std::endl;
         exit(1);
     }
+}
+
+void ArgParser::print_help() {
+    std::cout << R"V0G0N(Usage: osarracino [COLOR] {options}
+
+Examples:
+    ./osarracino white -t 23 -j 8
+    ./osarracino black -p fallback -a 192.168.1.1
+
+Options:
+    -t [n], --timeout [n]         Set the timeout to n ( must be int ).
+    -j [n], --workers [n]         Specify the number of thread worker
+                                  to spawn when using a multithreaded
+                                  profile. ( default: match CPU core count ).
+    -p [p], --profile [p]         Set the profile to p [ default, fallback ].
+    -a [host], --address [host]   Set a custom server host
+                                  ( default: localhost ).
+    --port [p]                    Set a custom port for the server
+                                  ( default: 5800 or 5801 ).
+    -h, --help                    Print this help.
+    -f [on|off]                   Enable or disable fork elaboration.
+                                  Note that this is needed to obtain fault
+                                  tolerance in case of crashes of the engine.
+                                  ( default: on ).
+
+    )V0G0N" << std::endl;
 }

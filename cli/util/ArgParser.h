@@ -14,6 +14,7 @@ public:
     ArgParser(int argc, char **argv);
 
     void populate_config(ConfigSet& config);
+    void print_help();
 private:
     std::vector<std::string> args;
 
