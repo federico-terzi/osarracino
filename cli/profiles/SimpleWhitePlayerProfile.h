@@ -19,9 +19,9 @@ public:
     std::string calculate_move(const Board &b) override;
 
 private:
-    //RamboSearchEngine engine;
+    RamboSearchEngine engine;
     //CarloSearchEngine engine;
-    FSMSearchEngine engine;
+    //FSMSearchEngine engine;
     TorettoWhiteEvaluator eval;
     //ArnoldMoveGenerator move_generator;
     HeisenbergMoveGenerator move_generator;
