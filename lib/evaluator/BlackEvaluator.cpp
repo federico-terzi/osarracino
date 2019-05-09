@@ -41,30 +41,7 @@ int BlackEvaluator::black_block_king(const Board &b) const {
 
 //Differences of pawns based on quarters! TO TEST
 int BlackEvaluator::pawn_differences(const Board &b) const {
-    int current_difference {0};
-
-    // Function that calculates the differences based on the cols;
-    auto counter = [&b](int start_col, int max_col, int start_row,int max_row) -> int {
-        int black {0};
-        int white {0};
-        for (int col = start_col; col <= max_col; col++) {
-            for (int row = start_row; row <= max_row; row++) {
-                if (b.board[col][row] == Pawn::White || b.board[col][row] == Pawn::FullThrone || b.board[col][row] == Pawn::King) {
-                    white++;
-                } else if (b.board[col][row] == Pawn::Black || b.board[col][row] == Pawn::FullCitadel) {
-                    black++;
-                }
-            }
-        }
-        return black - white - 1;
-    };
-
-    current_difference += counter(FIRST_QUARTER);
-    current_difference += counter(SECOND_QUARTER);
-    current_difference += counter(THIRD_QUARTER);
-    current_difference += counter(FOURTH_QUARTER);
-
-    return current_difference;
+    return b.black_count - b.white_count - 1;
 }
 
 
