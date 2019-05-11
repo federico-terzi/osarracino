@@ -15,7 +15,7 @@
 
 const int DIM = 9;
 
-enum Pawn {
+enum __attribute__ ((__packed__)) Pawn {
     Empty = 0,
     White = 1 << 0,
     Black = 1 << 1,
