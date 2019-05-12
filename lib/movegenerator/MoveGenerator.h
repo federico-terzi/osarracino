@@ -13,6 +13,7 @@
 struct Move {
     Position from;
     Position to;
+    int penality;
 
     friend std::ostream &operator<<(std::ostream &s, const Move &move) {
         s << move.from.to_move() << "->" << move.to.to_move();

@@ -21,7 +21,7 @@ add_library(libosarracino STATIC
         model/DTranspositionTable.cpp model/DTranspositionTable.h
         search/CollisionSearchEngine.h search/CarloSearchEngine.h
         search/ThanosSearchEngine.h
-        search/FSMSearchEngine.h)
+        search/FSMSearchEngine.h movegenerator/MadaraMoveGenerator.cpp movegenerator/MadaraMoveGenerator.h)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
