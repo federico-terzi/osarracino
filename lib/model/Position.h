@@ -28,11 +28,5 @@ struct Position {
     std::string to_move() const;
 };
 
-struct pos_hash {
-    std::size_t operator () (const Position &p) const {
-        return p.row*10 + p.col;
-    }
-};
-
 
 #endif //OSARRACINO_POSITION_H
