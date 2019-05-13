@@ -19,10 +19,12 @@ ArgParser::ArgParser(int argc, char **argv) {
 }
 
 void ArgParser::populate_config(ConfigSet &config) {
-    // Parse the player color
-    if (args.size() > 1) {
-        config.player = Player::from_string(args[1]);
+    if (args.size() < 2 || args[1] == "-h" || args[1] == "--help") {
+        print_help();
+        exit(0);
     }
+
+    config.player = Player::from_string(args[1]);
 
     // Setup the default port
     config.port = config.player.default_port();
