@@ -122,11 +122,11 @@ public:
     bool is_quiet;  // True if no pawns where eaten, false otherwise.
 
     inline bool has_black(int col, int row) const {
-        return BitUtils::is_bit_set(black_cols[col], row);
+        return (board[col][row] & Pawn::Black) != 0;
     }
 
     inline bool has_white(int col, int row) const {
-        return BitUtils::is_bit_set(white_cols[col], row);
+        return (board[col][row] & Pawn::White) != 0;
     }
 
     inline bool has_king(int col, int row) const {
@@ -134,11 +134,11 @@ public:
     }
 
     inline bool has_white_or_wall(int col, int row) const {
-        return BitUtils::is_bit_set(white_cols[col] | citadels_mask[col] | throne_mask[col], row);
+        return (board[col][row] & (Pawn::White | Pawn::EmptyCitadel | Pawn::EmptyThrone)) != 0;
     }
 
     inline bool has_citadel(int col, int row) const {
-        return BitUtils::is_bit_set(citadels_mask[col], row);
+        return (board[col][row] & Pawn::EmptyCitadel) != 0;
     }
 
     inline bool is_king_in_throne() const {
@@ -153,12 +153,8 @@ public:
         return vertical_surrounded + horizontal_surrounded == 4;
     }
 
-    inline bool has_black_or_citadel(int col, int row) const {
-        return BitUtils::is_bit_set(black_cols[col] | citadels_mask[col], row);
-    }
-
     inline bool has_black_or_wall(int col, int row) const {
-        return BitUtils::is_bit_set(black_cols[col] | citadels_mask[col] | throne_mask[col], row);
+        return (board[col][row] & (Pawn::Black | Pawn::EmptyCitadel | Pawn::EmptyThrone)) != 0;
     }
 
     inline bool has_black_surrounded_throne() const {
