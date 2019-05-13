@@ -9,12 +9,12 @@
 // Bonus or penality for the given king position
 const int position_weight[9][9] = {
         {   0, 1000, 1000,   0,    0,   0, 1000, 1000,    0},
-        {1000,  100,  200, 100,    0, 100,  200,  100, 1000},
+        {1000,  300,  200, 100,    0, 100,  200,  300, 1000},
         {1000,  200,  200, 200,  200, 200,  200,  200, 1000},
         {   0,  100,  200,   0,    0,   0,  200,  100,    0},
         {   0,    0,  200,   0,-9000,   0,  200,    0,    0},
         {   0,  100,  200,   0,    0,   0,  200,  100,    0},
-        {1000,  200,  200, 200,  200, 200,  200,  200, 1000},
+        {1000,  300,  200, 200,  200, 200,  200,  300, 1000},
         {1000,  100,  200, 100,    0, 100,  200,  100, 1000},
         {   0, 1000, 1000,   0,    0,   0, 1000, 1000,    0},
 };
@@ -37,6 +37,7 @@ int TheRockWhiteEvaluator::evaluate(const Board &b) const {
 
     int white_winpoints = calculate_white_winpoints(b);
     int black_winpoints = calculate_black_winpoints(b);
+    int black_high_risk = calculate_black_high_risk(b);
 
     // Consider also the number of free win points, the number
     // of white pawns and the number of black pawns.
@@ -44,7 +45,8 @@ int TheRockWhiteEvaluator::evaluate(const Board &b) const {
              b.white_count * THEROCK_EVALUATOR_WHITE_PAWN_MULTIPLIER +
              b.black_count * THEROCK_EVALUATOR_BLACK_PAWN_MULTIPLIER +
              white_winpoints * THEROCK_EVALUATOR_WHITE_WINPOINT_MULTIPLIER +
-             black_winpoints * THEROCK_EVALUATOR_BLACK_WINPOINT_MULTIPLIER;
+             black_winpoints * THEROCK_EVALUATOR_BLACK_WINPOINT_MULTIPLIER +
+             black_high_risk * THEROCK_EVALUATOR_BLACK_HIGH_RISK_MULTIPLIER;
 
 
     // Consider the amount of cells that surround the king
@@ -130,5 +132,26 @@ int TheRockWhiteEvaluator::calculate_black_winpoints(const Board &b) const {
     count += BitUtils::popcount(b.black_rows[8] & 0b0000000'011000110);
     count += BitUtils::popcount(b.black_cols[0] & 0b0000000'011000110);
     count += BitUtils::popcount(b.black_cols[8] & 0b0000000'011000110);
+    return count;
+}
+
+const uint16_t black_high_risk_mask[9] = {
+        0b0000000'011000110,
+        0b0000000'111000111,
+        0b0000000'110000011,
+        0b0000000'000000000,
+        0b0000000'000000000,
+        0b0000000'000000000,
+        0b0000000'110000011,
+        0b0000000'111000111,
+        0b0000000'011000110,
+};
+
+
+int TheRockWhiteEvaluator::calculate_black_high_risk(const Board &b) const {
+    int count = 0;
+    for (int i = 0; i<9; i++) {
+        count += BitUtils::popcount(b.black_cols[i] & black_high_risk_mask[i]);
+    }
     return count;
 }
