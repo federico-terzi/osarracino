@@ -63,6 +63,10 @@ namespace BitUtils {
         }
     }
 
+    inline int popcount(uint16_t row) {
+        return __builtin_popcount(row);
+    }
+
     /*
      * Check if the bit at the index position, is set in the mask.
      */

@@ -7,6 +7,7 @@
 #include "SimpleBlackPlayerProfile.h"
 #include "FallbackWhitePlayerProfile.h"
 #include "FallbackBlackPlayerProfile.h"
+#include "AggressiveWhitePlayerProfile.h"
 
 ProfileManager::ProfileManager(const ConfigSet &config) : config(config) {
     player_map["default"] = [](Player player) -> std::unique_ptr<PlayerProfile>{
@@ -22,6 +23,14 @@ ProfileManager::ProfileManager(const ConfigSet &config) : config(config) {
             return std::make_unique<FallbackWhitePlayerProfile>();
         }else{
             return std::make_unique<FallbackBlackPlayerProfile>();
+        }
+    };
+
+    player_map["aggressive"] = [](Player player) -> std::unique_ptr<PlayerProfile>{
+        if (player == Player::WHITE) {
+            return std::make_unique<AggressiveWhitePlayerProfile>();
+        }else{
+            return std::make_unique<SimpleBlackPlayerProfile>();
         }
     };
 }
