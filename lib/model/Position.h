@@ -12,8 +12,14 @@ struct Position {
     int col;
     int row;
 
-    bool operator==(const Position &rhs) const;
-    bool operator!=(const Position &rhs) const;
+    inline bool operator==(const Position &rhs) const {
+        return col == rhs.col &&
+               row == rhs.row;
+    }
+    inline bool operator!=(const Position &rhs) const {
+        return !(rhs == *this);
+    }
+
     friend std::ostream &operator<<(std::ostream &s, const Position &pos) {
         s << pos.to_move();
         return s;
