@@ -16,7 +16,8 @@ const int THEROCK_EVALUATOR_WHITE_WINPOINT_MULTIPLIER = 200;
 const int THEROCK_EVALUATOR_BLACK_WINPOINT_MULTIPLIER = -300;
 const int THEROCK_EVALUATOR_WHITE_PAWN_MULTIPLIER = 200;
 const int THEROCK_EVALUATOR_BLACK_PAWN_MULTIPLIER = -500;
-const int THEROCK_EVALUATOR_BLACK_HIGH_RISK_MULTIPLIER = -450;
+const int THEROCK_EVALUATOR_BLACK_HIGH_RISK_MULTIPLIER = -300;
+const int THEROCK_EVALUATOR_BLACK_RISK_MULTIPLIER = -300;
 const int THEROCK_EVALUATOR_BLACK_SURROUNDED_MULTIPLIER = -1000;
 
 class TheRockWhiteEvaluator : public Evaluator<TheRockWhiteEvaluator> {
@@ -36,7 +37,7 @@ public:
     int calculate_white_winpoints(const Board &b) const;
     int calculate_black_winpoints(const Board &b) const;
 
-    int calculate_black_high_risk(const Board &b) const;
+    int calculate_black_count_mask(const Board &b, const uint16_t *mask) const;
 };
 
 
