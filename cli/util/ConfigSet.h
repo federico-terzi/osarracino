@@ -9,7 +9,7 @@
 #include "../Player.h"
 
 struct ConfigSet {
-    int timeout = 5;
+    int timeout = 55;
     Player player = Player::WHITE;
     std::string profile = "default";
     std::string host = "localhost";

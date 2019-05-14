@@ -45,7 +45,7 @@ void ArgParser::populate_config(ConfigSet &config) {
         auto flag_pair {parse_flag(i)};
 
         if (flag_pair.first == "t" || flag_pair.first == "timeout") {
-            config.timeout = parse_int(flag_pair.first, flag_pair.second);
+            config.timeout = parse_int(flag_pair.first, flag_pair.second)-3;
         }else if(flag_pair.first == "p" || flag_pair.first == "profile") {
             config.profile = flag_pair.second;
         }else if(flag_pair.first == "f" || flag_pair.first == "fork") {
@@ -99,7 +99,9 @@ Examples:
     ./osarracino black -p fallback -a 192.168.1.1
 
 Options:
-    -t [n], --timeout [n]         Set the timeout to n ( must be int ).
+    -t [n], --timeout [n]         Set the timeout to n-3 ( must be int ).
+                                  NOTE: specified time is decreased by 3
+                                        seconds.
     -j [n], --workers [n]         Specify the number of thread worker
                                   to spawn when using a multithreaded
                                   profile. ( default: match CPU core count ).
