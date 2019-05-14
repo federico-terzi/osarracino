@@ -37,6 +37,7 @@ public:
     int calculate_black_winpoints(const Board &b) const;
 
     int calculate_black_high_risk(const Board &b) const;
+    int black_at_the_edge(const Board &b)const;
 };
 
 

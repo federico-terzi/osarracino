@@ -21,7 +21,10 @@ add_library(libosarracino STATIC
         model/DTranspositionTable.cpp model/DTranspositionTable.h
         search/CollisionSearchEngine.h search/CarloSearchEngine.h
         search/ThanosSearchEngine.h
-        search/FSMSearchEngine.h evaluator/TheRockWhiteEvaluator.cpp evaluator/TheRockWhiteEvaluator.h)
+        search/FSMSearchEngine.h
+        evaluator/TheRockWhiteEvaluator.cpp
+        evaluator/TheRockWhiteEvaluator.h
+        )
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")

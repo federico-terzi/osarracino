@@ -46,7 +46,8 @@ int TheRockWhiteEvaluator::evaluate(const Board &b) const {
              b.black_count * THEROCK_EVALUATOR_BLACK_PAWN_MULTIPLIER +
              white_winpoints * THEROCK_EVALUATOR_WHITE_WINPOINT_MULTIPLIER +
              black_winpoints * THEROCK_EVALUATOR_BLACK_WINPOINT_MULTIPLIER +
-             black_high_risk * THEROCK_EVALUATOR_BLACK_HIGH_RISK_MULTIPLIER;
+             black_high_risk * THEROCK_EVALUATOR_BLACK_HIGH_RISK_MULTIPLIER +
+             black_at_the_edge(b) * THEROCK_EVALUATOR_BLACK_HIGH_RISK_MULTIPLIER /2 ;
 
 
     // Consider the amount of cells that surround the king
@@ -154,4 +155,23 @@ int TheRockWhiteEvaluator::calculate_black_high_risk(const Board &b) const {
         count += BitUtils::popcount(b.black_cols[i] & black_high_risk_mask[i]);
     }
     return count;
+}
+
+int TheRockWhiteEvaluator::black_at_the_edge(const Board &b) const {
+    int counter {0};
+    for (int i = 0; i < 9; i++) {
+        if (b.board[1][i] == Pawn::Black || b.board[1][i] == Pawn::BlackWinPoint) {
+            counter++;
+        }
+        if (b.board[i][7] == Pawn::Black || b.board[i][7] == Pawn::BlackWinPoint) {
+            counter++;
+        }
+        if (b.board[7][i] == Pawn::Black || b.board[7][i] == Pawn::BlackWinPoint) {
+            counter++;
+        }
+        if (b.board[i][1] == Pawn::Black || b.board[i][1] == Pawn::BlackWinPoint) {
+            counter++;
+        }
+    }
+    return counter;
 }
