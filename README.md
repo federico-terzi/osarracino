@@ -1,32 +1,44 @@
 # O(sarracino)
 
-Installation instructions
+### Installation
+
+To install the required libraries on Debian:
 
 ```
-sudo apt install -y pkg-config
-sudo apt install libjsoncpp-dev
-
-If there are some errors with jsoncpp do:
-sudo ln -s /usr/lib/x86_64-linux-gnu/your_jsoncpp.so.xx /usr/lib/x86_64-linux-gnu/required_jsoncpp.so.xx
+sudo apt install build-essential pkg-config libjsoncpp-dev cmake
 ```
 
-Install gtest for testing
+Then to compile the program, first enter the project directory:
 
 ```
-sudo apt-get install libgtest-dev
-sudo apt-get install cmake # install cmake
-cd /usr/src/gtest
-sudo cmake CMakeLists.txt
-sudo make
- 
-# copy or symlink libgtest.a and libgtest_main.a to your /usr/lib folder
-sudo cp *.a /usr/lib
+cmake CMakeList.txt -DCMAKE_BUILD_TYPE=Release
+make -j 4
+ln -s ./cli/osarracino ./osarracino
 ```
 
-Install pyGame for the Editor
+### Using the player
+
+To start the player, type:
 
 ```
-python3 -m pip install -U pygame
+./osarracino COLOR -t [TIMEOUT]
+
+# Examples:
+
+# Launch white player with a timeout of 60 seconds
+./osarracino white -t 60
+
+# Launch black player with a timeout of 60 seconds
+./osarracino black -t 60
+
 ```
 
-Note that pip must be installed.
+#### Important
+
+O(sarracino) will use all available cores by default. If you want to limit the
+amount of threads you can use the -j option:
+
+```
+# Launch white player with a timeout of 60 seconds using 4 cores
+./osarracino white -t 60 -j 4
+```
