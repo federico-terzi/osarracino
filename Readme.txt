@@ -8,7 +8,7 @@ To install the required libraries on Debian:
 
 Then to compile the program, first enter the project directory:
 
-    cmake CMakeList.txt -DCMAKE_BUILD_TYPE=Release
+    cmake CMakeLists.txt -DCMAKE_BUILD_TYPE=Release
     make -j 4
     ln -s ./cli/osarracino ./osarracino
 
