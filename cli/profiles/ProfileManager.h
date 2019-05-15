@@ -11,8 +11,8 @@
 #include "PlayerProfile.h"
 
 struct ProfilePair {
-    PlayerProfile* defensive;
-    PlayerProfile* aggressive;
+    std::unique_ptr<PlayerProfile> defensive;
+    std::unique_ptr<PlayerProfile> aggressive;
 };
 
 class ProfileManager {
@@ -22,7 +22,7 @@ public:
     ProfilePair get_profile(const std::string& profile);
 private:
     ConfigSet config;
-    std::unordered_map<std::string, std::function<ProfilePair>> player_map;
+    std::unordered_map<std::string, std::function<ProfilePair(Player)>> player_map;
 };
 
 

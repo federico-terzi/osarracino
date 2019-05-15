@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
     long after_memory = MemoryManager::get_stack_size();
     std::cout << "Increased STACK size from "<< before_memory << " to " << after_memory << std::endl;
 
-    GameManager game_manager(connector, profilePair.defensive, profilePair.aggressive, config.player, config);
+    GameManager game_manager(connector, profilePair.defensive.get(), profilePair.aggressive.get(), config.player, config);
     game_manager.game_loop();
 
 }

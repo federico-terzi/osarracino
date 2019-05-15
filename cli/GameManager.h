@@ -27,7 +27,7 @@ private:
     int turn_count = 0;
 
     void set_aggressive(bool is_aggressive);
-    void analyze_board_status(const Board& b, Player player);
+    void analyze_profile_change_policy(const Board &b, Player player);
 };
 
 

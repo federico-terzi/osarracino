@@ -14,7 +14,11 @@ GameManager::GameManager(Connector &connector, PlayerProfile *defensive, PlayerP
 
 void GameManager::set_aggressive(bool is_aggressive) {
     this->is_aggressive = is_aggressive;
-    std::cout << "Switching to aggressive: " << is_aggressive << std::endl;
+    if (is_aggressive) {
+        std::cout << "Switching to AGGRESSIVE profile " << std::endl;
+    }else{
+        std::cout << "Switching to DEFENSIVE profile " << std::endl;
+    }
 }
 
 
@@ -32,8 +36,10 @@ void GameManager::send_move(const Board &b) {
             timer.update_start_time();
             std::string move;
             if (is_aggressive) {
+                std::cout << "Starting elaboration with AGGRESSIVE profile." << std::endl;
                 move = aggressive_profile->calculate_move(b, timer);
             }else{
+                std::cout << "Starting elaboration with DEFENSIVE profile." << std::endl;
                 move = defensive_profile->calculate_move(b, timer);
             }
             connector.send_string(move);
@@ -65,7 +71,7 @@ void GameManager::game_loop() {
             send_move(b);
             turn_count++;
         }else{
-
+            analyze_profile_change_policy(b, Player::BLACK);
         }
 
         Board b2;
@@ -76,15 +82,19 @@ void GameManager::game_loop() {
             send_move(b2);
             turn_count++;
         }else{
-
+            analyze_profile_change_policy(b2, Player::WHITE);
         }
     }
 }
 
-void GameManager::analyze_board_status(const Board &b, Player player) {
-    if (turn_count == 2 && player == Player::WHITE) {
-        if (b.white_count < 8) {
-            set_aggressive(true);
+void GameManager::analyze_profile_change_policy(const Board &b, Player player) {
+    if (player == Player::WHITE) {
+        if (turn_count == 2) {
+            int defence_score = b.count_black_defensive() + b.white_count;
+            // If the black player is defensive, start the aggressive strategy
+            if (defence_score > 9) {
+                set_aggressive(true);
+            }
         }
     }
 }

@@ -89,6 +89,18 @@ const uint16_t throne_mask[9] = {
         0b0000000'000000000,
 };
 
+const uint16_t black_defensive_mask[9] = {
+        0b0000000'011000110,
+        0b0000000'111000111,
+        0b0000000'110000011,
+        0b0000000'000000000,
+        0b0000000'000000000,
+        0b0000000'000000000,
+        0b0000000'110000011,
+        0b0000000'111000111,
+        0b0000000'011000110,
+};
+
 const int KING_LOST = -100;
 
 class Board {
@@ -230,6 +242,14 @@ public:
         BitUtils::unset_bit(obstacle_rows[row], col);
         obstacle_rows[row] |= citadels_mask[row];
         obstacle_rows[row] |= throne_mask[row];
+    }
+
+    inline int count_black_defensive() const {
+        int count = 0;
+        for (int i = 0; i<9; i++) {
+            count += BitUtils::popcount(black_cols[i] & black_defensive_mask[i]);
+        }
+        return count;
     }
 
     void load_board(const std::string &json_board);
