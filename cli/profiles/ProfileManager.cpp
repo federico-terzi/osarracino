@@ -12,7 +12,7 @@
 ProfileManager::ProfileManager(const ConfigSet &config) : config(config) {
     player_map["default"] = [](Player player) -> std::unique_ptr<PlayerProfile>{
         if (player == Player::WHITE) {
-            return std::make_unique<AggressiveWhitePlayerProfile>();
+            return std::make_unique<SimpleWhitePlayerProfile>();
         }else{
             return std::make_unique<SimpleBlackPlayerProfile>();
         }
@@ -26,9 +26,9 @@ ProfileManager::ProfileManager(const ConfigSet &config) : config(config) {
         }
     };
 
-    player_map["defensive"] = [](Player player) -> std::unique_ptr<PlayerProfile>{
+    player_map["aggressive"] = [](Player player) -> std::unique_ptr<PlayerProfile>{
         if (player == Player::WHITE) {
-            return std::make_unique<SimpleWhitePlayerProfile>();
+            return std::make_unique<AggressiveWhitePlayerProfile>();
         }else{
             return std::make_unique<SimpleBlackPlayerProfile>();
         }
