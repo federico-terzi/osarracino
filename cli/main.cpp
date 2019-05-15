@@ -28,11 +28,14 @@ int main(int argc, char **argv) {
 
     // Initialize player profile
     ProfileManager profile_manager(config);
-    std::unique_ptr<PlayerProfile> profile = profile_manager.get_profile(config.profile);
-    profile->set_config(config);
+    ProfilePair profilePair = profile_manager.get_profile(config.profile);
+    profilePair.aggressive->set_config(config);
+    profilePair.defensive->set_config(config);
 
-    std::cout << "Using profile: " << profile->get_profile_name() << std::endl;
-    profile->print_configuration();
+    std::cout << "Using aggressive profile: " << profilePair.aggressive->get_profile_name() << std::endl;
+    profilePair.aggressive->print_configuration();
+    std::cout << "Using defensive profile: " << profilePair.defensive->get_profile_name() << std::endl;
+    profilePair.defensive->print_configuration();
 
     // Connect to server
     std::cout << "Connecting to server... " << std::flush;
@@ -48,7 +51,7 @@ int main(int argc, char **argv) {
     long after_memory = MemoryManager::get_stack_size();
     std::cout << "Increased STACK size from "<< before_memory << " to " << after_memory << std::endl;
 
-    GameManager game_manager(connector, profile.get(), config.player, config);
+    GameManager game_manager(connector, profilePair.defensive, profilePair.aggressive, config.player, config);
     game_manager.game_loop();
 
 }

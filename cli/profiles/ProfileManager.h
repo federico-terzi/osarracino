@@ -10,14 +10,19 @@
 #include <functional>
 #include "PlayerProfile.h"
 
+struct ProfilePair {
+    PlayerProfile* defensive;
+    PlayerProfile* aggressive;
+};
+
 class ProfileManager {
 public:
     ProfileManager(const ConfigSet &config);
 
-    std::unique_ptr<PlayerProfile> get_profile(const std::string& profile);
+    ProfilePair get_profile(const std::string& profile);
 private:
     ConfigSet config;
-    std::unordered_map<std::string, std::function<std::unique_ptr<PlayerProfile>(Player)>> player_map;
+    std::unordered_map<std::string, std::function<ProfilePair>> player_map;
 };
 
 

@@ -12,15 +12,22 @@
 
 class GameManager {
 public:
-    explicit GameManager(Connector &connector, PlayerProfile *currentProfile, Player player, ConfigSet config);
+    explicit GameManager(Connector &connector, PlayerProfile *defensive, PlayerProfile *aggressive,
+            Player player, ConfigSet config);
 
     void game_loop();
     void send_move(const Board& b);
 private:
     Connector &connector;
-    PlayerProfile *current_profile;
+    PlayerProfile *defensive_profile;
+    PlayerProfile *aggressive_profile;
     Player player;
     ConfigSet config;
+    bool is_aggressive = false;
+    int turn_count = 0;
+
+    void set_aggressive(bool is_aggressive);
+    void analyze_board_status(const Board& b, Player player);
 };
 
 
