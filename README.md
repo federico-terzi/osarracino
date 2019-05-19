@@ -33,10 +33,7 @@ To start the player, type:
 
 ```
 
-#### Important
-
-O(sarracino) will use all available cores by default. If you want to limit the
-amount of threads you can use the -j option:
+To change the number of cores used by osarracino you can use the -j option:
 
 ```
 # Launch white player with a timeout of 60 seconds using 4 cores

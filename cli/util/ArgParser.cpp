@@ -30,10 +30,10 @@ void ArgParser::populate_config(ConfigSet &config) {
     config.port = config.player.default_port();
 
     // Setup worker count
-    config.worker_count = std::thread::hardware_concurrency();
-    if (config.worker_count == 0) {
-        config.worker_count = 4;
-    }
+//    config.worker_count = std::thread::hardware_concurrency();
+//    if (config.worker_count == 0) {
+//        config.worker_count = 4;
+//    }
 
     // Parse the other parameters
     for (int i = 2; i<args.size(); i+=2) {
@@ -45,7 +45,7 @@ void ArgParser::populate_config(ConfigSet &config) {
         auto flag_pair {parse_flag(i)};
 
         if (flag_pair.first == "t" || flag_pair.first == "timeout") {
-            config.timeout = parse_int(flag_pair.first, flag_pair.second)-3;
+            config.timeout = parse_int(flag_pair.first, flag_pair.second)-2;
         }else if(flag_pair.first == "p" || flag_pair.first == "profile") {
             config.profile = flag_pair.second;
         }else if(flag_pair.first == "f" || flag_pair.first == "fork") {

@@ -9,13 +9,13 @@
 #include "../Player.h"
 
 struct ConfigSet {
-    int timeout = 55;
+    int timeout = 57;
     Player player = Player::WHITE;
     std::string profile = "default";
     std::string host = "localhost";
     int port = -1;
     bool fork_enabled = true;
-    int worker_count = 4;
+    int worker_count = 2;
 
     void print() {
         std::cout << "Player: "<<player<< std::endl;
