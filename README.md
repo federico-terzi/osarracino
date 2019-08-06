@@ -1,5 +1,27 @@
 # O(sarracino)
 
+O(sarracino) is a Tablut Engine written in C++ with a strong focus on performance. 
+It was written by Federico Terzi and Massimo Schembri for the 2019 [yearly challenge](http://ai.unibo.it/games/boardgamecompetition/1819) 
+hosted by Prof. Mello for the Fundamentals of AI course.
+
+O(sarracino) got the 2nd place out of 22 participants.
+
+### Play online
+
+While the original version required a dedicated server to be played, a lighter version has been ported to the web using WebAssembly.
+
+[You can play online here](https://federicoterzi.com/webTablut/).
+
+### Performance
+
+In order to achive the best performance, O(sarracino) took advantage of:
+
+* Multi-threading
+* Bit operations
+* CPU intrinsics (native processor instructions)
+
+The engine is capable to evaluate ( on my Intel i5-8400 machine ) about 35 million possibile moves each second.
+
 ### Installation
 
 To install the required libraries on Debian:
